@@ -2,6 +2,7 @@ package database
 
 import (
 	"fmt"
+	"github.com/joho/godotenv"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"log"
@@ -25,8 +26,14 @@ func ConnectPostgres() {
 }
 
 func initializeDatabaseConnection() *gorm.DB {
-	cfg := config.GetConfig()
-	dsn := cfg.GetPostgresDSN()
+	// Load environment variables from the .env file
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatalf("Error loading .env file: %v", err)
+	}
+
+	cfg := config.GetConfig()   // Config struct is defined in your existing code
+	dsn := cfg.GetPostgresDSN() // Generate DSN from loaded environment variables
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		log.Fatalf("Failed to connect to the database. DSN: %v, Error: %v", dsn, err)
