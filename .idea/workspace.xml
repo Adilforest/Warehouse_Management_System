@@ -4,13 +4,7 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0bf56199-4d44-488a-a581-530161417705" name="Changes" comment="Added snapshot for web page.">
-      <change afterPath="$PROJECT_DIR$/warehouse-backend/.env" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/warehouse-backend/database/postgres_connection.go" beforeDir="false" afterPath="$PROJECT_DIR$/warehouse-backend/database/postgres_connection.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/warehouse-backend/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/warehouse-backend/go.mod" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/warehouse-backend/go.sum" beforeDir="false" afterPath="$PROJECT_DIR$/warehouse-backend/go.sum" afterDir="false" />
-    </list>
+    <list default="true" id="0bf56199-4d44-488a-a581-530161417705" name="Changes" comment="Added .env configuration" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -137,7 +131,8 @@
     <MESSAGE value="Refactoring backend." />
     <MESSAGE value="Fixed bag with DB." />
     <MESSAGE value="Added snapshot for web page." />
-    <option name="LAST_COMMIT_MESSAGE" value="Added snapshot for web page." />
+    <MESSAGE value="Added .env configuration" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added .env configuration" />
   </component>
   <component name="VgoProject">
     <settings-migrated>true</settings-migrated>
