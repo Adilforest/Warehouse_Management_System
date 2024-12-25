@@ -52,7 +52,8 @@ func setupRoutes() *gin.Engine {
 		productRoutes.GET("/:id", getProductHandler)
 		productRoutes.GET("/", getAllProductsHandler)
 		productRoutes.PUT("/:id", updateProductHandler)
-		productRoutes.DELETE("/:id", deleteProductHandler)
+		productRoutes.DELETE("/deleteAll", deleteAllProductsHandler) // Новый маршрут для удаления всех продуктов
+		productRoutes.DELETE("/:id", deleteProductHandler)           // Удаление по ID
 	}
 
 	return router
@@ -70,13 +71,39 @@ func handleGetRequest(c *gin.Context) {
 }
 
 func handlePostRequest(c *gin.Context) {
-	var message Message
-	if err := c.ShouldBindJSON(&message); err != nil || message.Message == "" {
-		c.JSON(http.StatusBadRequest, createResponse("fail", "Invalid or empty JSON message"))
+	var rawData map[string]interface{}
+
+	// Прочитать и разобрать входящий JSON
+	if err := c.ShouldBindJSON(&rawData); err != nil {
+		// Вернуть ошибку, если JSON некорректный
+		c.JSON(http.StatusBadRequest, createResponse("fail", "Invalid JSON payload"))
 		return
 	}
 
-	c.JSON(http.StatusOK, createResponse("success", "Data received successfully"))
+	// Проверить, содержит ли JSON ключ "message"
+	messageValue, exists := rawData["message"]
+	if !exists {
+		// Если ключ отсутствует, вернуть ошибку
+		c.JSON(http.StatusBadRequest, createResponse("fail", "Missing 'message' field"))
+		return
+	}
+
+	// Проверить, является ли поле "message" строкой (дополнительная проверка)
+	message, ok := messageValue.(string)
+	if !ok {
+		// Если поле не строка, вернуть ошибку
+		c.JSON(http.StatusBadRequest, createResponse("fail", "'message' field must be a string"))
+		return
+	}
+
+	// Если поле "message" существует, но пустое
+	if message == "" {
+		c.JSON(http.StatusOK, createResponse("success", "Empty message received"))
+		return
+	}
+
+	// Если всё прошло успешно, возвращаем ответ с содержимым message
+	c.JSON(http.StatusOK, createResponse("success", "Data received successfully with message: "+message))
 }
 
 func createResponse(status, message string) map[string]string {
@@ -165,4 +192,15 @@ func deleteProductHandler(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, createResponse("success", "Product deleted successfully"))
+}
+
+func deleteAllProductsHandler(c *gin.Context) {
+	// Обращаемся к функции базы данных для удаления всех записей
+	err := database.DeleteAllProducts()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, createResponse("fail", "Failed to delete all products"))
+		return
+	}
+
+	c.JSON(http.StatusOK, createResponse("success", "All products deleted successfully"))
 }

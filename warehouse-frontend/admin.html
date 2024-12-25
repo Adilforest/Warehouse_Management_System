@@ -3,41 +3,73 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Product Management</title>
-    <!-- Link to external CSS -->
-    <link rel="stylesheet" href="./css/styles.css">
+    <title>Admin Panel</title>
+    <script src="./js/admin.js" defer></script>
 </head>
 <body>
-<h1>Product Management</h1>
+<h1>Admin Panel - CRUD Operations</h1>
 
-<!-- Product Form -->
-<form id="productForm">
-    <input type="hidden" id="productID" name="productID">
-    <input type="text" id="name" name="name" placeholder="Product Name" required>
-    <input type="text" id="description" name="description" placeholder="Description" required>
-    <input type="number" id="price" name="price" placeholder="Price" step="0.01" required>
-    <input type="number" id="quantity" name="quantity" placeholder="Quantity" required>
-    <button type="submit">Save Product</button>
-</form>
+<!-- Create Product Form -->
+<section>
+    <h2>Create Product</h2>
+    <label for="create-name">Name:</label>
+    <input type="text" id="create-name" required><br><br>
+    <label for="create-description">Description:</label>
+    <input type="text" id="create-description" required><br><br>
+    <label for="create-price">Price:</label>
+    <input type="number" id="create-price" required><br><br>
+    <label for="create-quantity">Quantity:</label>
+    <input type="number" id="create-quantity" required><br><br>
+    <button onclick="createProduct()">Create Product</button>
+</section>
 
-<!-- Product Table -->
-<table>
-    <thead>
-    <tr>
-        <th>ID</th>
-        <th>Name</th>
-        <th>Description</th>
-        <th>Price</th>
-        <th>Quantity</th>
-        <th>Actions</th>
-    </tr>
-    </thead>
-    <tbody id="productTable">
-    <!-- Products will be dynamically populated here -->
-    </tbody>
-</table>
+<!-- Get Product By ID -->
+<section>
+    <h2>Get Product By ID</h2>
+    <label for="get-id">Product ID:</label>
+    <input type="number" id="get-id" required><br><br>
+    <button onclick="getProductById()">Get Product</button>
+    <pre id="product-response"></pre>
+</section>
 
-<!-- Link to external JavaScript -->
-<script src="./js/script.js"></script>
+<!-- Update Product -->
+<section>
+    <h2>Update Product</h2>
+    <label for="update-id">Product ID:</label>
+    <input type="number" id="update-id" required><br><br>
+    <label for="update-name">Name:</label>
+    <input type="text" id="update-name" required><br><br>
+    <label for="update-description">Description:</label>
+    <input type="text" id="update-description" required><br><br>
+    <label for="update-price">Price:</label>
+    <input type="number" id="update-price" required><br><br>
+    <label for="update-quantity">Quantity:</label>
+    <input type="number" id="update-quantity" required><br><br>
+    <button onclick="updateProduct()">Update Product</button>
+</section>
+
+<!-- Get All Products -->
+<section>
+    <h2>Get All Products</h2>
+    <button onclick="getAllProducts()">Get All Products</button>
+    <pre id="all-products-response"></pre>
+</section>
+
+<!-- Delete Product By ID -->
+<section>
+    <h2>Delete Product By ID</h2>
+    <label for="delete-id">Product ID:</label>
+    <input type="number" id="delete-id" required><br><br>
+    <button onclick="deleteProduct()">Delete Product</button>
+</section>
+
+<!-- Delete All Products -->
+<section>
+    <h2>Delete All Products</h2>
+    <button onclick="deleteAllProducts()">Delete All Products</button>
+</section>
+
+<h2>Server Response:</h2>
+<pre id="server-response"></pre>
 </body>
 </html>

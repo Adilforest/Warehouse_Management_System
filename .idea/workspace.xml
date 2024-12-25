@@ -4,7 +4,17 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0bf56199-4d44-488a-a581-530161417705" name="Changes" comment="Added .env configuration" />
+    <list default="true" id="0bf56199-4d44-488a-a581-530161417705" name="Changes" comment="Added .env configuration">
+      <change afterPath="$PROJECT_DIR$/qodana.yaml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/warehouse-frontend/js/admin.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/warehouse-backend/database/postgres_connection.go" beforeDir="false" afterPath="$PROJECT_DIR$/warehouse-backend/database/postgres_connection.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/warehouse-backend/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/warehouse-backend/main.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/warehouse-backend/routes/product_routes.go" beforeDir="false" afterPath="$PROJECT_DIR$/warehouse-backend/routes/product_routes.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/warehouse-frontend/admin.html" beforeDir="false" afterPath="$PROJECT_DIR$/warehouse-frontend/admin.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/warehouse-frontend/css/styles.css" beforeDir="false" afterPath="$PROJECT_DIR$/warehouse-frontend/css/styles.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/warehouse-frontend/js/script.js" beforeDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -41,6 +51,9 @@
   <component name="KubernetesApiProvider">{
   &quot;isMigrated&quot;: true
 }</component>
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="CurrentFile" />
+  </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 8
 }</component>
@@ -73,6 +86,11 @@
     &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;
   }
 }</component>
+  <component name="QodanaReportsService">
+    <option name="descriptions">
+      <ReportDescription localRun="true" path="/private/var/folders/2y/r4jgj_ys60n2_nrs19mncjlm0000gn/T/qodana_output/qodana.sarif.json" reportGuid="69d9870a-8054-4ba2-bc81-9d28ddf84fcc" reportId="Assignment_1_AP/qodana/2024-12-25" />
+    </option>
+  </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/warehouse-frontend/images" />
@@ -80,7 +98,7 @@
       <recent name="$PROJECT_DIR$" />
     </key>
   </component>
-  <component name="RunManager" selected="JavaScript Debug.index.html">
+  <component name="RunManager" selected="JavaScript Debug.admin.html">
     <configuration name="go build Assignment_1_AP" type="GoApplicationRunConfiguration" factoryName="Go Application" nameIsGenerated="true">
       <module name="Assignment_1_AP" />
       <working_directory value="$PROJECT_DIR$" />
@@ -101,9 +119,9 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="JavaScript Debug.admin.html" />
         <item itemvalue="JavaScript Debug.index.html" />
         <item itemvalue="JavaScript Debug.README.md" />
-        <item itemvalue="JavaScript Debug.admin.html" />
       </list>
     </recent_temporary>
   </component>
@@ -116,6 +134,9 @@
     </attachedChunks>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="StructureViewState">
+    <option name="selectedTab" value="Markdown" />
+  </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
   </component>
