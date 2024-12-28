@@ -1,34 +1,60 @@
 package routes
 
 import (
-	"github.com/go-chi/chi/v5"
+	"encoding/json"
 	"net/http"
-	"strconv"
 	"warehouse-backend/controllers"
+
+	"github.com/go-chi/chi/v5"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 func UserRoutes(router chi.Router) {
+	// Создать пользователя
 	router.Post("/users", func(w http.ResponseWriter, r *http.Request) {
-		// Получение данных из тела запроса
-		name := r.FormValue("name")
-		email := r.FormValue("email")
-		password := r.FormValue("password")
+		var user struct {
+			Name     string `json:"name"`
+			Email    string `json:"email"`
+			Password string `json:"password"`
+		}
 
-		user, err := controllers.CreateUser(name, email, password)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
+		// Декодируем тело запроса в структуру user
+		if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
+			http.Error(w, "Invalid request payload: "+err.Error(), http.StatusBadRequest)
 			return
 		}
-		w.Write([]byte("User created: " + user.Name))
+
+		// Создаём пользователя через контроллер
+		createdUser, err := controllers.CreateUser(user.Name, user.Email, user.Password)
+		if err != nil {
+			http.Error(w, "Failed to create user: "+err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		// Возвращаем успешный ответ
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(createdUser)
 	})
 
+	// Получить пользователя по ID
 	router.Get("/users/{id}", func(w http.ResponseWriter, r *http.Request) {
-		id, _ := strconv.Atoi(chi.URLParam(r, "id"))
-		user, err := controllers.GetUserByID(uint(id))
+		// Получаем параметр id из URL
+		id := chi.URLParam(r, "id")
+		objectID, err := primitive.ObjectIDFromHex(id) // Преобразуем строку в ObjectID
 		if err != nil {
-			http.Error(w, err.Error(), http.StatusNotFound)
+			http.Error(w, "Invalid user ID", http.StatusBadRequest)
 			return
 		}
-		w.Write([]byte("User: " + user.Name))
+
+		// Получаем пользователя через контроллер
+		user, err := controllers.GetUserByID(objectID.Hex())
+		if err != nil {
+			http.Error(w, "User not found: "+err.Error(), http.StatusNotFound)
+			return
+		}
+
+		// Возвращаем успешный ответ с данными пользователя
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(user)
 	})
 }

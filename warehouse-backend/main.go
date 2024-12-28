@@ -1,14 +1,16 @@
 package main
 
 import (
-	"github.com/gin-contrib/cors"
-	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
 	"os"
 	"os/signal"
 	"strconv"
 	"syscall"
+
+	"github.com/gin-contrib/cors"
+	"github.com/gin-gonic/gin"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"warehouse-backend/database"
 	"warehouse-backend/models"
 )
@@ -29,7 +31,7 @@ func main() {
 	// Настройка маршрутов
 	router := setupRoutes()
 
-	// Элегантное завершение сервера с обработкой сигналов
+	// Элегантное завершение работы сервера с обработкой сигналов
 	go func() {
 		log.Println("Server is running on port " + serverPort)
 		if err := router.Run(serverPort); err != nil {
@@ -43,11 +45,14 @@ func main() {
 	<-quit
 
 	log.Println("Shutting down server...")
-	// Освобождение ресурсов (например, закрытие подключений к БД)
+	database.DisconnectMongoDB() // Закрываем соединение с MongoDB
 }
 
 func setupDatabase() {
-	database.ConnectPostgres()
+	err := database.InitMongoDB("mongodb://localhost:27017") // Инициализация MongoDB
+	if err != nil {
+		log.Fatalf("Failed to connect to MongoDB: %v", err)
+	}
 }
 
 func setupRoutes() *gin.Engine {
@@ -55,7 +60,7 @@ func setupRoutes() *gin.Engine {
 
 	// Настройка CORS
 	router.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"http://localhost:63342"}, // Измените на URL фронтенда в production
+		AllowOrigins:     []string{"http://localhost:63342"}, // Замените URL для production
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE"},
 		AllowHeaders:     []string{"Content-Type", "Authorization"},
 		AllowCredentials: true,
@@ -64,11 +69,7 @@ func setupRoutes() *gin.Engine {
 	// Главная страница
 	router.GET("/", handleHome)
 
-	// Тестовые маршруты
-	router.GET("/get", handleGetRequest)
-	router.POST("/post", handlePostRequest)
-
-	// Группа маршрутов для работы с продуктами
+	// CRUD маршруты для продуктов
 	productRoutes := router.Group("/products")
 	{
 		productRoutes.POST("/create", createProductHandler)
@@ -87,37 +88,7 @@ func handleHome(c *gin.Context) {
 	c.String(http.StatusOK, "Welcome to the Warehouse Backend!")
 }
 
-// Обработчик GET-запроса
-func handleGetRequest(c *gin.Context) {
-	response := createResponse("success", "GET request processed successfully", nil)
-	c.JSON(http.StatusOK, response)
-}
-
-// Обработчик POST-запроса
-func handlePostRequest(c *gin.Context) {
-	var rawData map[string]interface{}
-
-	if err := c.ShouldBindJSON(&rawData); err != nil {
-		c.JSON(http.StatusBadRequest, createResponse("fail", "Invalid JSON payload", nil))
-		return
-	}
-
-	messageValue, exists := rawData["message"]
-	if !exists {
-		c.JSON(http.StatusBadRequest, createResponse("fail", "Missing 'message' field", nil))
-		return
-	}
-
-	message, ok := messageValue.(string)
-	if !ok || message == "" {
-		c.JSON(http.StatusOK, createResponse("success", "Empty or invalid message received", nil))
-		return
-	}
-
-	c.JSON(http.StatusOK, createResponse("success", "Data received successfully with message: "+message, nil))
-}
-
-// createResponse создает стандартный ответ API
+// createResponse создает стандартный API-ответ
 func createResponse(status, message string, data interface{}) APIResponse {
 	return APIResponse{
 		Status:  status,
@@ -126,7 +97,7 @@ func createResponse(status, message string, data interface{}) APIResponse {
 	}
 }
 
-// CRUD Handlers for Product
+// CRUD обработчики для продуктов
 
 // Создание продукта
 func createProductHandler(c *gin.Context) {
@@ -136,7 +107,11 @@ func createProductHandler(c *gin.Context) {
 		return
 	}
 
-	if err := database.CreateProduct(&product); err != nil {
+	product.ID = primitive.NewObjectID() // Генерируем ObjectID для нового продукта
+
+	// Вставляем продукт в MongoDB
+	err := database.CreateProduct(&product)
+	if err != nil {
 		c.JSON(http.StatusInternalServerError, createResponse("fail", "Failed to create product", nil))
 		return
 	}
@@ -146,13 +121,14 @@ func createProductHandler(c *gin.Context) {
 
 // Получение продукта по ID
 func getProductHandler(c *gin.Context) {
-	id, err := strconv.Atoi(c.Param("id"))
+	id := c.Param("id")
+	objectID, err := primitive.ObjectIDFromHex(id) // Конвертация ID в ObjectID
 	if err != nil {
 		c.JSON(http.StatusBadRequest, createResponse("fail", "Invalid product ID", nil))
 		return
 	}
 
-	product, err := database.GetProductByID(uint(id))
+	product, err := database.GetProductByID(objectID)
 	if err != nil {
 		c.JSON(http.StatusNotFound, createResponse("fail", "Product not found", nil))
 		return
@@ -161,9 +137,9 @@ func getProductHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, createResponse("success", "Product retrieved successfully", product))
 }
 
-// Пагинация при получении всех продуктов
+// Получение всех продуктов с пагинацией
 func getAllProductsHandler(c *gin.Context) {
-	limit, _ := strconv.Atoi(c.DefaultQuery("limit", "10")) // Default page size = 10
+	limit, _ := strconv.Atoi(c.DefaultQuery("limit", "10")) // По умолчанию 10
 	offset, _ := strconv.Atoi(c.DefaultQuery("offset", "0"))
 
 	products, err := database.GetProductsPaginated(limit, offset)
@@ -177,7 +153,8 @@ func getAllProductsHandler(c *gin.Context) {
 
 // Обновление продукта
 func updateProductHandler(c *gin.Context) {
-	id, err := strconv.Atoi(c.Param("id"))
+	id := c.Param("id")
+	objectID, err := primitive.ObjectIDFromHex(id) // Конвертация ID в ObjectID
 	if err != nil {
 		c.JSON(http.StatusBadRequest, createResponse("fail", "Invalid product ID", nil))
 		return
@@ -189,26 +166,27 @@ func updateProductHandler(c *gin.Context) {
 		return
 	}
 
-	err = database.UpdateProduct(uint(id), &updatedProduct)
+	err = database.UpdateProduct(objectID, &updatedProduct)
 	if err != nil {
-		c.JSON(http.StatusNotFound, createResponse("fail", err.Error(), nil))
+		c.JSON(http.StatusNotFound, createResponse("fail", "Failed to update product: "+err.Error(), nil))
 		return
 	}
 
-	c.JSON(http.StatusOK, createResponse("success", "Product updated successfully", nil))
+	c.JSON(http.StatusOK, createResponse("success", "Product updated successfully", updatedProduct))
 }
 
 // Удаление продукта по ID
 func deleteProductHandler(c *gin.Context) {
-	id, err := strconv.Atoi(c.Param("id"))
+	id := c.Param("id")
+	objectID, err := primitive.ObjectIDFromHex(id) // Конвертация ID в ObjectID
 	if err != nil {
 		c.JSON(http.StatusBadRequest, createResponse("fail", "Invalid product ID", nil))
 		return
 	}
 
-	err = database.DeleteProduct(uint(id))
+	err = database.DeleteProduct(objectID)
 	if err != nil {
-		c.JSON(http.StatusNotFound, createResponse("fail", err.Error(), nil))
+		c.JSON(http.StatusNotFound, createResponse("fail", "Product not found: "+err.Error(), nil))
 		return
 	}
 

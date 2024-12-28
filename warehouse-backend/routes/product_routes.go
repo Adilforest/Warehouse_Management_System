@@ -1,64 +1,84 @@
 package routes
 
 import (
-	"github.com/gin-gonic/gin"
+	"context"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"net/http"
+	"time"
 	"warehouse-backend/database"
 	"warehouse-backend/models"
+
+	"github.com/gin-gonic/gin"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 const productCreatedMessage = "Product created successfully"
 
-// HandleCreateProduct creates a new product
+// HandleCreateProduct создает новый продукт
 func HandleCreateProduct(c *gin.Context) {
 	var product models.Product
 
-	// Bind the JSON payload to the product model
+	// Привязка JSON-контента из тела запроса к модели Product
 	if err := c.ShouldBindJSON(&product); err != nil {
 		handleError(c, http.StatusBadRequest, err.Error())
 		return
 	}
 
-	// Insert the product into the database
-	if result := database.DB.Create(&product); result.Error != nil {
-		handleError(c, http.StatusInternalServerError, result.Error.Error())
+	product.ID = primitive.NewObjectID() // Генерируем новый ObjectID для продукта
+
+	// Получаем коллекцию "products"
+	collection := database.GetCollection("warehouse", "products")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	// Вставляем новый продукт в коллекцию
+	_, err := collection.InsertOne(ctx, product)
+	if err != nil {
+		handleError(c, http.StatusInternalServerError, "Failed to create product: "+err.Error())
 		return
 	}
 
-	// Return success response with created product
+	// Возвращаем успешный ответ с данными созданного объекта
 	c.JSON(http.StatusOK, gin.H{
 		"message": productCreatedMessage,
 		"product": product,
 	})
 }
 
-// HandleDeleteAllProducts deletes all products from the database
+// HandleDeleteAllProducts удаляет все продукты из базы данных
 func HandleDeleteAllProducts(c *gin.Context) {
-	// Call `DeleteAllProducts` to remove all entries
-	err := database.DeleteAllProducts()
+	// Получаем коллекцию "products"
+	collection := database.GetCollection("warehouse", "products")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	// Выполняем удаление всех записей в коллекции
+	result, err := collection.DeleteMany(ctx, bson.M{})
 	if err != nil {
-		// Handle any errors returned from the database function
-		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error(), "status": "fail"})
+		handleError(c, http.StatusInternalServerError, "Failed to delete all products: "+err.Error())
 		return
 	}
 
-	// Return success response if no errors occur
+	// Возвращаем успешный ответ с информацией о количестве удаленных записей
 	c.JSON(http.StatusOK, gin.H{
 		"message": "All products deleted successfully",
+		"deleted": result.DeletedCount,
 		"status":  "success",
 	})
 }
 
-// SetupProductRoutes sets up routes for product-related actions
+// SetupProductRoutes настраивает маршруты для управления продуктами
 func SetupProductRoutes(router *gin.Engine) {
-	// Route for creating a product
+	// Маршрут для создания продукта
 	router.POST("/products", HandleCreateProduct)
 
-	// Route for deleting all products
+	// Маршрут для удаления всех продуктов
 	router.DELETE("/products/deleteAll", HandleDeleteAllProducts)
 }
 
-// handleError is a helper function to return error responses
+// handleError — вспомогательная функция для возврата ошибок в ответах
 func handleError(c *gin.Context, statusCode int, errorMessage string) {
 	c.JSON(statusCode, gin.H{"error": errorMessage})
 }

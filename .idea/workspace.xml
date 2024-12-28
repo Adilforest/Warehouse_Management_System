@@ -4,17 +4,21 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0bf56199-4d44-488a-a581-530161417705" name="Changes" comment="Added features CRUD and POST operation.">
+    <list default="true" id="0bf56199-4d44-488a-a581-530161417705" name="Changes" comment="Last worked version on postgres.">
+      <change afterPath="$PROJECT_DIR$/warehouse-backend/database/database.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/warehouse-backend/database/postgres_connection.go" beforeDir="false" afterPath="$PROJECT_DIR$/warehouse-backend/database/postgres_connection.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/warehouse-backend/.env" beforeDir="false" afterPath="$PROJECT_DIR$/warehouse-backend/.env" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/warehouse-backend/config/config.go" beforeDir="false" afterPath="$PROJECT_DIR$/warehouse-backend/config/config.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/warehouse-backend/controllers/user_controller.go" beforeDir="false" afterPath="$PROJECT_DIR$/warehouse-backend/controllers/user_controller.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/warehouse-backend/database/mongo_connection.go" beforeDir="false" afterPath="$PROJECT_DIR$/warehouse-backend/database/mongo_connection.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/warehouse-backend/database/postgres_connection.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/warehouse-backend/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/warehouse-backend/go.mod" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/warehouse-backend/go.sum" beforeDir="false" afterPath="$PROJECT_DIR$/warehouse-backend/go.sum" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/warehouse-backend/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/warehouse-backend/main.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/warehouse-backend/models/product.go" beforeDir="false" afterPath="$PROJECT_DIR$/warehouse-backend/models/product.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/warehouse-backend/models/user.go" beforeDir="false" afterPath="$PROJECT_DIR$/warehouse-backend/models/user.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/warehouse-backend/routes/product_routes.go" beforeDir="false" afterPath="$PROJECT_DIR$/warehouse-backend/routes/product_routes.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/warehouse-frontend/admin.html" beforeDir="false" afterPath="$PROJECT_DIR$/warehouse-frontend/admin.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/warehouse-frontend/css/styles.css" beforeDir="false" afterPath="$PROJECT_DIR$/warehouse-frontend/css/styles.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/warehouse-frontend/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/warehouse-frontend/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/warehouse-frontend/js/admin.js" beforeDir="false" afterPath="$PROJECT_DIR$/warehouse-frontend/js/admin.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/warehouse-frontend/js/api.js" beforeDir="false" afterPath="$PROJECT_DIR$/warehouse-frontend/js/api.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/warehouse-backend/routes/user_routes.go" beforeDir="false" afterPath="$PROJECT_DIR$/warehouse-backend/routes/user_routes.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -155,7 +159,8 @@
     <MESSAGE value="Added snapshot for web page." />
     <MESSAGE value="Added .env configuration" />
     <MESSAGE value="Added features CRUD and POST operation." />
-    <option name="LAST_COMMIT_MESSAGE" value="Added features CRUD and POST operation." />
+    <MESSAGE value="Last worked version on postgres." />
+    <option name="LAST_COMMIT_MESSAGE" value="Last worked version on postgres." />
   </component>
   <component name="VgoProject">
     <settings-migrated>true</settings-migrated>
