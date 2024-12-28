@@ -14,29 +14,29 @@ var Database *gorm.DB
 
 const dbConnectionSuccessMsg = "Successfully connected to PostgreSQL!"
 
-// ConnectPostgres establishes a connection to the PostgreSQL database and performs AutoMigrations
+// ConnectPostgres устанавливает соединение с базой данных PostgreSQL и выполняет AutoMigrations
 func ConnectPostgres() {
 	db := initializeDatabaseConnection()
 	Database = db
 	fmt.Println(dbConnectionSuccessMsg)
 
-	// AutoMigrate the Product model
+	// AutoMigrate для модели Product
 	if err := Database.AutoMigrate(&models.Product{}); err != nil {
 		log.Fatalf("Error migrating the database: %v", err)
 	}
 	fmt.Println("Database migrated successfully!")
 }
 
-// initializeDatabaseConnection initializes the database connection
+// initializeDatabaseConnection инициализирует подключение к базе данных
 func initializeDatabaseConnection() *gorm.DB {
-	// Load environment variables from the .env file
+	// Загрузка переменных окружения из файла .env
 	err := godotenv.Load()
 	if err != nil {
 		log.Fatalf("Error loading .env file: %v", err)
 	}
 
-	cfg := config.GetConfig()   // Config struct is defined in your existing code
-	dsn := cfg.GetPostgresDSN() // Generate DSN from loaded environment variables
+	cfg := config.GetConfig()
+	dsn := cfg.GetPostgresDSN()
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		log.Fatalf("Failed to connect to the database. DSN: %v, Error: %v", dsn, err)
@@ -44,16 +44,16 @@ func initializeDatabaseConnection() *gorm.DB {
 	return db
 }
 
-// CreateProduct creates a new product in the database
+// CreateProduct создает новый продукт в базе данных
 func CreateProduct(product *models.Product) error {
 	result := Database.Create(product)
 	if result.Error != nil {
-		return fmt.Errorf("error creating product: %v", result.Error)
+		return fmt.Errorf("error creating product with fields: Name (%v), Type (%v): %v", product.Name, product.Type, result.Error)
 	}
 	return nil
 }
 
-// GetProductByID retrieves a product by its ID from the database
+// GetProductByID извлекает продукт по его ID из базы данных
 func GetProductByID(id uint) (*models.Product, error) {
 	var product models.Product
 	result := Database.First(&product, id)
@@ -66,7 +66,7 @@ func GetProductByID(id uint) (*models.Product, error) {
 	return &product, nil
 }
 
-// UpdateProduct updates an existing product by its ID
+// UpdateProduct обновляет существующий продукт по его ID
 func UpdateProduct(id uint, productData *models.Product) error {
 	var product models.Product
 	result := Database.First(&product, id)
@@ -77,9 +77,16 @@ func UpdateProduct(id uint, productData *models.Product) error {
 		return fmt.Errorf("error finding product: %v", result.Error)
 	}
 
+	// Обновляем поля
 	product.Name = productData.Name
 	product.Price = productData.Price
 	product.Quantity = productData.Quantity
+	product.Type = productData.Type
+	product.Brand = productData.Brand
+	product.Model = productData.Model
+	product.Specifications = productData.Specifications
+	product.Color = productData.Color
+	product.Warranty = productData.Warranty
 
 	saveResult := Database.Save(&product)
 	if saveResult.Error != nil {
@@ -88,7 +95,7 @@ func UpdateProduct(id uint, productData *models.Product) error {
 	return nil
 }
 
-// DeleteProduct deletes a product by its ID
+// DeleteProduct удаляет продукт по его ID
 func DeleteProduct(id uint) error {
 	result := Database.Delete(&models.Product{}, id)
 	if result.Error != nil {
@@ -100,7 +107,7 @@ func DeleteProduct(id uint) error {
 	return nil
 }
 
-// GetAllProducts retrieves all products from the database
+// GetAllProducts извлекает все продукты из базы данных
 func GetAllProducts() ([]models.Product, error) {
 	var products []models.Product
 	result := Database.Find(&products)
@@ -110,13 +117,21 @@ func GetAllProducts() ([]models.Product, error) {
 	return products, nil
 }
 
-// DeleteAllProducts deletes all products from the database
+// DeleteAllProducts удаляет все продукты из базы данных
 func DeleteAllProducts() error {
 	result := Database.Exec("DELETE FROM products")
 	if result.Error != nil {
-		fmt.Printf("SQL Error: %v\n", result.Error) // Логируем ошибку в SQL-запросе
 		return fmt.Errorf("error deleting all products: %v", result.Error)
 	}
-	fmt.Printf("Rows affected: %d\n", result.RowsAffected) // Логируем количество удаленных строк
 	return nil
+}
+
+// GetProductsPaginated возвращает список продуктов из базы данных с поддержкой пагинации
+func GetProductsPaginated(limit, offset int) ([]models.Product, error) {
+	var products []models.Product
+	result := Database.Limit(limit).Offset(offset).Find(&products)
+	if result.Error != nil {
+		return nil, fmt.Errorf("error fetching products with pagination: %v", result.Error)
+	}
+	return products, nil
 }

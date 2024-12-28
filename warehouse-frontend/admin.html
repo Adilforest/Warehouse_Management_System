@@ -3,23 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Panel</title>
+    <title>Inventory Management</title>
     <script src="./js/admin.js" defer></script>
+    <link rel="stylesheet" href="./css/styles.css">
 </head>
 <body>
-<h1>Admin Panel - CRUD Operations</h1>
+<h1>Inventory Management - CRUD Operations for Electronics</h1>
 
 <!-- Create Product Form -->
 <section>
     <h2>Create Product</h2>
-    <label for="create-name">Name:</label>
-    <input type="text" id="create-name" required><br><br>
-    <label for="create-description">Description:</label>
-    <input type="text" id="create-description" required><br><br>
-    <label for="create-price">Price:</label>
+    <label for="product-type">Product Type:</label>
+    <select id="product-type" required>
+        <option value="laptop">Laptop</option>
+        <option value="smartphone">Smartphone</option>
+        <option value="headphones">Headphones</option>
+    </select><br><br>
+
+    <label for="create-brand">Brand:</label>
+    <input type="text" id="create-brand" required><br><br>
+
+    <label for="create-model">Model:</label>
+    <input type="text" id="create-model" required><br><br>
+
+    <label for="create-specifications">Specifications (e.g., RAM, Processor):</label>
+    <input type="text" id="create-specifications"><br><br>
+
+    <label for="create-color">Color:</label>
+    <input type="text" id="create-color"><br><br>
+
+    <label for="create-price">Price ($):</label>
     <input type="number" id="create-price" required><br><br>
+
     <label for="create-quantity">Quantity:</label>
     <input type="number" id="create-quantity" required><br><br>
+
+    <label for="create-warranty">Warranty (Months):</label>
+    <input type="number" id="create-warranty"><br><br>
+
     <button onclick="createProduct()">Create Product</button>
 </section>
 
@@ -37,14 +58,35 @@
     <h2>Update Product</h2>
     <label for="update-id">Product ID:</label>
     <input type="number" id="update-id" required><br><br>
-    <label for="update-name">Name:</label>
-    <input type="text" id="update-name" required><br><br>
-    <label for="update-description">Description:</label>
-    <input type="text" id="update-description" required><br><br>
-    <label for="update-price">Price:</label>
-    <input type="number" id="update-price" required><br><br>
+
+    <label for="update-type">Product Type:</label>
+    <select id="update-type" required>
+        <option value="laptop">Laptop</option>
+        <option value="smartphone">Smartphone</option>
+        <option value="headphones">Headphones</option>
+    </select><br><br>
+
+    <label for="update-brand">Brand:</label>
+    <input type="text" id="update-brand"><br><br>
+
+    <label for="update-model">Model:</label>
+    <input type="text" id="update-model"><br><br>
+
+    <label for="update-specifications">Specifications (e.g., RAM, Processor):</label>
+    <input type="text" id="update-specifications"><br><br>
+
+    <label for="update-color">Color:</label>
+    <input type="text" id="update-color"><br><br>
+
+    <label for="update-price">Price ($):</label>
+    <input type="number" id="update-price"><br><br>
+
     <label for="update-quantity">Quantity:</label>
-    <input type="number" id="update-quantity" required><br><br>
+    <input type="number" id="update-quantity"><br><br>
+
+    <label for="update-warranty">Warranty (Months):</label>
+    <input type="number" id="update-warranty"><br><br>
+
     <button onclick="updateProduct()">Update Product</button>
 </section>
 

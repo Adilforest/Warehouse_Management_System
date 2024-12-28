@@ -32,14 +32,21 @@ func HandleCreateProduct(c *gin.Context) {
 	})
 }
 
-// DeleteAllProducts deletes all products from the database
+// HandleDeleteAllProducts deletes all products from the database
 func HandleDeleteAllProducts(c *gin.Context) {
-	err := database.DeleteAllProducts() // Метод, который удаляет все продукты в БД
+	// Call `DeleteAllProducts` to remove all entries
+	err := database.DeleteAllProducts()
 	if err != nil {
+		// Handle any errors returned from the database function
 		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error(), "status": "fail"})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"message": "All products deleted successfully"})
+
+	// Return success response if no errors occur
+	c.JSON(http.StatusOK, gin.H{
+		"message": "All products deleted successfully",
+		"status":  "success",
+	})
 }
 
 // SetupProductRoutes sets up routes for product-related actions
