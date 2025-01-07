@@ -1,21 +1,31 @@
 const apiUrl = "http://localhost:8080/products";
 
-// Toggle visibility of extra fields based on product type
 function toggleFields(context) {
-    const type = document.getElementById(`${context}-type`).value;
-    const extraFields = document.getElementById(`extra-fields-${context}`);
-    if (type === 'headphones') {
-        extraFields.style.display = 'none';  // Hide for headphones
+    // Получаем суффикс: "create" или "update"
+    const prefix = context || "create"; // Если не передан, по умолчанию "create"
+
+    // Элементы для управления
+    const productType = document.getElementById(`${prefix}-type`);
+    const processorField = document.getElementById(`${prefix}-processor`);
+    const ramField = document.getElementById(`${prefix}-ram`);
+    const storageField = document.getElementById(`${prefix}-storage`);
+    const extraFields = document.getElementById(`extra-fields-${prefix}`);
+
+    // Проверяем выбранный тип продукта
+    if (productType && productType.value === "headphones") {
+        // Скрыть лишние поля для "Headphones"
+        if (processorField) processorField.parentElement.style.display = "none";
+        if (ramField) ramField.parentElement.style.display = "none";
+        if (storageField) storageField.parentElement.style.display = "none";
+        if (extraFields) extraFields.style.display = "none";
     } else {
-        extraFields.style.display = '';  // Show for laptops and smartphones
+        // Показать поля для остальных типов продуктов
+        if (processorField) processorField.parentElement.style.display = "block";
+        if (ramField) ramField.parentElement.style.display = "block";
+        if (storageField) storageField.parentElement.style.display = "block";
+        if (extraFields) extraFields.style.display = "block";
     }
 }
-
-// Initialize visibility on page load
-document.addEventListener('DOMContentLoaded', () => {
-    toggleFields('create');
-    toggleFields('update');
-});
 
 function displayResponse(targetId, responseText) {
     const targetElement = document.getElementById(targetId);
