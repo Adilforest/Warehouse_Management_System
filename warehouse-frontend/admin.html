@@ -14,7 +14,7 @@
 <section>
     <h2>Create Product</h2>
     <label for="product-type">Product Type:</label>
-    <select id="product-type" required>
+    <select id="product-type" onchange="toggleFields('create')" required>
         <option value="laptop">Laptop</option>
         <option value="smartphone">Smartphone</option>
         <option value="headphones">Headphones</option>
@@ -26,8 +26,19 @@
     <label for="create-model">Model:</label>
     <input type="text" id="create-model" required><br><br>
 
-    <label for="create-specifications">Specifications (e.g., RAM, Processor):</label>
-    <input type="text" id="create-specifications"><br><br>
+    <label for="create-description">Description:</label>
+    <textarea id="create-description" rows="3" required></textarea><br><br>
+
+    <div id="extra-fields-create">
+        <label for="create-processor">Processor:</label>
+        <input type="text" id="create-processor"><br><br>
+
+        <label for="create-ram">RAM:</label>
+        <input type="text" id="create-ram"><br><br>
+
+        <label for="create-storage">Storage:</label>
+        <input type="text" id="create-storage"><br><br>
+    </div>
 
     <label for="create-color">Color:</label>
     <input type="text" id="create-color"><br><br>
@@ -67,7 +78,7 @@
     <input type="text" id="update-id" required><br><br>
 
     <label for="update-type">Product Type:</label>
-    <select id="update-type" required>
+    <select id="update-type" onchange="toggleFields('update')">
         <option value="laptop">Laptop</option>
         <option value="smartphone">Smartphone</option>
         <option value="headphones">Headphones</option>
@@ -79,8 +90,19 @@
     <label for="update-model">Model:</label>
     <input type="text" id="update-model"><br><br>
 
-    <label for="update-specifications">Specifications (e.g., RAM, Processor):</label>
-    <input type="text" id="update-specifications"><br><br>
+    <label for="update-description">Description:</label>
+    <textarea id="update-description" rows="3"></textarea><br><br>
+
+    <div id="extra-fields-update">
+        <label for="update-processor">Processor:</label>
+        <input type="text" id="update-processor"><br><br>
+
+        <label for="update-ram">RAM:</label>
+        <input type="text" id="update-ram"><br><br>
+
+        <label for="update-storage">Storage:</label>
+        <input type="text" id="update-storage"><br><br>
+    </div>
 
     <label for="update-color">Color:</label>
     <input type="text" id="update-color"><br><br>

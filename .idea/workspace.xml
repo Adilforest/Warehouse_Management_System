@@ -4,9 +4,15 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0bf56199-4d44-488a-a581-530161417705" name="Changes" comment="New start on new DB.">
+    <list default="true" id="0bf56199-4d44-488a-a581-530161417705" name="Changes" comment="Adding json structure.">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/warehouse-backend/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/warehouse-backend/go.mod" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/warehouse-backend/go.sum" beforeDir="false" afterPath="$PROJECT_DIR$/warehouse-backend/go.sum" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/warehouse-backend/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/warehouse-backend/main.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/warehouse-backend/models/product.go" beforeDir="false" afterPath="$PROJECT_DIR$/warehouse-backend/models/product.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/warehouse-backend/routes/product_routes.go" beforeDir="false" afterPath="$PROJECT_DIR$/warehouse-backend/routes/product_routes.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/warehouse-frontend/admin.html" beforeDir="false" afterPath="$PROJECT_DIR$/warehouse-frontend/admin.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/warehouse-frontend/cashier.html" beforeDir="false" afterPath="$PROJECT_DIR$/warehouse-frontend/cashier.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/warehouse-frontend/js/admin.js" beforeDir="false" afterPath="$PROJECT_DIR$/warehouse-frontend/js/admin.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -67,6 +73,7 @@
     &quot;DefaultGoTemplateProperty&quot;: &quot;Go File&quot;,
     &quot;Go Build.go build Assignment_1_AP.executor&quot;: &quot;Run&quot;,
     &quot;JavaScript Debug.admin.html.executor&quot;: &quot;Run&quot;,
+    &quot;JavaScript Debug.cashier.html.executor&quot;: &quot;Run&quot;,
     &quot;JavaScript Debug.index.html.executor&quot;: &quot;Run&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
@@ -113,12 +120,16 @@
     <configuration name="admin.html" type="JavascriptDebugType" temporary="true" nameIsGenerated="true" uri="http://localhost:63342/Assignment_1_AP/warehouse-frontend/admin.html" useBuiltInWebServerPort="true">
       <method v="2" />
     </configuration>
+    <configuration name="cashier.html" type="JavascriptDebugType" temporary="true" nameIsGenerated="true" uri="http://localhost:63342/Assignment_1_AP/warehouse-frontend/cashier.html" useBuiltInWebServerPort="true">
+      <method v="2" />
+    </configuration>
     <configuration name="index.html" type="JavascriptDebugType" temporary="true" nameIsGenerated="true" uri="http://localhost:63342/Assignment_1_AP/warehouse-frontend/index.html" useBuiltInWebServerPort="true">
       <method v="2" />
     </configuration>
     <recent_temporary>
       <list>
         <item itemvalue="JavaScript Debug.admin.html" />
+        <item itemvalue="JavaScript Debug.cashier.html" />
         <item itemvalue="JavaScript Debug.index.html" />
         <item itemvalue="JavaScript Debug.README.md" />
       </list>
@@ -155,7 +166,9 @@
     <MESSAGE value="Added features CRUD and POST operation." />
     <MESSAGE value="Last worked version on postgres." />
     <MESSAGE value="New start on new DB." />
-    <option name="LAST_COMMIT_MESSAGE" value="New start on new DB." />
+    <MESSAGE value="Fix id." />
+    <MESSAGE value="Adding json structure." />
+    <option name="LAST_COMMIT_MESSAGE" value="Adding json structure." />
   </component>
   <component name="VgoProject">
     <settings-migrated>true</settings-migrated>

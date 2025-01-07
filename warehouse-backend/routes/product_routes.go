@@ -2,16 +2,13 @@ package routes
 
 import (
 	"context"
+	"github.com/gin-gonic/gin"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"net/http"
 	"time"
 	"warehouse-backend/database"
 	"warehouse-backend/models"
-
-	"github.com/gin-gonic/gin"
-	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 const productCreatedMessage = "Product created successfully"
