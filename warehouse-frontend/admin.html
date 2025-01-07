@@ -48,16 +48,23 @@
 <section>
     <h2>Get Product By ID</h2>
     <label for="get-id">Product ID:</label>
-    <input type="number" id="get-id" required><br><br>
+    <input type="text" id="get-id" required><br><br>
     <button onclick="getProductById()">Get Product</button>
     <pre id="product-response"></pre>
+</section>
+
+<!-- Get All Products -->
+<section>
+    <h2>Get All Products</h2>
+    <button onclick="getAllProducts()">Get All Products</button>
+    <pre id="all-products-response"></pre>
 </section>
 
 <!-- Update Product -->
 <section>
     <h2>Update Product</h2>
     <label for="update-id">Product ID:</label>
-    <input type="number" id="update-id" required><br><br>
+    <input type="text" id="update-id" required><br><br>
 
     <label for="update-type">Product Type:</label>
     <select id="update-type" required>
@@ -90,20 +97,16 @@
     <button onclick="updateProduct()">Update Product</button>
 </section>
 
-<!-- Get All Products -->
-<section>
-    <h2>Get All Products</h2>
-    <button onclick="getAllProducts()">Get All Products</button>
-    <pre id="all-products-response"></pre>
-</section>
-
 <!-- Delete Product By ID -->
 <section>
     <h2>Delete Product By ID</h2>
     <label for="delete-id">Product ID:</label>
-    <input type="number" id="delete-id" required><br><br>
+    <input type="text" id="delete-id" required><br><br>
     <button onclick="deleteProduct()">Delete Product</button>
+    <pre id="delete-response"></pre>
 </section>
+
+
 
 <!-- Delete All Products -->
 <section>

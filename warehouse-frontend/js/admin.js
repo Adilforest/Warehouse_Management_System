@@ -37,42 +37,82 @@ function createProduct() {
 }
 
 function getProductById() {
-    const id = document.getElementById("get-id").value;
+    const productId = document.getElementById("get-id").value;
 
-    fetch(apiUrl + "/" + id)
-        .then((response) => response.json())
-        .then((data) => displayResponse("product-response", data))
+    // Проверяем, является ли ID корректным
+    if (!productId || productId.length !== 24) {
+        document.getElementById("product-response").innerText =
+            "Invalid Product ID. Please enter a valid 24-character ObjectID.";
+        return;
+    }
+
+    // Замените относительный URL на полный URL API
+    const apiUrl = `http://localhost:8080/products/${productId}`;
+
+    fetch(apiUrl)
+        .then((response) => {
+            // Проверяем успешность статуса (200-299)
+            if (!response.ok) {
+                throw new Error("Product not found. Status: " + response.status);
+            }
+            return response.json();
+        })
+        .then((data) => {
+            document.getElementById("product-response").innerText = JSON.stringify(data, null, 2);
+        })
         .catch((error) => {
+            document.getElementById("product-response").innerText = `Error: ${error.message}`;
             console.error(error);
-            displayResponse("product-response", error);
         });
 }
-
 function updateProduct() {
+    const id = document.getElementById("update-id").value.trim();
+
+    // Проверяем, введен ли корректный ID
+    if (!id || id.length !== 24) {
+        displayResponse("server-response", { error: "Invalid Product ID. Please enter a valid 24-character ObjectID." });
+        return;
+    }
+
     const updatedData = {
         type: document.getElementById("update-type").value,
-        brand: document.getElementById("update-brand").value.trim(),
-        model: document.getElementById("update-model").value.trim(),
-        specifications: document.getElementById("update-specifications").value.trim(),
-        color: document.getElementById("update-color").value.trim(),
-        price: parseFloat(document.getElementById("update-price").value),
-        quantity: parseInt(document.getElementById("update-quantity").value),
-        warranty: parseInt(document.getElementById("update-warranty").value),
+        brand: document.getElementById("update-brand").value.trim() || null,
+        model: document.getElementById("update-model").value.trim() || null,
+        specifications: document.getElementById("update-specifications").value.trim() || null,
+        color: document.getElementById("update-color").value.trim() || null,
+        price: parseFloat(document.getElementById("update-price").value) || null,
+        quantity: parseInt(document.getElementById("update-quantity").value) || null,
+        warranty: parseInt(document.getElementById("update-warranty").value) || null,
     };
 
-    const id = document.getElementById("update-id").value;
-    fetch(apiUrl + "/" + id, {
+    // Проверки на неотправку пустого объекта
+    if (Object.values(updatedData).every((value) => value === null)) {
+        displayResponse("server-response", { error: "Please fill at least one field to update." });
+        return;
+    }
+
+    // URL для API
+    const apiUrl = "http://localhost:8080/products";
+
+    fetch(`${apiUrl}/${id}`, {
         method: "PUT",
         headers: {
             "Content-Type": "application/json",
         },
         body: JSON.stringify(updatedData),
     })
-        .then((response) => response.json())
-        .then((data) => displayResponse("server-response", data))
+        .then((response) => {
+            if (!response.ok) {
+                throw new Error(`Error: ${response.status} - ${response.statusText}`);
+            }
+            return response.json();
+        })
+        .then((data) => {
+            displayResponse("server-response", data); // Обрабатываем успешный ответ
+        })
         .catch((error) => {
             console.error(error);
-            displayResponse("server-response", error);
+            displayResponse("server-response", { error: error.message }); // Выводим сообщение об ошибке
         });
 }
 
@@ -87,15 +127,33 @@ function getAllProducts() {
 }
 
 function deleteProduct() {
-    const id = document.getElementById("delete-id").value;
-    fetch(apiUrl + "/" + id, {
+    const id = document.getElementById("delete-id").value.trim();
+
+    // Проверяем, является ли ID корректным
+    if (!id || id.length !== 24) {
+        document.getElementById("delete-response").innerText =
+            "Invalid Product ID. Please enter a valid 24-character ObjectID.";
+        return;
+    }
+
+    // URL для API
+    const apiUrl = "http://localhost:8080/products";
+
+    fetch(`${apiUrl}/${id}`, {
         method: "DELETE",
     })
-        .then((response) => response.json())
-        .then((data) => displayResponse("server-response", data))
+        .then((response) => {
+            if (!response.ok) {
+                throw new Error(`Error: ${response.status} - ${response.statusText}`);
+            }
+            return response.json();
+        })
+        .then((data) => {
+            document.getElementById("delete-response").innerText = JSON.stringify(data, null, 2);
+        })
         .catch((error) => {
             console.error(error);
-            displayResponse("server-response", error);
+            document.getElementById("delete-response").innerText = `Error: ${error.message}`;
         });
 }
 
