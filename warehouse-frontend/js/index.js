@@ -8,12 +8,16 @@ const itemsPerPage = 9; // Количество элементов на стра
 
 // Получение ссылок на DOM-элементы
 let productList, pagination, sortBy;
+let ramFilterGroup, storageFilterGroup, processorFilterGroup;
 
 // Функция для инициализации DOM-элементов
 function initDOM() {
     productList = document.getElementById("product-list");
     pagination = document.getElementById("pagination");
     sortBy = document.getElementById("sort-by"); // Инициализация элемента сортировки
+    ramFilterGroup = document.getElementById("ram-filter-group");
+    storageFilterGroup = document.getElementById("storage-filter-group");
+    processorFilterGroup = document.getElementById("processor-filter-group");
 }
 
 // Fetch данных с сервера
@@ -64,6 +68,8 @@ function renderProducts(productsToRender) {
                 <p>${product.ram ? `RAM: ${product.ram}` : ""}</p>
                 <p>${product.storage ? `Storage: ${product.storage}` : ""}</p>
                 <p>${product.color ? `Color: ${product.color}` : ""}</p>
+                <p>${product.processor ? `Processor: ${product.processor}` : ""}</p>
+                <p>${product.description ? `Description: ${product.description}` : ""}</p>
                 <p class="price">$${product.price.toFixed(2)}</p>
             </div>
             <div class="card-footer">
@@ -128,16 +134,22 @@ function filterProducts() {
         filteredProducts = filteredProducts.filter(product => selectedBrands.includes(product.brand));
     }
 
-    // Фильтрация по RAM
+    // Фильтрация по RAM (только для ноутбуков и телефонов)
     const selectedRAMs = getSelectedValues("ram");
     if (selectedRAMs.length > 0) {
         filteredProducts = filteredProducts.filter(product => selectedRAMs.includes(product.ram.toString()));
     }
 
-    // Фильтрация по хранилищу
+    // Фильтрация по хранилищу (только для ноутбуков и телефонов)
     const selectedStorages = getSelectedValues("storage");
     if (selectedStorages.length > 0) {
         filteredProducts = filteredProducts.filter(product => selectedStorages.includes(product.storage.toString()));
+    }
+
+    // Фильтрация по процессору (только для ноутбуков и телефонов)
+    const selectedProcessors = getSelectedValues("processor");
+    if (selectedProcessors.length > 0) {
+        filteredProducts = filteredProducts.filter(product => selectedProcessors.includes(product.processor));
     }
 
     // Фильтрация по цвету
@@ -186,6 +198,34 @@ function capitalize(text) {
     return text.charAt(0).toUpperCase() + text.slice(1);
 }
 
+// Функция для управления видимостью фильтров
+function toggleFilters() {
+    const selectedTypes = getSelectedValues("type");
+
+    // Если выбраны наушники, скрываем фильтры для процессора, RAM и хранилища
+    if (selectedTypes.includes("headphones")) {
+        ramFilterGroup.style.display = "none";
+        storageFilterGroup.style.display = "none";
+        processorFilterGroup.style.display = "none";
+    } else {
+        ramFilterGroup.style.display = "block";
+        storageFilterGroup.style.display = "block";
+        processorFilterGroup.style.display = "block";
+    }
+
+    // Если выбраны наушники, снимаем выбор с других типов
+    if (selectedTypes.includes("headphones")) {
+        document.querySelectorAll('input[name="type"]').forEach(checkbox => {
+            if (checkbox.value !== "headphones") {
+                checkbox.checked = false;
+            }
+        });
+    } else {
+        // Если выбраны ноутбуки или телефоны, снимаем выбор с наушников
+        document.querySelector('input[name="type"][value="headphones"]').checked = false;
+    }
+}
+
 // Инициализация
 document.addEventListener("DOMContentLoaded", () => {
     initDOM(); // Инициализация DOM-элементов
@@ -196,6 +236,7 @@ document.addEventListener("DOMContentLoaded", () => {
     checkboxes.forEach(checkbox => {
         checkbox.addEventListener("change", () => {
             currentPage = 1; // Сброс на первую страницу
+            toggleFilters(); // Управление видимостью фильтров
             updateView();
         });
     });

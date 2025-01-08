@@ -48,8 +48,8 @@
             </div>
         </div>
 
-        <!-- Фильтр по RAM -->
-        <div class="filter-group">
+        <!-- Фильтр по RAM (только для ноутбуков и телефонов) -->
+        <div class="filter-group" id="ram-filter-group">
             <label>RAM</label>
             <div>
                 <label><input type="checkbox" name="ram" value="4"> 4 GB</label>
@@ -58,13 +58,26 @@
             </div>
         </div>
 
-        <!-- Фильтр по хранилищу -->
-        <div class="filter-group">
+        <!-- Фильтр по хранилищу (только для ноутбуков и телефонов) -->
+        <div class="filter-group" id="storage-filter-group">
             <label>Storage</label>
             <div>
                 <label><input type="checkbox" name="storage" value="128"> 128 GB</label>
                 <label><input type="checkbox" name="storage" value="256"> 256 GB</label>
                 <label><input type="checkbox" name="storage" value="512"> 512 GB</label>
+            </div>
+        </div>
+
+        <!-- Фильтр по процессору (только для ноутбуков и телефонов) -->
+        <div class="filter-group" id="processor-filter-group">
+            <label>Processor</label>
+            <div>
+                <label><input type="checkbox" name="processor" value="Intel Core i5"> Intel Core i5</label>
+                <label><input type="checkbox" name="processor" value="Intel Core i7"> Intel Core i7</label>
+                <label><input type="checkbox" name="processor" value="AMD Ryzen 5"> AMD Ryzen 5</label>
+                <label><input type="checkbox" name="processor" value="AMD Ryzen 7"> AMD Ryzen 7</label>
+                <label><input type="checkbox" name="processor" value="Snapdragon 888"> Snapdragon 888</label>
+                <label><input type="checkbox" name="processor" value="Apple A15"> Apple A15</label>
             </div>
         </div>
 

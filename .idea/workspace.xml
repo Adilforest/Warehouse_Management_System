@@ -4,9 +4,8 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0bf56199-4d44-488a-a581-530161417705" name="Changes" comment="Fixing count of products in page.">
+    <list default="true" id="0bf56199-4d44-488a-a581-530161417705" name="Changes" comment="Updated filters.">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/warehouse-frontend/css/index.css" beforeDir="false" afterPath="$PROJECT_DIR$/warehouse-frontend/css/index.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/warehouse-frontend/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/warehouse-frontend/index.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/warehouse-frontend/js/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/warehouse-frontend/js/index.js" afterDir="false" />
     </list>
@@ -180,7 +179,8 @@
     <MESSAGE value="Adding index.html." />
     <MESSAGE value="Fixing create func." />
     <MESSAGE value="Fixing count of products in page." />
-    <option name="LAST_COMMIT_MESSAGE" value="Fixing count of products in page." />
+    <MESSAGE value="Updated filters." />
+    <option name="LAST_COMMIT_MESSAGE" value="Updated filters." />
   </component>
   <component name="VgoProject">
     <settings-migrated>true</settings-migrated>
