@@ -13,7 +13,6 @@
 <!-- Create Product -->
 <section>
     <h2>Create Product</h2>
-
     <label for="create-type">Product Type:</label>
     <select id="create-type" onchange="toggleFields('create')">
         <option value="laptop">Laptop</option>
@@ -52,6 +51,9 @@
 
     <label for="create-warranty">Warranty (Months):</label>
     <input type="number" id="create-warranty"><br><br>
+
+    <label for="create-link">Photo Link (URL):</label>
+    <input type="url" id="create-link" required><br><br>
 
     <button onclick="createProduct()">Create Product</button>
 </section>
@@ -116,6 +118,9 @@
 
     <label for="update-warranty">Warranty (Months):</label>
     <input type="number" id="update-warranty"><br><br>
+
+    <label for="update-link">Photo Link (URL):</label>
+    <input type="url" id="update-link"><br><br>
 
     <button onclick="updateProduct()">Update Product</button>
 </section>

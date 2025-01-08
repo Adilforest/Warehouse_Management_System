@@ -37,6 +37,16 @@ function displayResponse(targetId, responseText) {
 }
 
 function createProduct() {
+    if (!validateCreateForm()) {
+        return; // Остановка, если валидация не пройдена
+    }
+
+    const linkField = document.getElementById("create-link").value.trim();
+
+    if (!linkField || !isValidURL(linkField)) {
+        alert("Please provide a valid URL for the photo.");
+        return;
+    }
     const productData = {
         type: document.getElementById("create-type").value,
         brand: document.getElementById("create-brand").value.trim(),
@@ -47,7 +57,8 @@ function createProduct() {
         color: document.getElementById("create-color").value.trim(),
         price: parseFloat(document.getElementById("create-price").value),
         quantity: parseInt(document.getElementById("create-quantity").value),
-        warranty: parseInt(document.getElementById("create-warranty").value),
+        warranty: parseInt(document.getElementById("create-warranty").value) || 0,
+        link: linkField,
         description: document.getElementById("create-description")?.value.trim() || "", // добавлено описание
     };
 
@@ -104,22 +115,31 @@ function updateProduct() {
         type: document.getElementById("update-type").value,
         brand: document.getElementById("update-brand").value.trim() || null,
         model: document.getElementById("update-model").value.trim() || null,
-        processor: document.getElementById("update-processor").value.trim() || null, // новое поле
-        ram: document.getElementById("update-ram").value.trim() || null, // новое поле
-        storage: document.getElementById("update-storage").value.trim() || null, // новое поле
+        processor: document.getElementById("update-processor").value.trim() || null,
+        ram: document.getElementById("update-ram").value.trim() || null,
+        storage: document.getElementById("update-storage").value.trim() || null,
         color: document.getElementById("update-color").value.trim() || null,
         price: parseFloat(document.getElementById("update-price").value) || null,
         quantity: parseInt(document.getElementById("update-quantity").value) || null,
         warranty: parseInt(document.getElementById("update-warranty").value) || null,
-        description: document.getElementById("update-description")?.value.trim() || null, // описание
+        description: document.getElementById("update-description")?.value.trim() || null,
+        link: document.getElementById("update-link").value.trim() || null, // новое поле
     };
 
+    // Удаляем пустые поля (равные null)
+    for (const key in updatedData) {
+        if (updatedData[key] === null || updatedData[key] === "") {
+            delete updatedData[key];
+        }
+    }
+
     // Проверяем, что хотя бы одно поле для изменения заполнено
-    if (Object.values(updatedData).every((value) => value === null)) {
+    if (Object.keys(updatedData).length === 0) {
         displayResponse("server-response", { error: "Please fill at least one field to update." });
         return;
     }
 
+    // Отправляем запрос на сервер
     fetch(`${apiUrl}/${id}`, {
         method: "PUT",
         headers: {

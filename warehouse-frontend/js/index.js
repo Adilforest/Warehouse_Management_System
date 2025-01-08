@@ -51,19 +51,20 @@ function renderProducts(productsToRender) {
         const productCard = document.createElement("div");
         productCard.className = "product-card";
 
+        // Используем поле `link` для изображения
         productCard.innerHTML = `
-        <img src="${product.imageURL || 'https://via.placeholder.com/250x150'}" alt="${product.type}">
-         <div class="card-content">
-            <h3>${product.brand} ${product.model}</h3>
-            <p>Type: ${capitalize(product.type)}</p>
-            <p>${product.ram ? `RAM: ${product.ram}` : ""}</p>
-            <p>${product.storage ? `Storage: ${product.storage}` : ""}</p>
-            <p>${product.color ? `Color: ${product.color}` : ""}</p>
-            <p class="price">$${product.price.toFixed(2)}</p>
-        </div>
-        <div class="card-footer">
-            <button>Details</button>
-        </div>
+            <img src="${product.link || 'https://via.placeholder.com/250x150'}" alt="${product.type}">
+            <div class="card-content">
+                <h3>${product.brand} ${product.model}</h3>
+                <p>Type: ${capitalize(product.type)}</p>
+                <p>${product.ram ? `RAM: ${product.ram}` : ""}</p>
+                <p>${product.storage ? `Storage: ${product.storage}` : ""}</p>
+                <p>${product.color ? `Color: ${product.color}` : ""}</p>
+                <p class="price">$${product.price.toFixed(2)}</p>
+            </div>
+            <div class="card-footer">
+                <button>Details</button>
+            </div>
         `;
         productList.appendChild(productCard);
     });

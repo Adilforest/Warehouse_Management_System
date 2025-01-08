@@ -21,6 +21,7 @@ type Product struct {
 	Price       float64            `bson:"price" json:"price"`             // Цена в USD
 	Quantity    int                `bson:"quantity" json:"quantity"`       // Количество на складе
 	Warranty    int                `bson:"warranty" json:"warranty"`       // Гарантия в месяцах
+	Link        string             `bson:"link" json:"link"`               // Ссылка на фото товара
 }
 
 // Debug формирует строку для отладки продукта
