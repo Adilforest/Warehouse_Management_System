@@ -36,6 +36,54 @@ function displayResponse(targetId, responseText) {
     }
 }
 
+function validateCreateForm() {
+    // Пример логики валидации
+    const brand = document.getElementById("create-brand").value.trim();
+    const model = document.getElementById("create-model").value.trim();
+    const price = document.getElementById("create-price").value.trim();
+    const quantity = document.getElementById("create-quantity").value.trim();
+    const link = document.getElementById("create-link").value.trim();
+
+    // Проверка обязательных полей
+    if (!brand) {
+        displayResponse("server-response", { error: "Поле 'Бренд' обязательно для заполнения." });
+        return false;
+    }
+
+    if (!model) {
+        displayResponse("server-response", { error: "Поле 'Модель' обязательно для заполнения." });
+        return false;
+    }
+
+    if (!price || isNaN(price)) {
+        displayResponse("server-response", { error: "Цена должна быть числом." });
+        return false;
+    }
+
+    if (!quantity || isNaN(quantity)) {
+        displayResponse("server-response", { error: "Количество должно быть числом." });
+        return false;
+    }
+
+    if (!link || !isValidURL(link)) {
+        displayResponse("server-response", { error: "Укажите корректную ссылку на фото." });
+        return false;
+    }
+
+    // Если все проверки пройдены
+    return true;
+}
+
+// Функция для проверки корректности URL
+function isValidURL(url) {
+    try {
+        new URL(url);
+        return true;
+    } catch (error) {
+        return false;
+    }
+}
+
 function createProduct() {
     if (!validateCreateForm()) {
         return; // Остановка, если валидация не пройдена
@@ -44,23 +92,35 @@ function createProduct() {
     const linkField = document.getElementById("create-link").value.trim();
 
     if (!linkField || !isValidURL(linkField)) {
-        alert("Please provide a valid URL for the photo.");
+        highlightErrorField("create-link");
+        displayResponse("server-response", { error: "Please provide a valid URL for the photo." });
         return;
     }
+
     const productData = {
         type: document.getElementById("create-type").value,
         brand: document.getElementById("create-brand").value.trim(),
         model: document.getElementById("create-model").value.trim(),
-        processor: document.getElementById("create-processor").value.trim(), // добавлено
-        ram: document.getElementById("create-ram").value.trim(), // добавлено
-        storage: document.getElementById("create-storage").value.trim(), // добавлено
         color: document.getElementById("create-color").value.trim(),
         price: parseFloat(document.getElementById("create-price").value),
         quantity: parseInt(document.getElementById("create-quantity").value),
         warranty: parseInt(document.getElementById("create-warranty").value) || 0,
         link: linkField,
-        description: document.getElementById("create-description")?.value.trim() || "", // добавлено описание
+        description: document.getElementById("create-description")?.value.trim() || "",
     };
+
+    // Необязательные поля
+    const optionalFields = {
+        processor: document.getElementById("create-processor").value.trim(),
+        ram: document.getElementById("create-ram").value.trim(),
+        storage: document.getElementById("create-storage").value.trim(),
+    };
+
+    for (const [key, value] of Object.entries(optionalFields)) {
+        if (value) {
+            productData[key] = value;
+        }
+    }
 
     fetch(`${apiUrl}/create`, {
         method: "POST",
@@ -73,7 +133,7 @@ function createProduct() {
         .then((data) => displayResponse("server-response", data))
         .catch((error) => {
             console.error(error);
-            displayResponse("server-response", error);
+            displayResponse("server-response", { error: "Something went wrong while creating the product." });
         });
 }
 
