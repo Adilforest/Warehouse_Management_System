@@ -4,9 +4,12 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0bf56199-4d44-488a-a581-530161417705" name="Changes" comment="Adding photos to index.html.">
+    <list default="true" id="0bf56199-4d44-488a-a581-530161417705" name="Changes" comment="Adding index.html.">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/warehouse-backend/models/product.go" beforeDir="false" afterPath="$PROJECT_DIR$/warehouse-backend/models/product.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/warehouse-frontend/admin.html" beforeDir="false" afterPath="$PROJECT_DIR$/warehouse-frontend/admin.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/warehouse-frontend/js/admin.js" beforeDir="false" afterPath="$PROJECT_DIR$/warehouse-frontend/js/admin.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/warehouse-frontend/js/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/warehouse-frontend/js/index.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -165,8 +168,7 @@
     <MESSAGE value="Adding json structure." />
     <MESSAGE value="Fixed Admin.js." />
     <MESSAGE value="Adding index.html." />
-    <MESSAGE value="Adding photos to index.html." />
-    <option name="LAST_COMMIT_MESSAGE" value="Adding photos to index.html." />
+    <option name="LAST_COMMIT_MESSAGE" value="Adding index.html." />
   </component>
   <component name="VgoProject">
     <settings-migrated>true</settings-migrated>
