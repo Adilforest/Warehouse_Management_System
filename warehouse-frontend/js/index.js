@@ -4,7 +4,7 @@ const API_URL = 'http://localhost:8080/products/';
 // Текущее состояние
 let products = []; // Сюда будет загружен массив продуктов
 let currentPage = 1; // Текущая страница
-const itemsPerPage = 9; // Количество элементов на странице
+const itemsPerPage = 8; // Количество элементов на странице
 
 // Получение ссылок на DOM-элементы
 const productList = document.getElementById("product-list");
