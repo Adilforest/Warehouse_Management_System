@@ -95,6 +95,7 @@ function createProduct() {
         highlightErrorField("create-link");
         displayResponse("server-response", { error: "Please provide a valid URL for the photo." });
         return;
+
     }
 
     const productData = {
