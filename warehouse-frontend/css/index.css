@@ -21,36 +21,86 @@ h1 {
 }
 
 main {
-    padding: 20px;
+    display: flex;
     max-width: 1200px;
-    margin: auto;
+    margin: 20px auto;
+    gap: 20px;
+    padding: 0 20px;
 }
 
-/* Секция фильтров и сортировки */
-.sort-filter {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-    padding: 10px 15px;
+/* Боковая панель фильтров */
+.filter-sidebar {
+    width: 250px;
     background-color: white;
-    border-radius: 5px;
+    padding: 20px;
+    border-radius: 8px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-.sort-filter label {
+.filter-sidebar h2 {
+    font-size: 1.2em;
+    margin-bottom: 15px;
+    color: #007bff;
+}
+
+/* Группы фильтров */
+.filter-group {
+    margin-bottom: 20px;
+}
+
+.filter-group label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #555;
+}
+
+.filter-group div {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.filter-group div label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: normal;
+    cursor: pointer;
+}
+
+.filter-group input[type="checkbox"] {
+    margin: 0;
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+}
+
+/* Основная секция с карточками товаров */
+.product-section {
+    flex: 1;
+}
+
+/* Сортировка справа сверху */
+.sort-options {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 20px;
+}
+
+.sort-options label {
     margin-right: 10px;
     font-weight: bold;
 }
 
-.sort-filter select {
+.sort-options select {
     padding: 8px;
     font-size: 1em;
     border: 1px solid #ccc;
     border-radius: 5px;
-    width: 200px;
     background-color: white;
     outline: none;
+    cursor: pointer;
 }
 
 /* Секция карточек товаров */
@@ -102,6 +152,7 @@ main {
 .product-card .card-content .price {
     font-weight: bold;
     font-size: 1.1em;
+    color: #007bff;
 }
 
 .product-card .card-footer {

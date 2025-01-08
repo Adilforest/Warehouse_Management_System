@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Product Display</title>
+    <title>Product Catalog</title>
     <link rel="stylesheet" href="./css/index.css">
 </head>
 <body>
@@ -12,23 +12,76 @@
 </header>
 
 <main>
-    <!-- Индикатор загрузки -->
-    <div id="loading" style="display: none;">
-        Loading...
-    </div>
+    <!-- Боковая панель фильтров -->
+    <aside class="filter-sidebar">
+        <h2>Filters</h2>
 
-    <!-- Filter and Sort Section -->
-    <section class="sort-filter">
-        <div class="filter">
-            <label for="product-type-filter">Filter by Type:</label>
-            <select id="product-type-filter">
-                <option value="all">All</option>
-                <option value="laptop">Laptop</option>
-                <option value="smartphone">Smartphone</option>
-                <option value="headphones">Headphones</option>
-            </select>
+        <!-- Фильтр по типу -->
+        <div class="filter-group">
+            <label>Product Type</label>
+            <div>
+                <label><input type="checkbox" name="type" value="laptop"> Laptop</label>
+                <label><input type="checkbox" name="type" value="smartphone"> Smartphone</label>
+                <label><input type="checkbox" name="type" value="headphones"> Headphones</label>
+            </div>
         </div>
 
+        <!-- Фильтр по цене -->
+        <div class="filter-group">
+            <label>Price Range</label>
+            <div>
+                <label><input type="checkbox" name="price" value="0-100"> $0 - $100</label>
+                <label><input type="checkbox" name="price" value="100-500"> $100 - $500</label>
+                <label><input type="checkbox" name="price" value="500-1000"> $500 - $1000</label>
+                <label><input type="checkbox" name="price" value="1000-2000"> $1000 - $2000</label>
+                <label><input type="checkbox" name="price" value="2000+"> $2000+</label>
+            </div>
+        </div>
+
+        <!-- Фильтр по бренду -->
+        <div class="filter-group">
+            <label>Brand</label>
+            <div>
+                <label><input type="checkbox" name="brand" value="Apple"> Apple</label>
+                <label><input type="checkbox" name="brand" value="Samsung"> Samsung</label>
+                <label><input type="checkbox" name="brand" value="Xiaomi"> Xiaomi</label>
+            </div>
+        </div>
+
+        <!-- Фильтр по RAM -->
+        <div class="filter-group">
+            <label>RAM</label>
+            <div>
+                <label><input type="checkbox" name="ram" value="4"> 4 GB</label>
+                <label><input type="checkbox" name="ram" value="8"> 8 GB</label>
+                <label><input type="checkbox" name="ram" value="16"> 16 GB</label>
+            </div>
+        </div>
+
+        <!-- Фильтр по хранилищу -->
+        <div class="filter-group">
+            <label>Storage</label>
+            <div>
+                <label><input type="checkbox" name="storage" value="128"> 128 GB</label>
+                <label><input type="checkbox" name="storage" value="256"> 256 GB</label>
+                <label><input type="checkbox" name="storage" value="512"> 512 GB</label>
+            </div>
+        </div>
+
+        <!-- Фильтр по цвету -->
+        <div class="filter-group">
+            <label>Color</label>
+            <div>
+                <label><input type="checkbox" name="color" value="Black"> Black</label>
+                <label><input type="checkbox" name="color" value="White"> White</label>
+                <label><input type="checkbox" name="color" value="Silver"> Silver</label>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Основная секция с карточками товаров -->
+    <section class="product-section">
+        <!-- Сортировка справа сверху -->
         <div class="sort-options">
             <label for="sort-by">Sort By:</label>
             <select id="sort-by">
@@ -38,16 +91,21 @@
                 <option value="model">Model (A-Z)</option>
             </select>
         </div>
-    </section>
 
-    <!-- Product List Section -->
-    <section class="product-list" id="product-list">
-        <!-- Product cards will be dynamically inserted here -->
-    </section>
+        <!-- Индикатор загрузки -->
+        <div id="loading" style="display: none;">
+            Loading...
+        </div>
 
-    <!-- Pagination Section -->
-    <section class="pagination" id="pagination">
-        <!-- Pagination buttons will be dynamically inserted here -->
+        <!-- Секция карточек товаров -->
+        <div class="product-list" id="product-list">
+            <!-- Карточки будут вставлены сюда динамически -->
+        </div>
+
+        <!-- Пагинация -->
+        <div class="pagination" id="pagination">
+            <!-- Кнопки пагинации будут вставлены сюда динамически -->
+        </div>
     </section>
 </main>
 

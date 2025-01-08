@@ -4,13 +4,17 @@ const API_URL = 'http://localhost:8080/products/';
 // Текущее состояние
 let products = []; // Сюда будет загружен массив продуктов
 let currentPage = 1; // Текущая страница
-const itemsPerPage = 8; // Количество элементов на странице
+const itemsPerPage = 9; // Количество элементов на странице
 
 // Получение ссылок на DOM-элементы
-const productList = document.getElementById("product-list");
-const pagination = document.getElementById("pagination");
-const productTypeFilter = document.getElementById("product-type-filter");
-const sortBy = document.getElementById("sort-by");
+let productList, pagination, sortBy;
+
+// Функция для инициализации DOM-элементов
+function initDOM() {
+    productList = document.getElementById("product-list");
+    pagination = document.getElementById("pagination");
+    sortBy = document.getElementById("sort-by"); // Инициализация элемента сортировки
+}
 
 // Fetch данных с сервера
 async function fetchProducts() {
@@ -88,17 +92,61 @@ function renderPagination(totalItems) {
     }
 }
 
+// Функция для получения выбранных значений из чекбоксов
+function getSelectedValues(name) {
+    const checkboxes = document.querySelectorAll(`input[name="${name}"]:checked`);
+    return Array.from(checkboxes).map(checkbox => checkbox.value);
+}
+
 // Функция для фильтрации продуктов
 function filterProducts() {
-    const selectedType = productTypeFilter.value;
+    let filteredProducts = products;
 
-    // Возвращаем все продукты, если выбрано "all"
-    if (selectedType === "all") {
-        return products;
+    // Фильтрация по типу
+    const selectedTypes = getSelectedValues("type");
+    if (selectedTypes.length > 0) {
+        filteredProducts = filteredProducts.filter(product => selectedTypes.includes(product.type));
     }
 
-    // Фильтруем по типу
-    return products.filter(product => product.type === selectedType);
+    // Фильтрация по цене
+    const selectedPrices = getSelectedValues("price");
+    if (selectedPrices.length > 0) {
+        filteredProducts = filteredProducts.filter(product => {
+            return selectedPrices.some(range => {
+                const [min, max] = range.split("-").map(Number);
+                if (range.endsWith("+")) {
+                    return product.price >= min;
+                }
+                return product.price >= min && product.price <= max;
+            });
+        });
+    }
+
+    // Фильтрация по бренду
+    const selectedBrands = getSelectedValues("brand");
+    if (selectedBrands.length > 0) {
+        filteredProducts = filteredProducts.filter(product => selectedBrands.includes(product.brand));
+    }
+
+    // Фильтрация по RAM
+    const selectedRAMs = getSelectedValues("ram");
+    if (selectedRAMs.length > 0) {
+        filteredProducts = filteredProducts.filter(product => selectedRAMs.includes(product.ram.toString()));
+    }
+
+    // Фильтрация по хранилищу
+    const selectedStorages = getSelectedValues("storage");
+    if (selectedStorages.length > 0) {
+        filteredProducts = filteredProducts.filter(product => selectedStorages.includes(product.storage.toString()));
+    }
+
+    // Фильтрация по цвету
+    const selectedColors = getSelectedValues("color");
+    if (selectedColors.length > 0) {
+        filteredProducts = filteredProducts.filter(product => selectedColors.includes(product.color));
+    }
+
+    return filteredProducts;
 }
 
 // Функция для сортировки продуктов
@@ -138,16 +186,23 @@ function capitalize(text) {
     return text.charAt(0).toUpperCase() + text.slice(1);
 }
 
-// Слушатели событий
-productTypeFilter.addEventListener("change", () => {
-    currentPage = 1; // Сброс на первую страницу
-    updateView();
-});
-
-sortBy.addEventListener("change", () => {
-    currentPage = 1; // Сброс на первую страницу
-    updateView();
-});
-
 // Инициализация
-fetchProducts();
+document.addEventListener("DOMContentLoaded", () => {
+    initDOM(); // Инициализация DOM-элементов
+    fetchProducts(); // Загрузка продуктов
+
+    // Слушатели событий для всех чекбоксов
+    const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+    checkboxes.forEach(checkbox => {
+        checkbox.addEventListener("change", () => {
+            currentPage = 1; // Сброс на первую страницу
+            updateView();
+        });
+    });
+
+    // Слушатель для сортировки
+    sortBy.addEventListener("change", () => {
+        currentPage = 1; // Сброс на первую страницу
+        updateView();
+    });
+});
