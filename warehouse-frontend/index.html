@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Display</title>
+    <link rel="stylesheet" href="./css/index.css">
+</head>
+<body>
+<header>
+    <h1>Product Catalog</h1>
+</header>
+
+<main>
+    <!-- Индикатор загрузки -->
+    <div id="loading" style="display: none;">
+        Loading...
+    </div>
+
+    <!-- Filter and Sort Section -->
+    <section class="sort-filter">
+        <div class="filter">
+            <label for="product-type-filter">Filter by Type:</label>
+            <select id="product-type-filter">
+                <option value="all">All</option>
+                <option value="laptop">Laptop</option>
+                <option value="smartphone">Smartphone</option>
+                <option value="headphones">Headphones</option>
+            </select>
+        </div>
+
+        <div class="sort-options">
+            <label for="sort-by">Sort By:</label>
+            <select id="sort-by">
+                <option value="price-asc">Price (Low to High)</option>
+                <option value="price-desc">Price (High to Low)</option>
+                <option value="brand">Brand (A-Z)</option>
+                <option value="model">Model (A-Z)</option>
+            </select>
+        </div>
+    </section>
+
+    <!-- Product List Section -->
+    <section class="product-list" id="product-list">
+        <!-- Product cards will be dynamically inserted here -->
+    </section>
+
+    <!-- Pagination Section -->
+    <section class="pagination" id="pagination">
+        <!-- Pagination buttons will be dynamically inserted here -->
+    </section>
+</main>
+
+<footer>
+    <p>&copy; 2023 Product Catalog. All rights reserved.</p>
+</footer>
+
+<script src="./js/index.js"></script>
+</body>
+</html>

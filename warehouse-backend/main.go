@@ -57,12 +57,14 @@ func setupDatabase() {
 
 func setupRoutes() *gin.Engine {
 	router := gin.Default()
+	router.RedirectTrailingSlash = false // Отключаем автоматическое добавление "/" в конце URL
 
 	// Настройка CORS
 	router.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"*"}, // Замените URL для production
+		AllowOrigins:     []string{"http://localhost:63342", "http://localhost:8080"}, // Разрешить запросы с этих источников
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowHeaders:     []string{"Content-Type", "Authorization"},
+		ExposeHeaders:    []string{"Content-Length"},
 		AllowCredentials: true,
 	}))
 

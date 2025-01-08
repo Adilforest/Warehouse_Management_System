@@ -4,9 +4,13 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0bf56199-4d44-488a-a581-530161417705" name="Changes" comment="Adding json structure.">
+    <list default="true" id="0bf56199-4d44-488a-a581-530161417705" name="Changes" comment="Fixed Admin.js.">
+      <change afterPath="$PROJECT_DIR$/warehouse-frontend/css/index.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/warehouse-frontend/js/index.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/warehouse-frontend/admin.html" beforeDir="false" afterPath="$PROJECT_DIR$/warehouse-frontend/admin.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/warehouse-backend/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/warehouse-backend/main.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/warehouse-backend/routes/product_routes.go" beforeDir="false" afterPath="$PROJECT_DIR$/warehouse-backend/routes/product_routes.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/warehouse-frontend/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/warehouse-frontend/index.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/warehouse-frontend/js/admin.js" beforeDir="false" afterPath="$PROJECT_DIR$/warehouse-frontend/js/admin.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -18,6 +22,7 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="Go File" />
+        <option value="CSS File" />
         <option value="JavaScript File" />
       </list>
     </option>
@@ -79,6 +84,7 @@
     &quot;go.import.settings.migrated&quot;: &quot;true&quot;,
     &quot;go.sdk.automatically.set&quot;: &quot;true&quot;,
     &quot;last_opened_file_path&quot;: &quot;/Users/adilforest&quot;,
+    &quot;list.type.of.created.stylesheet&quot;: &quot;CSS&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
     &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
@@ -98,7 +104,7 @@
       <recent name="$PROJECT_DIR$" />
     </key>
   </component>
-  <component name="RunManager" selected="JavaScript Debug.admin.html">
+  <component name="RunManager" selected="JavaScript Debug.index.html">
     <configuration name="go build Assignment_1_AP" type="GoApplicationRunConfiguration" factoryName="Go Application" nameIsGenerated="true">
       <module name="Assignment_1_AP" />
       <working_directory value="$PROJECT_DIR$" />
@@ -122,9 +128,9 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="JavaScript Debug.index.html" />
         <item itemvalue="JavaScript Debug.admin.html" />
         <item itemvalue="JavaScript Debug.cashier.html" />
-        <item itemvalue="JavaScript Debug.index.html" />
         <item itemvalue="JavaScript Debug.README.md" />
       </list>
     </recent_temporary>
@@ -162,7 +168,8 @@
     <MESSAGE value="New start on new DB." />
     <MESSAGE value="Fix id." />
     <MESSAGE value="Adding json structure." />
-    <option name="LAST_COMMIT_MESSAGE" value="Adding json structure." />
+    <MESSAGE value="Fixed Admin.js." />
+    <option name="LAST_COMMIT_MESSAGE" value="Fixed Admin.js." />
   </component>
   <component name="VgoProject">
     <settings-migrated>true</settings-migrated>

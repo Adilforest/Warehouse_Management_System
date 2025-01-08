@@ -38,7 +38,7 @@ function displayResponse(targetId, responseText) {
 
 function createProduct() {
     const productData = {
-        type: document.getElementById("product-type").value,
+        type: document.getElementById("create-type").value,
         brand: document.getElementById("create-brand").value.trim(),
         model: document.getElementById("create-model").value.trim(),
         processor: document.getElementById("create-processor").value.trim(), // добавлено
