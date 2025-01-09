@@ -1,38 +1,32 @@
-// URL API для загрузки данных из базы данных
 const API_URL = 'http://localhost:8080/products/';
 
-// Текущее состояние
-let products = []; // Сюда будет загружен массив продуктов
-let currentPage = 1; // Текущая страница
-const itemsPerPage = 9; // Количество элементов на странице
+let products = [];
+let currentPage = 1;
+const itemsPerPage = 9;
 
-// Получение ссылок на DOM-элементы
 let productList, pagination, sortBy;
 let ramFilterGroup, storageFilterGroup, processorFilterGroup;
 
-// Функция для инициализации DOM-элементов
 function initDOM() {
     productList = document.getElementById("product-list");
     pagination = document.getElementById("pagination");
-    sortBy = document.getElementById("sort-by"); // Инициализация элемента сортировки
+    sortBy = document.getElementById("sort-by");
     ramFilterGroup = document.getElementById("ram-filter-group");
     storageFilterGroup = document.getElementById("storage-filter-group");
     processorFilterGroup = document.getElementById("processor-filter-group");
 }
 
-// Fetch данных с сервера
 async function fetchProducts() {
-    // Показываем индикатор загрузки
     const loadingIndicator = document.getElementById("loading");
     loadingIndicator.style.display = "block";
 
     try {
-        const response = await fetch(API_URL); // Запрос к API
+        const response = await fetch(API_URL);
         const result = await response.json();
 
         if (result.status === "success") {
-            products = result.data; // Сохраняем продукты
-            updateView(); // Обновляем отображение
+            products = result.data;
+            updateView();
         } else {
             console.error("Failed to load products:", result.message);
             productList.innerHTML = '<p>Failed to load products.</p>';
@@ -41,14 +35,12 @@ async function fetchProducts() {
         console.error("Error fetching products:", error);
         productList.innerHTML = '<p>Failed to load products. Please try again later.</p>';
     } finally {
-        // Скрываем индикатор загрузки
         loadingIndicator.style.display = "none";
     }
 }
 
-// Функция для отображения продуктов на странице
 function renderProducts(productsToRender) {
-    productList.innerHTML = ""; // Очистка списка продуктов
+    productList.innerHTML = "";
 
     if (productsToRender.length === 0) {
         productList.innerHTML = '<p>No products found.</p>';
@@ -59,7 +51,6 @@ function renderProducts(productsToRender) {
         const productCard = document.createElement("div");
         productCard.className = "product-card";
 
-        // Используем поле `link` для изображения
         productCard.innerHTML = `
             <img src="${product.link || 'https://via.placeholder.com/250x150'}" alt="${product.type}">
             <div class="card-content">
@@ -80,9 +71,8 @@ function renderProducts(productsToRender) {
     });
 }
 
-// Функция для создания кнопок пагинации
 function renderPagination(totalItems) {
-    pagination.innerHTML = ""; // Очистка кнопок
+    pagination.innerHTML = "";
 
     const totalPages = Math.ceil(totalItems / itemsPerPage);
 
@@ -98,23 +88,19 @@ function renderPagination(totalItems) {
     }
 }
 
-// Функция для получения выбранных значений из чекбоксов
 function getSelectedValues(name) {
     const checkboxes = document.querySelectorAll(`input[name="${name}"]:checked`);
     return Array.from(checkboxes).map(checkbox => checkbox.value);
 }
 
-// Функция для фильтрации продуктов
 function filterProducts() {
     let filteredProducts = products;
 
-    // Фильтрация по типу
     const selectedTypes = getSelectedValues("type");
     if (selectedTypes.length > 0) {
         filteredProducts = filteredProducts.filter(product => selectedTypes.includes(product.type));
     }
 
-    // Фильтрация по цене
     const selectedPrices = getSelectedValues("price");
     if (selectedPrices.length > 0) {
         filteredProducts = filteredProducts.filter(product => {
@@ -128,13 +114,11 @@ function filterProducts() {
         });
     }
 
-    // Фильтрация по бренду
     const selectedBrands = getSelectedValues("brand");
     if (selectedBrands.length > 0) {
         filteredProducts = filteredProducts.filter(product => selectedBrands.includes(product.brand));
     }
 
-    // Фильтрация по RAM (только для ноутбуков и телефонов)
     const selectedRAMs = getSelectedValues("ram");
     if (selectedRAMs.length > 0) {
         filteredProducts = filteredProducts.filter(product => selectedRAMs.includes(product.ram.toString()));
@@ -179,30 +163,25 @@ function sortProducts(productsToSort) {
     }
 }
 
-// Функция для обновления отображения продуктов и пагинации
 function updateView() {
     const filteredProducts = filterProducts();
     const sortedProducts = sortProducts(filteredProducts);
 
-    // Пагинация
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
     const paginatedProducts = sortedProducts.slice(startIndex, endIndex);
 
     renderProducts(paginatedProducts); // Отображаем продукты
-    renderPagination(filteredProducts.length); // Отображаем кнопки для пагинации
+    renderPagination(filteredProducts.length);
 }
 
-// Утилита для приведения текста к виду с заглавной буквы
 function capitalize(text) {
     return text.charAt(0).toUpperCase() + text.slice(1);
 }
 
-// Функция для управления видимостью фильтров
 function toggleFilters() {
     const selectedTypes = getSelectedValues("type");
 
-    // Если выбраны наушники, скрываем фильтры для процессора, RAM и хранилища
     if (selectedTypes.includes("headphones")) {
         ramFilterGroup.style.display = "none";
         storageFilterGroup.style.display = "none";
@@ -213,7 +192,6 @@ function toggleFilters() {
         processorFilterGroup.style.display = "block";
     }
 
-    // Если выбраны наушники, снимаем выбор с других типов
     if (selectedTypes.includes("headphones")) {
         document.querySelectorAll('input[name="type"]').forEach(checkbox => {
             if (checkbox.value !== "headphones") {
@@ -221,29 +199,25 @@ function toggleFilters() {
             }
         });
     } else {
-        // Если выбраны ноутбуки или телефоны, снимаем выбор с наушников
         document.querySelector('input[name="type"][value="headphones"]').checked = false;
     }
 }
 
-// Инициализация
 document.addEventListener("DOMContentLoaded", () => {
-    initDOM(); // Инициализация DOM-элементов
-    fetchProducts(); // Загрузка продуктов
+    initDOM();
+    fetchProducts();
 
-    // Слушатели событий для всех чекбоксов
     const checkboxes = document.querySelectorAll('input[type="checkbox"]');
     checkboxes.forEach(checkbox => {
         checkbox.addEventListener("change", () => {
-            currentPage = 1; // Сброс на первую страницу
-            toggleFilters(); // Управление видимостью фильтров
+            currentPage = 1;
+            toggleFilters();
             updateView();
         });
     });
 
-    // Слушатель для сортировки
     sortBy.addEventListener("change", () => {
-        currentPage = 1; // Сброс на первую страницу
+        currentPage = 1;
         updateView();
     });
 });

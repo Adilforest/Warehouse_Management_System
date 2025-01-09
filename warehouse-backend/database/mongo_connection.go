@@ -9,18 +9,16 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-// CreateProduct добавляет новый продукт в коллекцию MongoDB.
 func CreateProduct(product *models.Product) error {
 	collection := GetCollection("warehouse", "products")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	product.ID = primitive.NewObjectID() // Автоматически создаем ObjectID для продукта.
+	product.ID = primitive.NewObjectID()
 	_, err := collection.InsertOne(ctx, product)
 	return err
 }
 
-// GetProductByID возвращает продукт по его ObjectID.
 func GetProductByID(id primitive.ObjectID) (*models.Product, error) {
 	collection := GetCollection("warehouse", "products")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
@@ -35,13 +33,11 @@ func GetProductByID(id primitive.ObjectID) (*models.Product, error) {
 	return &product, nil
 }
 
-// GetProductsPaginated возвращает список продуктов с учетом пагинации.
 func GetProductsPaginated(limit, offset int) ([]models.Product, error) {
 	collection := GetCollection("warehouse", "products")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	// Опции для пагинации
 	opts := bson.M{}
 	cursor, err := collection.Find(ctx, opts, nil)
 	if err != nil {
@@ -57,7 +53,6 @@ func GetProductsPaginated(limit, offset int) ([]models.Product, error) {
 	return products, nil
 }
 
-// UpdateProduct обновляет существующий продукт в MongoDB по ObjectID.
 func UpdateProduct(id primitive.ObjectID, updatedProduct *models.Product) error {
 	collection := GetCollection("warehouse", "products")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
@@ -71,7 +66,6 @@ func UpdateProduct(id primitive.ObjectID, updatedProduct *models.Product) error 
 	return err
 }
 
-// DeleteProduct удаляет продукт в MongoDB по ObjectID.
 func DeleteProduct(id primitive.ObjectID) error {
 	collection := GetCollection("warehouse", "products")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
@@ -81,7 +75,6 @@ func DeleteProduct(id primitive.ObjectID) error {
 	return err
 }
 
-// DeleteAllProducts удаляет все продукты из MongoDB.
 func DeleteAllProducts() error {
 	collection := GetCollection("warehouse", "products")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)

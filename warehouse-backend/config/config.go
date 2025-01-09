@@ -13,7 +13,6 @@ type Config struct {
 	DBPort     string
 }
 
-// GetConfig загружает конфигурацию из переменных окружения
 func GetConfig() Config {
 	return Config{
 		DBUser:     os.Getenv("DB_USER"),
@@ -24,13 +23,10 @@ func GetConfig() Config {
 	}
 }
 
-// GetMongoDBURI формирует MongoDB connection string
 func (c Config) GetMongoDBURI() string {
 	if c.DBUser != "" && c.DBPassword != "" {
-		// Строка подключения с учётными данными
 		return fmt.Sprintf("mongodb+srv://%s:%s@%s/%s?retryWrites=true&w=majority",
 			c.DBUser, c.DBPassword, c.DBHost, c.DBName)
 	}
-	// Строка подключения без учётных данных
 	return fmt.Sprintf("mongodb+srv://%s/%s?retryWrites=true&w=majority", c.DBHost, c.DBName)
 }

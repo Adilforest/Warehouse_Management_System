@@ -10,9 +10,8 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-var MongoClient *mongo.Client // Глобальная переменная для хранения клиента MongoDB
+var MongoClient *mongo.Client
 
-// InitMongoDB устанавливает соединение с MongoDB
 func InitMongoDB(uri string) error {
 	clientOptions := options.Client().ApplyURI(uri)
 
@@ -39,15 +38,17 @@ func InitMongoDB(uri string) error {
 	return nil
 }
 
-// GetCollection возвращает коллекцию из MongoDB
 func GetCollection(databaseName, collectionName string) *mongo.Collection {
 	if MongoClient == nil {
 		log.Fatalf("MongoClient is not initialized. Did you call InitMongoDB?")
 	}
+
+	if databaseName == "" {
+		log.Fatal("Database name is empty. Check your configuration.")
+	}
+
 	return MongoClient.Database(databaseName).Collection(collectionName)
 }
-
-// DisconnectMongoDB закрывает соединение с MongoDB
 func DisconnectMongoDB() {
 	if MongoClient == nil {
 		return
