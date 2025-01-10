@@ -124,19 +124,16 @@ function filterProducts() {
         filteredProducts = filteredProducts.filter(product => selectedRAMs.includes(product.ram.toString()));
     }
 
-    // Фильтрация по хранилищу (только для ноутбуков и телефонов)
     const selectedStorages = getSelectedValues("storage");
     if (selectedStorages.length > 0) {
         filteredProducts = filteredProducts.filter(product => selectedStorages.includes(product.storage.toString()));
     }
 
-    // Фильтрация по процессору (только для ноутбуков и телефонов)
     const selectedProcessors = getSelectedValues("processor");
     if (selectedProcessors.length > 0) {
         filteredProducts = filteredProducts.filter(product => selectedProcessors.includes(product.processor));
     }
 
-    // Фильтрация по цвету
     const selectedColors = getSelectedValues("color");
     if (selectedColors.length > 0) {
         filteredProducts = filteredProducts.filter(product => selectedColors.includes(product.color));
@@ -145,7 +142,6 @@ function filterProducts() {
     return filteredProducts;
 }
 
-// Функция для сортировки продуктов
 function sortProducts(productsToSort) {
     const selectedSort = sortBy.value;
 
@@ -171,7 +167,7 @@ function updateView() {
     const endIndex = startIndex + itemsPerPage;
     const paginatedProducts = sortedProducts.slice(startIndex, endIndex);
 
-    renderProducts(paginatedProducts); // Отображаем продукты
+    renderProducts(paginatedProducts);
     renderPagination(filteredProducts.length);
 }
 

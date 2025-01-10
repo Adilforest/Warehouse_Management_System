@@ -117,7 +117,6 @@ func createProductHandler(c *gin.Context) {
 
 	product.ID = primitive.NewObjectID()
 
-	// Вставляем продукт в MongoDB
 	err := database.CreateProduct(&product)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, createResponse("fail",
@@ -150,10 +149,39 @@ func getProductHandler(c *gin.Context) {
 }
 
 func getAllProductsHandler(c *gin.Context) {
+	// Параметры пагинации
 	limit, _ := strconv.Atoi(c.DefaultQuery("limit", "10"))
 	offset, _ := strconv.Atoi(c.DefaultQuery("offset", "0"))
 
-	products, err := database.GetProductsPaginated(limit, offset)
+	// Параметры фильтрации
+	productType := c.Query("type")
+	minPrice, _ := strconv.ParseFloat(c.Query("minPrice"), 64)
+	maxPrice, _ := strconv.ParseFloat(c.Query("maxPrice"), 64)
+	brand := c.Query("brand")
+	ram := c.Query("ram")
+	storage := c.Query("storage")
+	processor := c.Query("processor")
+	color := c.Query("color")
+
+	// Параметры сортировки
+	sortBy := c.Query("sortBy")   // Например, "price", "brand", "model"
+	sortOrder := c.Query("order") // "asc" или "desc"
+
+	// Вызов GetProductsPaginated с новыми параметрами
+	products, err := database.GetProductsPaginated(
+		limit,       // limit
+		offset,      // offset
+		productType, // productType
+		minPrice,    // minPrice
+		maxPrice,    // maxPrice
+		brand,       // brand
+		ram,         // ram
+		storage,     // storage
+		processor,   // processor
+		color,       // color
+		sortBy,      // sortBy
+		sortOrder,   // sortOrder
+	)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, createResponse("fail",
 			"Failed to fetch products", nil))

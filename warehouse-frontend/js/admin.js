@@ -1,8 +1,7 @@
 const apiUrl = "http://localhost:8080/products";
 
 function toggleFields(context) {
-    // Получаем суффикс: "create" или "update"
-    const prefix = context || "create"; // Если не передан, по умолчанию "create"
+    const prefix = context || "create";
 
     // Элементы для управления
     const productType = document.getElementById(`${prefix}-type`);
@@ -37,14 +36,12 @@ function displayResponse(targetId, responseText) {
 }
 
 function validateCreateForm() {
-    // Пример логики валидации
     const brand = document.getElementById("create-brand").value.trim();
     const model = document.getElementById("create-model").value.trim();
     const price = document.getElementById("create-price").value.trim();
     const quantity = document.getElementById("create-quantity").value.trim();
     const link = document.getElementById("create-link").value.trim();
 
-    // Проверка обязательных полей
     if (!brand) {
         displayResponse("server-response", { error: "Поле 'Бренд' обязательно для заполнения." });
         return false;
@@ -70,11 +67,9 @@ function validateCreateForm() {
         return false;
     }
 
-    // Если все проверки пройдены
     return true;
 }
 
-// Функция для проверки корректности URL
 function isValidURL(url) {
     try {
         new URL(url);
@@ -271,3 +266,4 @@ function deleteAllProducts() {
             displayResponse("server-response", error);
         });
 }
+
