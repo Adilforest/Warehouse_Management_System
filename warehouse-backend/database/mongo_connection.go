@@ -2,6 +2,7 @@ package database
 
 import (
 	"context"
+	"log"
 	"time"
 	"warehouse-backend/models"
 
@@ -74,6 +75,9 @@ func GetProductsPaginated(limit, offset int, productType string, minPrice, maxPr
 		filter["color"] = color
 	}
 
+	// Логирование фильтра
+	log.Printf("Filter: %+v", filter)
+
 	// Создаем опции для сортировки
 	options := options.Find()
 	if sortBy != "" {
@@ -87,6 +91,9 @@ func GetProductsPaginated(limit, offset int, productType string, minPrice, maxPr
 	// Пагинация
 	options.SetLimit(int64(limit))
 	options.SetSkip(int64(offset))
+
+	// Логирование опций
+	log.Printf("Options: %+v", options)
 
 	// Выполняем запрос к MongoDB
 	cursor, err := collection.Find(ctx, filter, options)

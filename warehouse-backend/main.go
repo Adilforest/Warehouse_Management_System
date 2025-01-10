@@ -150,7 +150,7 @@ func getProductHandler(c *gin.Context) {
 
 func getAllProductsHandler(c *gin.Context) {
 	// Параметры пагинации
-	limit, _ := strconv.Atoi(c.DefaultQuery("limit", "10"))
+	limit, _ := strconv.Atoi(c.DefaultQuery("limit", "30"))
 	offset, _ := strconv.Atoi(c.DefaultQuery("offset", "0"))
 
 	// Параметры фильтрации
