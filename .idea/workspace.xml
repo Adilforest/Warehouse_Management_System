@@ -4,7 +4,14 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0bf56199-4d44-488a-a581-530161417705" name="Changes" comment="Filtering, Sorting &amp; Paginated Implementation on backend.&#10;&#10;Bags: broken paginated, filtering." />
+    <list default="true" id="0bf56199-4d44-488a-a581-530161417705" name="Changes" comment="Filtering, Sorting &amp; Paginated Implementation on backend.">
+      <change afterPath="$PROJECT_DIR$/warehouse-backend/logger/logger.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/warehouse-backend/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/warehouse-backend/go.mod" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/warehouse-backend/go.sum" beforeDir="false" afterPath="$PROJECT_DIR$/warehouse-backend/go.sum" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/warehouse-backend/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/warehouse-backend/main.go" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -13,9 +20,9 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="Go File" />
         <option value="CSS File" />
         <option value="JavaScript File" />
+        <option value="Go File" />
       </list>
     </option>
   </component>
@@ -76,7 +83,7 @@
     &quot;git-widget-placeholder&quot;: &quot;mongo-main&quot;,
     &quot;go.import.settings.migrated&quot;: &quot;true&quot;,
     &quot;go.sdk.automatically.set&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/Users/adilforest&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/adilforest/GolandProjects/Assignment_1_AP&quot;,
     &quot;list.type.of.created.stylesheet&quot;: &quot;CSS&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
@@ -97,7 +104,7 @@
       <recent name="$PROJECT_DIR$" />
     </key>
   </component>
-  <component name="RunManager" selected="JavaScript Debug.admin.html">
+  <component name="RunManager" selected="JavaScript Debug.index.html">
     <configuration name="go build Assignment_1_AP" type="GoApplicationRunConfiguration" factoryName="Go Application" nameIsGenerated="true">
       <module name="Assignment_1_AP" />
       <working_directory value="$PROJECT_DIR$" />
@@ -139,8 +146,8 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="JavaScript Debug.admin.html" />
         <item itemvalue="JavaScript Debug.index.html" />
+        <item itemvalue="JavaScript Debug.admin.html" />
         <item itemvalue="Go Build.go build product_routes.go" />
         <item itemvalue="JavaScript Debug.cashier.html" />
         <item itemvalue="JavaScript Debug.README.md" />
@@ -198,7 +205,8 @@
     <MESSAGE value="Updated filters." />
     <MESSAGE value="Mongo Atlas Connection." />
     <MESSAGE value="Filtering, Sorting &amp; Paginated Implementation on backend.&#10;&#10;Bags: broken paginated, filtering." />
-    <option name="LAST_COMMIT_MESSAGE" value="Filtering, Sorting &amp; Paginated Implementation on backend.&#10;&#10;Bags: broken paginated, filtering." />
+    <MESSAGE value="Filtering, Sorting &amp; Paginated Implementation on backend." />
+    <option name="LAST_COMMIT_MESSAGE" value="Filtering, Sorting &amp; Paginated Implementation on backend." />
   </component>
   <component name="VgoProject">
     <settings-migrated>true</settings-migrated>

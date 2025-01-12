@@ -1,19 +1,18 @@
 package main
 
 import (
+	"github.com/gin-contrib/cors"
+	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
-	"log"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"net/http"
 	"os"
 	"os/signal"
 	"strconv"
 	"strings"
 	"syscall"
-
-	"github.com/gin-contrib/cors"
-	"github.com/gin-gonic/gin"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"warehouse-backend/database"
+	"warehouse-backend/logger"
 	"warehouse-backend/models"
 )
 
@@ -26,49 +25,62 @@ type APIResponse struct {
 }
 
 func main() {
+	// Инициализация логгера
+	logger.InitLogger()
+	logger.Log.Info("Initializing logger...")
+
+	// Настройка базы данных
 	setupDatabase()
 
+	// Настройка маршрутов
 	router := setupRoutes()
 
+	// Запуск сервера в горутине
 	go func() {
-		log.Println("Server is running on port " + serverPort)
+		logger.LogInfo("server_start", "Server is starting...", map[string]interface{}{
+			"port": serverPort,
+		})
 		if err := router.Run(serverPort); err != nil {
-			log.Fatal(err)
+			logger.Log.Fatal(err)
 		}
 	}()
 
+	// Закрытие сервера по сигналам
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, os.Interrupt, syscall.SIGTERM)
 	<-quit
 
-	log.Println("Shutting down server...")
+	logger.Log.Warn("Shutting down server...")
 	database.DisconnectMongoDB()
 }
 
 func setupDatabase() {
+	// Загрузка переменных из .env файла
 	err := godotenv.Load()
 	if err != nil {
-		log.Fatalf("Error loading .env file: %v", err)
+		logger.Log.Fatal("Error loading .env file: ", err)
 	}
 
 	mongoURI := os.Getenv("MONGO_URI")
 	if mongoURI == "" {
-		log.Fatal("MONGO_URI not set in .env")
+		logger.Log.Fatal("MONGO_URI is not set in .env")
 	}
 
 	err = database.InitMongoDB(mongoURI)
 	if err != nil {
-		log.Fatalf("Failed to connect to MongoDB: %v", err)
+		logger.LogDBError("connect_to_mongo", "Failed to connect to MongoDB", err)
+		logger.Log.Fatal(err)
 	}
+	logger.Log.Info("Connected to MongoDB successfully")
 }
 
 func setupRoutes() *gin.Engine {
 	router := gin.Default()
-	router.RedirectTrailingSlash = false
 
+	// Настройка CORS
 	allowOrigins := os.Getenv("CORS_ORIGINS")
 	if allowOrigins == "" {
-		allowOrigins = "http://localhost:63342,http://localhost:8080"
+		allowOrigins = "http://localhost:3000,http://localhost:8080"
 	}
 	origins := strings.Split(allowOrigins, ",")
 
@@ -80,6 +92,18 @@ func setupRoutes() *gin.Engine {
 		AllowCredentials: true,
 	}))
 
+	// Логирование запросов
+	router.Use(func(c *gin.Context) {
+		c.Next()
+		fields := map[string]interface{}{
+			"method": c.Request.Method,
+			"path":   c.Request.URL.Path,
+			"status": c.Writer.Status(),
+		}
+		logger.LogInfo("http_request", "Request received", fields)
+	})
+
+	// Маршруты
 	router.GET("/", handleHome)
 
 	productRoutes := router.Group("/products")
@@ -96,22 +120,17 @@ func setupRoutes() *gin.Engine {
 }
 
 func handleHome(c *gin.Context) {
+	logger.LogRequest("GET", "/", "200")
 	c.String(http.StatusOK, "Welcome to the Warehouse Backend!")
-}
-
-func createResponse(status, message string, data interface{}) APIResponse {
-	return APIResponse{
-		Status:  status,
-		Message: message,
-		Data:    data,
-	}
 }
 
 func createProductHandler(c *gin.Context) {
 	var product models.Product
 	if err := c.ShouldBindJSON(&product); err != nil {
-		c.JSON(http.StatusBadRequest, createResponse("fail",
-			"Invalid JSON payload", nil))
+		logger.LogError("create_product", "Invalid payload", map[string]interface{}{
+			"error": err.Error(),
+		})
+		c.JSON(http.StatusBadRequest, createResponse("fail", "Invalid JSON payload", nil))
 		return
 	}
 
@@ -119,33 +138,40 @@ func createProductHandler(c *gin.Context) {
 
 	err := database.CreateProduct(&product)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, createResponse("fail",
-			"Failed to create product", nil))
+		logger.LogDBError("create_product", "Failed to save product", err)
+		c.JSON(http.StatusInternalServerError, createResponse("fail", "Failed to create product", nil))
 		return
 	}
 
-	c.JSON(http.StatusCreated, createResponse("success",
-		"Product created successfully", product))
+	logger.LogInfo("create_product", "Product created successfully", map[string]interface{}{
+		"product_id": product.ID,
+		"product":    product,
+	})
+	c.JSON(http.StatusCreated, createResponse("success", "Product created successfully", product))
 }
 
 func getProductHandler(c *gin.Context) {
 	id := c.Param("id")
 	objectID, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, createResponse("fail",
-			"Invalid product ID", nil))
+		logger.LogError("get_product", "Invalid product ID", map[string]interface{}{
+			"product_id": id,
+		})
+		c.JSON(http.StatusBadRequest, createResponse("fail", "Invalid product ID", nil))
 		return
 	}
 
 	product, err := database.GetProductByID(objectID)
 	if err != nil {
-		c.JSON(http.StatusNotFound, createResponse("fail",
-			"Product not found", nil))
+		logger.LogDBError("get_product", "Product not found", err)
+		c.JSON(http.StatusNotFound, createResponse("fail", "Product not found", nil))
 		return
 	}
 
-	c.JSON(http.StatusOK, createResponse("success",
-		"Product retrieved successfully", product))
+	logger.LogInfo("get_product", "Product fetched successfully", map[string]interface{}{
+		"product": product,
+	})
+	c.JSON(http.StatusOK, createResponse("success", "Product retrieved successfully", product))
 }
 
 func getAllProductsHandler(c *gin.Context) {
@@ -249,4 +275,12 @@ func deleteAllProductsHandler(c *gin.Context) {
 
 	c.JSON(http.StatusOK, createResponse("success",
 		"All products deleted successfully", nil))
+}
+
+func createResponse(status, message string, data interface{}) APIResponse {
+	return APIResponse{
+		Status:  status,
+		Message: message,
+		Data:    data,
+	}
 }
