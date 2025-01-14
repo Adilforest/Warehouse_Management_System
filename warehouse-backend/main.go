@@ -194,10 +194,16 @@ func getAllProductsHandler(c *gin.Context) {
 	// Параметры пагинации
 	limit, err := strconv.Atoi(c.DefaultQuery("limit", "30"))
 	if err != nil || limit <= 0 {
+		logger.LogWarning("get_all_products", "Invalid limit value, using default value", map[string]interface{}{
+			"limit": c.Query("limit"),
+		})
 		limit = 30 // Значение по умолчанию
 	}
 	offset, err := strconv.Atoi(c.DefaultQuery("offset", "0"))
 	if err != nil || offset < 0 {
+		logger.LogWarning("get_all_products", "Invalid offset value, using default value", map[string]interface{}{
+			"offset": c.Query("offset"),
+		})
 		offset = 0 // Значение по умолчанию
 	}
 
@@ -205,10 +211,16 @@ func getAllProductsHandler(c *gin.Context) {
 	productType := c.DefaultQuery("type", "")
 	minPrice, err := strconv.ParseFloat(c.DefaultQuery("minPrice", "0"), 64)
 	if err != nil || minPrice < 0 {
+		logger.LogWarning("get_all_products", "Invalid minPrice value, using default value", map[string]interface{}{
+			"minPrice": c.Query("minPrice"),
+		})
 		minPrice = 0 // Значение по умолчанию
 	}
 	maxPrice, err := strconv.ParseFloat(c.DefaultQuery("maxPrice", "0"), 64)
 	if err != nil || maxPrice < 0 {
+		logger.LogWarning("get_all_products", "Invalid maxPrice value, using default value", map[string]interface{}{
+			"maxPrice": c.Query("maxPrice"),
+		})
 		maxPrice = 0 // Значение по умолчанию
 	}
 	brand := c.DefaultQuery("brand", "")
@@ -221,7 +233,7 @@ func getAllProductsHandler(c *gin.Context) {
 	sortBy := c.DefaultQuery("sortBy", "")   // Например, "price", "brand", "model"
 	sortOrder := c.DefaultQuery("order", "") // "asc" или "desc"
 
-	// Логирование параметров запроса перед выполнением запроса к базе данных
+	// Логирование параметров запроса
 	logger.LogInfo("get_all_products", "Fetching products with filters", map[string]interface{}{
 		"limit":     limit,
 		"offset":    offset,
@@ -237,8 +249,8 @@ func getAllProductsHandler(c *gin.Context) {
 		"order":     sortOrder,
 	})
 
-	// Вызов функции для получения продуктов
-	products, err := database.GetProductsPaginated(
+	// Вызов функции для получения продуктов (работа с базой данных)
+	products, total, err := database.GetProductsPaginated(
 		limit,
 		offset,
 		productType,
@@ -253,8 +265,8 @@ func getAllProductsHandler(c *gin.Context) {
 		sortOrder,
 	)
 
-	// Проверка на ошибки получения данных
 	if err != nil {
+		// Обработка ошибки базы данных
 		logger.LogError("get_all_products", "Failed to fetch products from database", map[string]interface{}{
 			"error": err.Error(),
 		})
@@ -262,9 +274,31 @@ func getAllProductsHandler(c *gin.Context) {
 		return
 	}
 
+	// Проверка: пустой результат
+	if len(products) == 0 {
+		logger.LogWarning("get_all_products", "No products match the filter", map[string]interface{}{
+			"filters": map[string]interface{}{
+				"limit":     limit,
+				"offset":    offset,
+				"type":      productType,
+				"min_price": minPrice,
+				"max_price": maxPrice,
+				"brand":     brand,
+				"ram":       ram,
+				"storage":   storage,
+				"processor": processor,
+				"color":     color,
+				"sort_by":   sortBy,
+				"order":     sortOrder,
+			},
+		})
+		c.JSON(http.StatusNotFound, createResponse("fail", "No products match the filter", nil))
+		return
+	}
+
 	// Логирование успешного получения данных
 	logger.LogInfo("get_all_products", "Products fetched successfully", map[string]interface{}{
-		"total_products": len(products),
+		"total_products": total,
 		"filters": map[string]interface{}{
 			"limit":     limit,
 			"offset":    offset,
@@ -281,8 +315,11 @@ func getAllProductsHandler(c *gin.Context) {
 		},
 	})
 
-	// Отправка ответа клиенту
-	c.JSON(http.StatusOK, createResponse("success", "Products retrieved successfully", products))
+	// Отправка успешного ответа клиенту
+	c.JSON(http.StatusOK, createResponse("success", "Products retrieved successfully", gin.H{
+		"data":  products,
+		"total": total,
+	}))
 }
 
 func updateProductHandler(c *gin.Context) {

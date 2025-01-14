@@ -16,17 +16,38 @@ function initDOM() {
     processorFilterGroup = document.getElementById("processor-filter-group");
 }
 
-async function fetchProducts() {
+async function fetchProducts(filters = {}, sortBy = "", order = "asc", page = 1) {
     const loadingIndicator = document.getElementById("loading");
     loadingIndicator.style.display = "block";
 
+    // Удаляем пустые параметры из фильтров
+    const cleanedFilters = {};
+    for (const key in filters) {
+        if (filters[key]) {
+            cleanedFilters[key] = filters[key];
+        }
+    }
+
+    // Добавляем параметры запроса
+    const params = new URLSearchParams({
+        ...cleanedFilters,
+        sortBy,
+        order,
+        limit: itemsPerPage,
+        offset: (page - 1) * itemsPerPage,
+    });
+
     try {
-        const response = await fetch(API_URL);
+        const response = await fetch(`${API_URL}?${params.toString()}`);
         const result = await response.json();
 
         if (result.status === "success") {
-            products = result.data;
-            updateView();
+            // Извлекаем массив товаров и общее количество из result.data
+            const products = result.data.data;
+            const total = result.data.total;
+
+            renderProducts(products);
+            renderPagination(total);
         } else {
             console.error("Failed to load products:", result.message);
             productList.innerHTML = '<p>Failed to load products.</p>';
@@ -41,6 +62,12 @@ async function fetchProducts() {
 
 function renderProducts(productsToRender) {
     productList.innerHTML = "";
+
+    if (!Array.isArray(productsToRender)) {
+        console.error("Expected an array of products, but got:", productsToRender);
+        productList.innerHTML = '<p>No products found.</p>';
+        return;
+    }
 
     if (productsToRender.length === 0) {
         productList.innerHTML = '<p>No products found.</p>';
@@ -82,7 +109,7 @@ function renderPagination(totalItems) {
         button.className = i === currentPage ? "active" : "";
         button.addEventListener("click", () => {
             currentPage = i;
-            updateView();
+            updateView(); // Отправляем запрос на сервер при изменении страницы
         });
         pagination.appendChild(button);
     }
@@ -93,82 +120,21 @@ function getSelectedValues(name) {
     return Array.from(checkboxes).map(checkbox => checkbox.value);
 }
 
-function filterProducts() {
-    let filteredProducts = products;
-
-    const selectedTypes = getSelectedValues("type");
-    if (selectedTypes.length > 0) {
-        filteredProducts = filteredProducts.filter(product => selectedTypes.includes(product.type));
-    }
-
-    const selectedPrices = getSelectedValues("price");
-    if (selectedPrices.length > 0) {
-        filteredProducts = filteredProducts.filter(product => {
-            return selectedPrices.some(range => {
-                const [min, max] = range.split("-").map(Number);
-                if (range.endsWith("+")) {
-                    return product.price >= min;
-                }
-                return product.price >= min && product.price <= max;
-            });
-        });
-    }
-
-    const selectedBrands = getSelectedValues("brand");
-    if (selectedBrands.length > 0) {
-        filteredProducts = filteredProducts.filter(product => selectedBrands.includes(product.brand));
-    }
-
-    const selectedRAMs = getSelectedValues("ram");
-    if (selectedRAMs.length > 0) {
-        filteredProducts = filteredProducts.filter(product => selectedRAMs.includes(product.ram.toString()));
-    }
-
-    const selectedStorages = getSelectedValues("storage");
-    if (selectedStorages.length > 0) {
-        filteredProducts = filteredProducts.filter(product => selectedStorages.includes(product.storage.toString()));
-    }
-
-    const selectedProcessors = getSelectedValues("processor");
-    if (selectedProcessors.length > 0) {
-        filteredProducts = filteredProducts.filter(product => selectedProcessors.includes(product.processor));
-    }
-
-    const selectedColors = getSelectedValues("color");
-    if (selectedColors.length > 0) {
-        filteredProducts = filteredProducts.filter(product => selectedColors.includes(product.color));
-    }
-
-    return filteredProducts;
-}
-
-function sortProducts(productsToSort) {
-    const selectedSort = sortBy.value;
-
-    switch (selectedSort) {
-        case "price-asc":
-            return productsToSort.sort((a, b) => a.price - b.price);
-        case "price-desc":
-            return productsToSort.sort((a, b) => b.price - a.price);
-        case "brand":
-            return productsToSort.sort((a, b) => a.brand.localeCompare(b.brand));
-        case "model":
-            return productsToSort.sort((a, b) => a.model.localeCompare(b.model));
-        default:
-            return productsToSort;
-    }
-}
-
 function updateView() {
-    const filteredProducts = filterProducts();
-    const sortedProducts = sortProducts(filteredProducts);
+    const filters = {
+        type: getSelectedValues("type").join(","),
+        brand: getSelectedValues("brand").join(","),
+        price: getSelectedValues("price").join(","),
+        ram: getSelectedValues("ram").join(","),
+        storage: getSelectedValues("storage").join(","),
+        processor: getSelectedValues("processor").join(","),
+        color: getSelectedValues("color").join(","),
+    };
 
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    const endIndex = startIndex + itemsPerPage;
-    const paginatedProducts = sortedProducts.slice(startIndex, endIndex);
+    const sortByValue = sortBy.value.split("-")[0]; // Убираем -asc или -desc
+    const order = sortBy.value.includes("asc") ? "asc" : "desc";
 
-    renderProducts(paginatedProducts);
-    renderPagination(filteredProducts.length);
+    fetchProducts(filters, sortByValue, order, currentPage);
 }
 
 function capitalize(text) {
@@ -201,19 +167,19 @@ function toggleFilters() {
 
 document.addEventListener("DOMContentLoaded", () => {
     initDOM();
-    fetchProducts();
+    fetchProducts(); // Загружаем данные при загрузке страницы
 
     const checkboxes = document.querySelectorAll('input[type="checkbox"]');
     checkboxes.forEach(checkbox => {
         checkbox.addEventListener("change", () => {
             currentPage = 1;
             toggleFilters();
-            updateView();
+            updateView(); // Отправляем запрос на сервер при изменении фильтров
         });
     });
 
     sortBy.addEventListener("change", () => {
         currentPage = 1;
-        updateView();
+        updateView(); // Отправляем запрос на сервер при изменении сортировки
     });
 });

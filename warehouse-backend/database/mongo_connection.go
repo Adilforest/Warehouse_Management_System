@@ -3,6 +3,7 @@ package database
 import (
 	"context"
 	"log"
+	"strings"
 	"time"
 	"warehouse-backend/models"
 
@@ -38,7 +39,7 @@ func GetProductByID(id primitive.ObjectID) (*models.Product, error) {
 }
 
 // GetProductsPaginated возвращает список продуктов с фильтрацией, сортировкой и пагинацией
-func GetProductsPaginated(limit, offset int, productType string, minPrice, maxPrice float64, brand, ram, storage, processor, color, sortBy, sortOrder string) ([]models.Product, error) {
+func GetProductsPaginated(limit, offset int, productType string, minPrice, maxPrice float64, brand, ram, storage, processor, color, sortBy, sortOrder string) ([]models.Product, int64, error) {
 	collection := GetCollection("warehouse", "products")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
@@ -46,9 +47,43 @@ func GetProductsPaginated(limit, offset int, productType string, minPrice, maxPr
 	// Создаем фильтр для MongoDB
 	filter := bson.M{}
 
+	// Обработка множественных значений для type
 	if productType != "" {
-		filter["type"] = productType
+		types := strings.Split(productType, ",")
+		filter["type"] = bson.M{"$in": types}
 	}
+
+	// Обработка множественных значений для brand
+	if brand != "" {
+		brands := strings.Split(brand, ",")
+		filter["brand"] = bson.M{"$in": brands}
+	}
+
+	// Обработка множественных значений для ram
+	if ram != "" {
+		rams := strings.Split(ram, ",")
+		filter["ram"] = bson.M{"$in": rams}
+	}
+
+	// Обработка множественных значений для storage
+	if storage != "" {
+		storages := strings.Split(storage, ",")
+		filter["storage"] = bson.M{"$in": storages}
+	}
+
+	// Обработка множественных значений для processor
+	if processor != "" {
+		processors := strings.Split(processor, ",")
+		filter["processor"] = bson.M{"$in": processors}
+	}
+
+	// Обработка множественных значений для color
+	if color != "" {
+		colors := strings.Split(color, ",")
+		filter["color"] = bson.M{"$in": colors}
+	}
+
+	// Фильтр по цене
 	if minPrice > 0 || maxPrice > 0 {
 		priceFilter := bson.M{}
 		if minPrice > 0 {
@@ -59,24 +94,15 @@ func GetProductsPaginated(limit, offset int, productType string, minPrice, maxPr
 		}
 		filter["price"] = priceFilter
 	}
-	if brand != "" {
-		filter["brand"] = brand
-	}
-	if ram != "" {
-		filter["ram"] = ram
-	}
-	if storage != "" {
-		filter["storage"] = storage
-	}
-	if processor != "" {
-		filter["processor"] = processor
-	}
-	if color != "" {
-		filter["color"] = color
-	}
 
 	// Логирование фильтра
 	log.Printf("Filter: %+v", filter)
+
+	// Получаем общее количество товаров
+	total, err := collection.CountDocuments(ctx, filter)
+	if err != nil {
+		return nil, 0, err
+	}
 
 	// Создаем опции для сортировки
 	options := options.Find()
@@ -98,16 +124,16 @@ func GetProductsPaginated(limit, offset int, productType string, minPrice, maxPr
 	// Выполняем запрос к MongoDB
 	cursor, err := collection.Find(ctx, filter, options)
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 	defer cursor.Close(ctx)
 
 	var products []models.Product
 	if err = cursor.All(ctx, &products); err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 
-	return products, nil
+	return products, total, nil
 }
 
 // UpdateProduct обновляет продукт по его ID

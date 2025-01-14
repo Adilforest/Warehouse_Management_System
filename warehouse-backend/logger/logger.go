@@ -59,3 +59,10 @@ func LogDBError(operation, message string, err error) {
 		"error":     err.Error(),
 	}).Error(message)
 }
+
+// LogWarning логирует предупреждения с кастомными полями
+func LogWarning(event, message string, fields map[string]interface{}) {
+	Log.WithFields(logrus.Fields(fields)).
+		WithField("event", event).
+		Warn(message)
+}
