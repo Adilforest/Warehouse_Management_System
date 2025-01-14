@@ -99,13 +99,29 @@ func setupRoutes() *gin.Engine {
 			"method": c.Request.Method,
 			"path":   c.Request.URL.Path,
 			"status": c.Writer.Status(),
+			"ip":     c.ClientIP(),
+			"agent":  c.Request.UserAgent(),
 		}
 		logger.LogInfo("http_request", "Request received", fields)
 	})
 
-	// Маршруты
-	router.GET("/", handleHome)
+	// Сервировка статичных файлов и маршрута для index.html
+	router.Static("/static", "./static") // Папка для CSS, JS и прочих статичных файлов
 
+	// Главная страница
+	router.GET("/", func(c *gin.Context) {
+		// Логирование посещения главной страницы
+		logger.LogInfo("page_visit", "Index page visited", map[string]interface{}{
+			"method": c.Request.Method,
+			"path":   c.Request.URL.Path,
+			"ip":     c.ClientIP(),
+			"agent":  c.Request.UserAgent(),
+		})
+
+		c.File("./public/index.html") // Отсылка index.html (путь до файла)
+	})
+
+	// Маршруты для работы с продуктами
 	productRoutes := router.Group("/products")
 	{
 		productRoutes.POST("/create", createProductHandler)
@@ -176,46 +192,97 @@ func getProductHandler(c *gin.Context) {
 
 func getAllProductsHandler(c *gin.Context) {
 	// Параметры пагинации
-	limit, _ := strconv.Atoi(c.DefaultQuery("limit", "30"))
-	offset, _ := strconv.Atoi(c.DefaultQuery("offset", "0"))
+	limit, err := strconv.Atoi(c.DefaultQuery("limit", "30"))
+	if err != nil || limit <= 0 {
+		limit = 30 // Значение по умолчанию
+	}
+	offset, err := strconv.Atoi(c.DefaultQuery("offset", "0"))
+	if err != nil || offset < 0 {
+		offset = 0 // Значение по умолчанию
+	}
 
 	// Параметры фильтрации
-	productType := c.Query("type")
-	minPrice, _ := strconv.ParseFloat(c.Query("minPrice"), 64)
-	maxPrice, _ := strconv.ParseFloat(c.Query("maxPrice"), 64)
-	brand := c.Query("brand")
-	ram := c.Query("ram")
-	storage := c.Query("storage")
-	processor := c.Query("processor")
-	color := c.Query("color")
+	productType := c.DefaultQuery("type", "")
+	minPrice, err := strconv.ParseFloat(c.DefaultQuery("minPrice", "0"), 64)
+	if err != nil || minPrice < 0 {
+		minPrice = 0 // Значение по умолчанию
+	}
+	maxPrice, err := strconv.ParseFloat(c.DefaultQuery("maxPrice", "0"), 64)
+	if err != nil || maxPrice < 0 {
+		maxPrice = 0 // Значение по умолчанию
+	}
+	brand := c.DefaultQuery("brand", "")
+	ram := c.DefaultQuery("ram", "")
+	storage := c.DefaultQuery("storage", "")
+	processor := c.DefaultQuery("processor", "")
+	color := c.DefaultQuery("color", "")
 
 	// Параметры сортировки
-	sortBy := c.Query("sortBy")   // Например, "price", "brand", "model"
-	sortOrder := c.Query("order") // "asc" или "desc"
+	sortBy := c.DefaultQuery("sortBy", "")   // Например, "price", "brand", "model"
+	sortOrder := c.DefaultQuery("order", "") // "asc" или "desc"
 
-	// Вызов GetProductsPaginated с новыми параметрами
+	// Логирование параметров запроса перед выполнением запроса к базе данных
+	logger.LogInfo("get_all_products", "Fetching products with filters", map[string]interface{}{
+		"limit":     limit,
+		"offset":    offset,
+		"type":      productType,
+		"min_price": minPrice,
+		"max_price": maxPrice,
+		"brand":     brand,
+		"ram":       ram,
+		"storage":   storage,
+		"processor": processor,
+		"color":     color,
+		"sort_by":   sortBy,
+		"order":     sortOrder,
+	})
+
+	// Вызов функции для получения продуктов
 	products, err := database.GetProductsPaginated(
-		limit,       // limit
-		offset,      // offset
-		productType, // productType
-		minPrice,    // minPrice
-		maxPrice,    // maxPrice
-		brand,       // brand
-		ram,         // ram
-		storage,     // storage
-		processor,   // processor
-		color,       // color
-		sortBy,      // sortBy
-		sortOrder,   // sortOrder
+		limit,
+		offset,
+		productType,
+		minPrice,
+		maxPrice,
+		brand,
+		ram,
+		storage,
+		processor,
+		color,
+		sortBy,
+		sortOrder,
 	)
+
+	// Проверка на ошибки получения данных
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, createResponse("fail",
-			"Failed to fetch products", nil))
+		logger.LogError("get_all_products", "Failed to fetch products from database", map[string]interface{}{
+			"error": err.Error(),
+		})
+		c.JSON(http.StatusInternalServerError, createResponse("fail", "Failed to fetch products", nil))
 		return
 	}
 
-	c.JSON(http.StatusOK, createResponse("success",
-		"Products retrieved successfully", products))
+	// Логирование успешного получения данных
+	logger.LogInfo("get_all_products", "Products fetched successfully", map[string]interface{}{
+		"total_products": len(products),
+		"filters": map[string]interface{}{
+			"limit":     limit,
+			"offset":    offset,
+			"type":      productType,
+			"min_price": minPrice,
+			"max_price": maxPrice,
+			"brand":     brand,
+			"ram":       ram,
+			"storage":   storage,
+			"processor": processor,
+			"color":     color,
+			"sort_by":   sortBy,
+			"order":     sortOrder,
+		},
+	})
+
+	// Отправка ответа клиенту
+	c.JSON(http.StatusOK, createResponse("success", "Products retrieved successfully", products))
 }
 
 func updateProductHandler(c *gin.Context) {

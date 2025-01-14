@@ -2,6 +2,8 @@ package logger
 
 import (
 	"github.com/sirupsen/logrus"
+	"gopkg.in/natefinch/lumberjack.v2"
+	"io"
 	"os"
 )
 
@@ -10,14 +12,35 @@ var Log *logrus.Logger
 // InitLogger инициализирует логгер
 func InitLogger() {
 	Log = logrus.New()
-	Log.SetFormatter(&logrus.JSONFormatter{}) // JSON формат
-	file, err := os.OpenFile("server.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
-	if err == nil {
-		Log.SetOutput(file)
-	} else {
-		Log.Warn("Failed to log to file. Using default stderr.")
+	Log.SetLevel(logrus.InfoLevel)
+
+	// Логи в файл с ротацией
+	logFile := &lumberjack.Logger{
+		Filename:   "server.log",
+		MaxSize:    10, // Мегабайты
+		MaxBackups: 3,  // Максимальное количество резервных файлов
+		MaxAge:     28, // Дней хранения
+		Compress:   true,
 	}
-	Log.SetLevel(logrus.InfoLevel) // Уровень логирования
+
+	// Логи в файл и консоль одновременно
+	Log.SetOutput(io.MultiWriter(logFile, os.Stdout))
+
+	Log.SetFormatter(&logrus.JSONFormatter{})
+}
+
+// LogInfo логирует информационные события
+func LogInfo(event, message string, fields map[string]interface{}) {
+	Log.WithFields(logrus.Fields(fields)).
+		WithField("event", event).
+		Info(message)
+}
+
+// LogError логирует ошибки с кастомными полями
+func LogError(event, message string, fields map[string]interface{}) {
+	Log.WithFields(logrus.Fields(fields)).
+		WithField("event", event).
+		Error(message)
 }
 
 // LogRequest логирует HTTP-запрос с методом, путём и статусом
@@ -35,26 +58,4 @@ func LogDBError(operation, message string, err error) {
 		"operation": operation,
 		"error":     err.Error(),
 	}).Error(message)
-}
-
-// LogInfo логирует информационные события
-func LogInfo(event, message string, fields map[string]interface{}) {
-	entry := Log.WithFields(logrus.Fields{
-		"event": event,
-	})
-	for key, value := range fields {
-		entry = entry.WithField(key, value)
-	}
-	entry.Info(message)
-}
-
-// LogError логирует ошибки с кастомными полями
-func LogError(event, message string, fields map[string]interface{}) {
-	entry := Log.WithFields(logrus.Fields{
-		"event": event,
-	})
-	for key, value := range fields {
-		entry = entry.WithField(key, value)
-	}
-	entry.Error(message)
 }
