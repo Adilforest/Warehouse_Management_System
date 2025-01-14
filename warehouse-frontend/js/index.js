@@ -16,7 +16,7 @@ function initDOM() {
     processorFilterGroup = document.getElementById("processor-filter-group");
 }
 
-async function fetchProducts(filters = {}, sortBy = "", order = "asc", page = 1) {
+async function fetchProducts(filters = {}, sortBy = "", order = "asc", page = 1, minPrice = 0, maxPrice = 0) {
     const loadingIndicator = document.getElementById("loading");
     loadingIndicator.style.display = "block";
 
@@ -35,6 +35,8 @@ async function fetchProducts(filters = {}, sortBy = "", order = "asc", page = 1)
         order,
         limit: itemsPerPage,
         offset: (page - 1) * itemsPerPage,
+        minPrice, // Передаем minPrice
+        maxPrice, // Передаем maxPrice
     });
 
     try {
@@ -42,7 +44,7 @@ async function fetchProducts(filters = {}, sortBy = "", order = "asc", page = 1)
         const result = await response.json();
 
         if (result.status === "success") {
-            // Извлекаем массив товаров и общее количество из result.data
+            // Извлекаем массив товаров из result.data.data
             const products = result.data.data;
             const total = result.data.total;
 
@@ -124,7 +126,7 @@ function updateView() {
     const filters = {
         type: getSelectedValues("type").join(","),
         brand: getSelectedValues("brand").join(","),
-        price: getSelectedValues("price").join(","),
+        price: getSelectedValues("price").join(","), // Передаем выбранные диапазоны цен
         ram: getSelectedValues("ram").join(","),
         storage: getSelectedValues("storage").join(","),
         processor: getSelectedValues("processor").join(","),
@@ -134,7 +136,25 @@ function updateView() {
     const sortByValue = sortBy.value.split("-")[0]; // Убираем -asc или -desc
     const order = sortBy.value.includes("asc") ? "asc" : "desc";
 
-    fetchProducts(filters, sortByValue, order, currentPage);
+    // Получаем выбранные значения для minPrice и maxPrice
+    const selectedPrices = getSelectedValues("price");
+    let minPrice = 0;
+    let maxPrice = 0;
+
+    if (selectedPrices.length > 0) {
+        const priceRange = selectedPrices[0];
+        if (priceRange === "2000-0") {
+            // Обработка диапазона "$2000+"
+            minPrice = 2000;
+            maxPrice = 0; // maxPrice не задан
+        } else {
+            const [min, max] = priceRange.split("-").map(Number);
+            minPrice = min;
+            maxPrice = max;
+        }
+    }
+
+    fetchProducts(filters, sortByValue, order, currentPage, minPrice, maxPrice);
 }
 
 function capitalize(text) {

@@ -209,20 +209,7 @@ func getAllProductsHandler(c *gin.Context) {
 
 	// Параметры фильтрации
 	productType := c.DefaultQuery("type", "")
-	minPrice, err := strconv.ParseFloat(c.DefaultQuery("minPrice", "0"), 64)
-	if err != nil || minPrice < 0 {
-		logger.LogWarning("get_all_products", "Invalid minPrice value, using default value", map[string]interface{}{
-			"minPrice": c.Query("minPrice"),
-		})
-		minPrice = 0 // Значение по умолчанию
-	}
-	maxPrice, err := strconv.ParseFloat(c.DefaultQuery("maxPrice", "0"), 64)
-	if err != nil || maxPrice < 0 {
-		logger.LogWarning("get_all_products", "Invalid maxPrice value, using default value", map[string]interface{}{
-			"maxPrice": c.Query("maxPrice"),
-		})
-		maxPrice = 0 // Значение по умолчанию
-	}
+	priceRanges := c.QueryArray("price") // Получаем массив выбранных диапазонов цен
 	brand := c.DefaultQuery("brand", "")
 	ram := c.DefaultQuery("ram", "")
 	storage := c.DefaultQuery("storage", "")
@@ -235,18 +222,17 @@ func getAllProductsHandler(c *gin.Context) {
 
 	// Логирование параметров запроса
 	logger.LogInfo("get_all_products", "Fetching products with filters", map[string]interface{}{
-		"limit":     limit,
-		"offset":    offset,
-		"type":      productType,
-		"min_price": minPrice,
-		"max_price": maxPrice,
-		"brand":     brand,
-		"ram":       ram,
-		"storage":   storage,
-		"processor": processor,
-		"color":     color,
-		"sort_by":   sortBy,
-		"order":     sortOrder,
+		"limit":       limit,
+		"offset":      offset,
+		"type":        productType,
+		"priceRanges": priceRanges,
+		"brand":       brand,
+		"ram":         ram,
+		"storage":     storage,
+		"processor":   processor,
+		"color":       color,
+		"sort_by":     sortBy,
+		"order":       sortOrder,
 	})
 
 	// Вызов функции для получения продуктов (работа с базой данных)
@@ -254,8 +240,7 @@ func getAllProductsHandler(c *gin.Context) {
 		limit,
 		offset,
 		productType,
-		minPrice,
-		maxPrice,
+		priceRanges,
 		brand,
 		ram,
 		storage,
@@ -278,18 +263,17 @@ func getAllProductsHandler(c *gin.Context) {
 	if len(products) == 0 {
 		logger.LogWarning("get_all_products", "No products match the filter", map[string]interface{}{
 			"filters": map[string]interface{}{
-				"limit":     limit,
-				"offset":    offset,
-				"type":      productType,
-				"min_price": minPrice,
-				"max_price": maxPrice,
-				"brand":     brand,
-				"ram":       ram,
-				"storage":   storage,
-				"processor": processor,
-				"color":     color,
-				"sort_by":   sortBy,
-				"order":     sortOrder,
+				"limit":       limit,
+				"offset":      offset,
+				"type":        productType,
+				"priceRanges": priceRanges,
+				"brand":       brand,
+				"ram":         ram,
+				"storage":     storage,
+				"processor":   processor,
+				"color":       color,
+				"sort_by":     sortBy,
+				"order":       sortOrder,
 			},
 		})
 		c.JSON(http.StatusNotFound, createResponse("fail", "No products match the filter", nil))
@@ -300,18 +284,17 @@ func getAllProductsHandler(c *gin.Context) {
 	logger.LogInfo("get_all_products", "Products fetched successfully", map[string]interface{}{
 		"total_products": total,
 		"filters": map[string]interface{}{
-			"limit":     limit,
-			"offset":    offset,
-			"type":      productType,
-			"min_price": minPrice,
-			"max_price": maxPrice,
-			"brand":     brand,
-			"ram":       ram,
-			"storage":   storage,
-			"processor": processor,
-			"color":     color,
-			"sort_by":   sortBy,
-			"order":     sortOrder,
+			"limit":       limit,
+			"offset":      offset,
+			"type":        productType,
+			"priceRanges": priceRanges,
+			"brand":       brand,
+			"ram":         ram,
+			"storage":     storage,
+			"processor":   processor,
+			"color":       color,
+			"sort_by":     sortBy,
+			"order":       sortOrder,
 		},
 	})
 

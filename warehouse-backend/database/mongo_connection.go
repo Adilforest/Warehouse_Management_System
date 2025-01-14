@@ -3,6 +3,7 @@ package database
 import (
 	"context"
 	"log"
+	"strconv"
 	"strings"
 	"time"
 	"warehouse-backend/models"
@@ -39,7 +40,7 @@ func GetProductByID(id primitive.ObjectID) (*models.Product, error) {
 }
 
 // GetProductsPaginated возвращает список продуктов с фильтрацией, сортировкой и пагинацией
-func GetProductsPaginated(limit, offset int, productType string, minPrice, maxPrice float64, brand, ram, storage, processor, color, sortBy, sortOrder string) ([]models.Product, int64, error) {
+func GetProductsPaginated(limit, offset int, productType string, priceRanges []string, brand, ram, storage, processor, color, sortBy, sortOrder string) ([]models.Product, int64, error) {
 	collection := GetCollection("warehouse", "products")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
@@ -83,16 +84,32 @@ func GetProductsPaginated(limit, offset int, productType string, minPrice, maxPr
 		filter["color"] = bson.M{"$in": colors}
 	}
 
-	// Фильтр по цене
-	if minPrice > 0 || maxPrice > 0 {
-		priceFilter := bson.M{}
-		if minPrice > 0 {
-			priceFilter["$gte"] = minPrice
+	// Фильтр по цене (поддержка нескольких диапазонов)
+	if len(priceRanges) > 0 {
+		var priceFilters []bson.M
+		for _, priceRange := range priceRanges {
+			// Разбиваем строку на отдельные диапазоны, если они переданы через запятую
+			ranges := strings.Split(priceRange, ",")
+			for _, r := range ranges {
+				if r == "2000-0" {
+					// Обработка диапазона "$2000+"
+					priceFilters = append(priceFilters, bson.M{"price": bson.M{"$gte": 2000}})
+				} else {
+					// Обработка диапазонов вида "min-max"
+					parts := strings.Split(r, "-")
+					if len(parts) == 2 {
+						minPrice, err1 := strconv.ParseFloat(parts[0], 64)
+						maxPrice, err2 := strconv.ParseFloat(parts[1], 64)
+						if err1 == nil && err2 == nil {
+							priceFilters = append(priceFilters, bson.M{"price": bson.M{"$gte": minPrice, "$lte": maxPrice}})
+						}
+					}
+				}
+			}
 		}
-		if maxPrice > 0 {
-			priceFilter["$lte"] = maxPrice
+		if len(priceFilters) > 0 {
+			filter["$or"] = priceFilters
 		}
-		filter["price"] = priceFilter
 	}
 
 	// Логирование фильтра

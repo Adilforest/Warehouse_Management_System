@@ -7,8 +7,8 @@
     <list default="true" id="0bf56199-4d44-488a-a581-530161417705" name="Changes" comment="Structuring logging.">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/warehouse-backend/database/mongo_connection.go" beforeDir="false" afterPath="$PROJECT_DIR$/warehouse-backend/database/mongo_connection.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/warehouse-backend/logger/logger.go" beforeDir="false" afterPath="$PROJECT_DIR$/warehouse-backend/logger/logger.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/warehouse-backend/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/warehouse-backend/main.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/warehouse-frontend/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/warehouse-frontend/index.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/warehouse-frontend/js/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/warehouse-frontend/js/index.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
