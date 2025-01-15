@@ -52,11 +52,11 @@ async function fetchProducts(filters = {}, sortBy = "", order = "asc", page = 1,
             renderPagination(total);
         } else {
             console.error("Failed to load products:", result.message);
-            productList.innerHTML = '<p>Failed to load products.</p>';
+            productList.innerHTML = '<p>Impression error while there are no such products in the Database. Try to find out later.</p>';
         }
     } catch (error) {
         console.error("Error fetching products:", error);
-        productList.innerHTML = '<p>Failed to load products. Please try again later.</p>';
+        productList.innerHTML = '<p>Impression error while there are no such products in the Database. Try to find out later.</p>';
     } finally {
         loadingIndicator.style.display = "none";
     }
