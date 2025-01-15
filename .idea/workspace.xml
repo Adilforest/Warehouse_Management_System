@@ -4,12 +4,7 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0bf56199-4d44-488a-a581-530161417705" name="Changes" comment="Rate limiting.">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/warehouse-backend/.env" beforeDir="false" afterPath="$PROJECT_DIR$/warehouse-backend/.env" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/warehouse-frontend/ContactUs.html" beforeDir="false" afterPath="$PROJECT_DIR$/warehouse-frontend/ContactUs.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/warehouse-frontend/js/ContactUs.js" beforeDir="false" afterPath="$PROJECT_DIR$/warehouse-frontend/js/ContactUs.js" afterDir="false" />
-    </list>
+    <list default="true" id="0bf56199-4d44-488a-a581-530161417705" name="Changes" comment="Rate limiting." />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
