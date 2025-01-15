@@ -5,7 +5,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="0bf56199-4d44-488a-a581-530161417705" name="Changes" comment="Email Sending.">
-      <change beforePath="$PROJECT_DIR$/warehouse-backend/middleware/logging_middleware.go" beforeDir="false" afterPath="$PROJECT_DIR$/warehouse-backend/middleware/logging_middleware.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/warehouse-backend/middleware/rate_limit_middleware.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/warehouse-backend/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/warehouse-backend/go.mod" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/warehouse-backend/go.sum" beforeDir="false" afterPath="$PROJECT_DIR$/warehouse-backend/go.sum" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/warehouse-backend/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/warehouse-backend/main.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/warehouse-frontend/js/ContactUs.js" beforeDir="false" afterPath="$PROJECT_DIR$/warehouse-frontend/js/ContactUs.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -102,7 +107,7 @@
       <recent name="$PROJECT_DIR$" />
     </key>
   </component>
-  <component name="RunManager" selected="JavaScript Debug.index.html">
+  <component name="RunManager" selected="JavaScript Debug.admin.html">
     <configuration name="go build Assignment_1_AP" type="GoApplicationRunConfiguration" factoryName="Go Application" nameIsGenerated="true">
       <module name="Assignment_1_AP" />
       <working_directory value="$PROJECT_DIR$" />
@@ -144,9 +149,9 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="JavaScript Debug.admin.html" />
         <item itemvalue="JavaScript Debug.index.html" />
         <item itemvalue="JavaScript Debug.ContactUs.html" />
-        <item itemvalue="JavaScript Debug.admin.html" />
         <item itemvalue="Go Build.go build product_routes.go" />
         <item itemvalue="JavaScript Debug.cashier.html" />
       </list>

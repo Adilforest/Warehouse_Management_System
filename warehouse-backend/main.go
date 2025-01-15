@@ -5,15 +5,18 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"golang.org/x/time/rate"
 	"net/http"
 	"os"
 	"os/signal"
 	"strconv"
 	"strings"
 	"syscall"
+	"time"
 	"warehouse-backend/controllers"
 	"warehouse-backend/database"
 	"warehouse-backend/logger"
+	"warehouse-backend/middleware"
 	"warehouse-backend/models"
 )
 
@@ -137,8 +140,11 @@ func setupRoutes() *gin.Engine {
 		productRoutes.DELETE("/:id", deleteProductHandler)
 	}
 
-	// Маршрут для обработки запросов от формы "Contact Us"
-	router.POST("/api/contact", controllers.ContactController)
+	// Настройка rate limiter: 1 запрос в 15 секунд
+	limiter := middleware.RateLimiterMiddleware(rate.Every(15*time.Second), 1)
+
+	// Маршрут для обработки запросов от формы "Contact Us" с rate limiting
+	router.POST("/api/contact", limiter, controllers.ContactController)
 
 	return router
 }

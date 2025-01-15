@@ -14,6 +14,10 @@ document.addEventListener('DOMContentLoaded', function () {
             body: formData,
         })
             .then(response => {
+                if (response.status === 429) {
+                    // Если лимит запросов превышен
+                    throw new Error('Too Many Requests');
+                }
                 if (!response.ok) {
                     // Если ответ не OK, выбрасываем ошибку
                     throw new Error('Network response was not ok');
@@ -35,9 +39,17 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             })
             .catch(error => {
-                // Ошибка сети или другая ошибка
+                // Обработка ошибок
                 console.error('Ошибка:', error);
-                responseMessage.textContent = 'Произошла ошибка при отправке. Пожалуйста, проверьте подключение к интернету.';
+
+                if (error.message === 'Too Many Requests') {
+                    // Если лимит запросов превышен
+                    responseMessage.textContent = 'Вы отправили слишком много запросов. Пожалуйста, попробуйте снова через 15 секунд.';
+                } else {
+                    // Другие ошибки (например, проблемы с сетью)
+                    responseMessage.textContent = 'Произошла ошибка при отправке. Пожалуйста, проверьте подключение к интернету.';
+                }
+
                 responseMessage.classList.remove('success');
                 responseMessage.classList.add('error');
             });
