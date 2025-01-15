@@ -4,12 +4,10 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0bf56199-4d44-488a-a581-530161417705" name="Changes" comment="Email Sending.">
-      <change afterPath="$PROJECT_DIR$/warehouse-backend/middleware/rate_limit_middleware.go" afterDir="false" />
+    <list default="true" id="0bf56199-4d44-488a-a581-530161417705" name="Changes" comment="Rate limiting.">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/warehouse-backend/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/warehouse-backend/go.mod" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/warehouse-backend/go.sum" beforeDir="false" afterPath="$PROJECT_DIR$/warehouse-backend/go.sum" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/warehouse-backend/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/warehouse-backend/main.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/warehouse-backend/.env" beforeDir="false" afterPath="$PROJECT_DIR$/warehouse-backend/.env" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/warehouse-frontend/ContactUs.html" beforeDir="false" afterPath="$PROJECT_DIR$/warehouse-frontend/ContactUs.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/warehouse-frontend/js/ContactUs.js" beforeDir="false" afterPath="$PROJECT_DIR$/warehouse-frontend/js/ContactUs.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -184,7 +182,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Adding ide files &amp; Architecture." />
     <MESSAGE value="Adding .gitignore file." />
     <MESSAGE value="Adding Post requests to server with html page" />
     <MESSAGE value="Updated docs." />
@@ -209,7 +206,8 @@
     <MESSAGE value="Filtering, Sorting &amp; Paginated Implementation on backend." />
     <MESSAGE value="Structuring logging." />
     <MESSAGE value="Email Sending." />
-    <option name="LAST_COMMIT_MESSAGE" value="Email Sending." />
+    <MESSAGE value="Rate limiting." />
+    <option name="LAST_COMMIT_MESSAGE" value="Rate limiting." />
   </component>
   <component name="VgoProject">
     <settings-migrated>true</settings-migrated>

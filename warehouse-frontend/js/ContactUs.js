@@ -3,51 +3,51 @@ document.addEventListener('DOMContentLoaded', function () {
     const responseMessage = document.getElementById('responseMessage');
 
     contactForm.addEventListener('submit', function (event) {
-        event.preventDefault(); // Предотвращаем стандартную отправку формы
+        event.preventDefault(); // Prevent the default form submission
 
-        // Создаем объект FormData для сбора данных формы
+        // Create a FormData object to collect form data
         const formData = new FormData(contactForm);
 
-        // Отправляем данные на бэкенд
+        // Send the data to the backend
         fetch('http://localhost:8080/api/contact', {
             method: 'POST',
             body: formData,
         })
             .then(response => {
                 if (response.status === 429) {
-                    // Если лимит запросов превышен
+                    // If the request limit is exceeded
                     throw new Error('Too Many Requests');
                 }
                 if (!response.ok) {
-                    // Если ответ не OK, выбрасываем ошибку
+                    // If the response is not OK, throw an error
                     throw new Error('Network response was not ok');
                 }
-                return response.json(); // Парсим JSON из ответа
+                return response.json(); // Parse JSON from the response
             })
             .then(data => {
                 if (data.success) {
-                    // Успешная отправка
-                    responseMessage.textContent = 'Сообщение успешно отправлено!';
+                    // Successful submission
+                    responseMessage.textContent = 'Message sent successfully!';
                     responseMessage.classList.remove('error');
                     responseMessage.classList.add('success');
-                    contactForm.reset(); // Очищаем форму
+                    contactForm.reset(); // Clear the form
                 } else {
-                    // Ошибка на стороне сервера
-                    responseMessage.textContent = 'Ошибка при отправке сообщения. Пожалуйста, попробуйте еще раз.';
+                    // Server-side error
+                    responseMessage.textContent = 'Error sending message. Please try again.';
                     responseMessage.classList.remove('success');
                     responseMessage.classList.add('error');
                 }
             })
             .catch(error => {
-                // Обработка ошибок
-                console.error('Ошибка:', error);
+                // Handle errors
+                console.error('Error:', error);
 
                 if (error.message === 'Too Many Requests') {
-                    // Если лимит запросов превышен
-                    responseMessage.textContent = 'Вы отправили слишком много запросов. Пожалуйста, попробуйте снова через 15 секунд.';
+                    // If the request limit is exceeded
+                    responseMessage.textContent = 'You have sent too many requests. Please try again in 15 seconds.';
                 } else {
-                    // Другие ошибки (например, проблемы с сетью)
-                    responseMessage.textContent = 'Произошла ошибка при отправке. Пожалуйста, проверьте подключение к интернету.';
+                    // Other errors (e.g., network issues)
+                    responseMessage.textContent = 'An error occurred while sending. Please check your internet connection.';
                 }
 
                 responseMessage.classList.remove('success');
