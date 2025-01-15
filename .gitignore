@@ -3,3 +3,4 @@ workspace.xml
 qodana.yaml
 .idea
 server.log
+uploads

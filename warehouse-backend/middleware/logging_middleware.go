@@ -21,9 +21,6 @@ func LoggingMiddleware(next func(c *gin.Context)) http.HandlerFunc {
 			start.Format("2006-01-02 15:04:05"),
 		)
 
-		// Вызываем следующий обработчик в цепочке
-		next(w, r)
-
 		// Логируем время выполнения запроса
 		duration := time.Since(start)
 		log.Printf(
