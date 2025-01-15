@@ -11,6 +11,7 @@ import (
 	"strconv"
 	"strings"
 	"syscall"
+	"warehouse-backend/controllers"
 	"warehouse-backend/database"
 	"warehouse-backend/logger"
 	"warehouse-backend/models"
@@ -58,11 +59,15 @@ func setupDatabase() {
 	// Загрузка переменных из .env файла
 	err := godotenv.Load()
 	if err != nil {
+		logger.LogError("setup_database", "Error loading .env file", map[string]interface{}{
+			"error": err.Error(),
+		}, err) // Добавлен четвертый аргумент
 		logger.Log.Fatal("Error loading .env file: ", err)
 	}
 
 	mongoURI := os.Getenv("MONGO_URI")
 	if mongoURI == "" {
+		logger.LogError("setup_database", "MONGO_URI is not set in .env", map[string]interface{}{}, nil) // Добавлен четвертый аргумент
 		logger.Log.Fatal("MONGO_URI is not set in .env")
 	}
 
@@ -132,6 +137,9 @@ func setupRoutes() *gin.Engine {
 		productRoutes.DELETE("/:id", deleteProductHandler)
 	}
 
+	// Маршрут для обработки запросов от формы "Contact Us"
+	router.POST("/api/contact", controllers.ContactController)
+
 	return router
 }
 
@@ -145,7 +153,7 @@ func createProductHandler(c *gin.Context) {
 	if err := c.ShouldBindJSON(&product); err != nil {
 		logger.LogError("create_product", "Invalid payload", map[string]interface{}{
 			"error": err.Error(),
-		})
+		}, err) // Добавлен четвертый аргумент
 		c.JSON(http.StatusBadRequest, createResponse("fail", "Invalid JSON payload", nil))
 		return
 	}
@@ -172,7 +180,7 @@ func getProductHandler(c *gin.Context) {
 	if err != nil {
 		logger.LogError("get_product", "Invalid product ID", map[string]interface{}{
 			"product_id": id,
-		})
+		}, err) // Добавлен четвертый аргумент
 		c.JSON(http.StatusBadRequest, createResponse("fail", "Invalid product ID", nil))
 		return
 	}
@@ -193,7 +201,7 @@ func getProductHandler(c *gin.Context) {
 func getAllProductsHandler(c *gin.Context) {
 	// Параметры пагинации
 	limit, err := strconv.Atoi(c.DefaultQuery("limit", "30"))
-	if err != nil || limit <= 0 {
+	if err != nil || limit <= 0 || limit > 100 {
 		logger.LogWarning("get_all_products", "Invalid limit value, using default value", map[string]interface{}{
 			"limit": c.Query("limit"),
 		})
@@ -254,7 +262,7 @@ func getAllProductsHandler(c *gin.Context) {
 		// Обработка ошибки базы данных
 		logger.LogError("get_all_products", "Failed to fetch products from database", map[string]interface{}{
 			"error": err.Error(),
-		})
+		}, err)
 		c.JSON(http.StatusInternalServerError, createResponse("fail", "Failed to fetch products", nil))
 		return
 	}
@@ -309,59 +317,62 @@ func updateProductHandler(c *gin.Context) {
 	id := c.Param("id")
 	objectID, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, createResponse("fail",
-			"Invalid product ID", nil))
+		logger.LogError("update_product", "Invalid product ID", map[string]interface{}{
+			"product_id": id,
+		}, err) // Добавлен четвертый аргумент
+		c.JSON(http.StatusBadRequest, createResponse("fail", "Invalid product ID", nil))
 		return
 	}
 
 	var updatedProduct models.Product
 	if err := c.ShouldBindJSON(&updatedProduct); err != nil {
-		c.JSON(http.StatusBadRequest, createResponse("fail",
-			"Invalid JSON payload", nil))
+		logger.LogError("update_product", "Invalid JSON payload", map[string]interface{}{
+			"error": err.Error(),
+		}, err) // Добавлен четвертый аргумент
+		c.JSON(http.StatusBadRequest, createResponse("fail", "Invalid JSON payload", nil))
 		return
 	}
 
 	err = database.UpdateProduct(objectID, &updatedProduct)
 	if err != nil {
-		c.JSON(http.StatusNotFound, createResponse("fail",
-			"Failed to update product: "+err.Error(), nil))
+		logger.LogDBError("update_product", "Failed to update product", err)
+		c.JSON(http.StatusNotFound, createResponse("fail", "Failed to update product: "+err.Error(), nil))
 		return
 	}
 
-	c.JSON(http.StatusOK, createResponse("success",
-		"Product updated successfully", updatedProduct))
+	c.JSON(http.StatusOK, createResponse("success", "Product updated successfully", updatedProduct))
 }
 
 func deleteProductHandler(c *gin.Context) {
 	id := c.Param("id")
 	objectID, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, createResponse("fail",
-			"Invalid product ID", nil))
+		logger.LogError("delete_product", "Invalid product ID", map[string]interface{}{
+			"product_id": id,
+		}, err) // Добавлен четвертый аргумент
+		c.JSON(http.StatusBadRequest, createResponse("fail", "Invalid product ID", nil))
 		return
 	}
 
 	err = database.DeleteProduct(objectID)
 	if err != nil {
-		c.JSON(http.StatusNotFound, createResponse("fail",
-			"Product not found: "+err.Error(), nil))
+		logger.LogDBError("delete_product", "Failed to delete product", err)
+		c.JSON(http.StatusNotFound, createResponse("fail", "Product not found: "+err.Error(), nil))
 		return
 	}
 
-	c.JSON(http.StatusOK, createResponse("success",
-		"Product deleted successfully", nil))
+	c.JSON(http.StatusOK, createResponse("success", "Product deleted successfully", nil))
 }
 
 func deleteAllProductsHandler(c *gin.Context) {
 	err := database.DeleteAllProducts()
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, createResponse("fail",
-			"Failed to delete all products", nil))
+		logger.LogDBError("delete_all_products", "Failed to delete all products", err)
+		c.JSON(http.StatusInternalServerError, createResponse("fail", "Failed to delete all products", nil))
 		return
 	}
 
-	c.JSON(http.StatusOK, createResponse("success",
-		"All products deleted successfully", nil))
+	c.JSON(http.StatusOK, createResponse("success", "All products deleted successfully", nil))
 }
 
 func createResponse(status, message string, data interface{}) APIResponse {

@@ -37,9 +37,10 @@ func LogInfo(event, message string, fields map[string]interface{}) {
 }
 
 // LogError логирует ошибки с кастомными полями
-func LogError(event, message string, fields map[string]interface{}) {
+func LogError(event, message string, fields map[string]interface{}, err error) {
 	Log.WithFields(logrus.Fields(fields)).
 		WithField("event", event).
+		WithField("error", err.Error()).
 		Error(message)
 }
 
@@ -65,4 +66,34 @@ func LogWarning(event, message string, fields map[string]interface{}) {
 	Log.WithFields(logrus.Fields(fields)).
 		WithField("event", event).
 		Warn(message)
+}
+
+// LogOperationStart логирует начало операции
+func LogOperationStart(operation string, fields map[string]interface{}) {
+	Log.WithFields(logrus.Fields(fields)).
+		WithField("operation", operation).
+		Info("Operation started")
+}
+
+// LogOperationEnd логирует завершение операции
+func LogOperationEnd(operation string, fields map[string]interface{}) {
+	Log.WithFields(logrus.Fields(fields)).
+		WithField("operation", operation).
+		Info("Operation completed")
+}
+
+// LogFileOperation логирует операции с файлами
+func LogFileOperation(operation, filePath string, fields map[string]interface{}) {
+	Log.WithFields(logrus.Fields(fields)).
+		WithField("operation", operation).
+		WithField("file_path", filePath).
+		Info("File operation")
+}
+
+// LogEmail логирует отправку email
+func LogEmail(recipient, subject string, fields map[string]interface{}) {
+	Log.WithFields(logrus.Fields(fields)).
+		WithField("recipient", recipient).
+		WithField("subject", subject).
+		Info("Email sent")
 }

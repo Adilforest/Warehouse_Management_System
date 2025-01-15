@@ -2,6 +2,7 @@ package database
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"strconv"
 	"strings"
@@ -88,7 +89,6 @@ func GetProductsPaginated(limit, offset int, productType string, priceRanges []s
 	if len(priceRanges) > 0 {
 		var priceFilters []bson.M
 		for _, priceRange := range priceRanges {
-			// Разбиваем строку на отдельные диапазоны, если они переданы через запятую
 			ranges := strings.Split(priceRange, ",")
 			for _, r := range ranges {
 				if r == "2000-0" {
@@ -118,7 +118,7 @@ func GetProductsPaginated(limit, offset int, productType string, priceRanges []s
 	// Получаем общее количество товаров
 	total, err := collection.CountDocuments(ctx, filter)
 	if err != nil {
-		return nil, 0, err
+		return nil, 0, fmt.Errorf("failed to count documents: %w", err)
 	}
 
 	// Создаем опции для сортировки
@@ -128,7 +128,7 @@ func GetProductsPaginated(limit, offset int, productType string, priceRanges []s
 		if sortOrder == "desc" {
 			order = -1
 		}
-		options.SetSort(bson.D{{sortBy, order}})
+		options.SetSort(bson.D{{Key: sortBy, Value: order}})
 	}
 
 	// Пагинация
@@ -141,13 +141,13 @@ func GetProductsPaginated(limit, offset int, productType string, priceRanges []s
 	// Выполняем запрос к MongoDB
 	cursor, err := collection.Find(ctx, filter, options)
 	if err != nil {
-		return nil, 0, err
+		return nil, 0, fmt.Errorf("failed to execute query: %w", err)
 	}
 	defer cursor.Close(ctx)
 
 	var products []models.Product
 	if err = cursor.All(ctx, &products); err != nil {
-		return nil, 0, err
+		return nil, 0, fmt.Errorf("failed to decode products: %w", err)
 	}
 
 	return products, total, nil
