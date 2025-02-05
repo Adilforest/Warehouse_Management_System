@@ -18,6 +18,7 @@ import (
 	"warehouse-backend/logger"
 	"warehouse-backend/middleware"
 	"warehouse-backend/models"
+	"warehouse-backend/routes"
 )
 
 const serverPort = ":8080"
@@ -91,7 +92,6 @@ func setupRoutes() *gin.Engine {
 		allowOrigins = "http://localhost:3000,http://localhost:8080"
 	}
 	origins := strings.Split(allowOrigins, ",")
-
 	router.Use(cors.New(cors.Config{
 		AllowOrigins:     origins,
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
@@ -125,7 +125,6 @@ func setupRoutes() *gin.Engine {
 			"ip":     c.ClientIP(),
 			"agent":  c.Request.UserAgent(),
 		})
-
 		c.File("./public/index.html") // Отсылка index.html (путь до файла)
 	})
 
@@ -145,6 +144,9 @@ func setupRoutes() *gin.Engine {
 
 	// Маршрут для обработки запросов от формы "Contact Us" с rate limiting
 	router.POST("/api/contact", limiter, controllers.ContactController)
+
+	// Настройка маршрутов для аутентификации
+	routes.SetupAuthRoutes(router)
 
 	return router
 }

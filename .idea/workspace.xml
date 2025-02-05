@@ -4,7 +4,26 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0bf56199-4d44-488a-a581-530161417705" name="Changes" comment="Rate limiting." />
+    <list default="true" id="0bf56199-4d44-488a-a581-530161417705" name="Changes" comment="Email verification.">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/warehouse-backend/.env" beforeDir="false" afterPath="$PROJECT_DIR$/warehouse-backend/.env" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/warehouse-backend/controllers/auth_controller.go" beforeDir="false" afterPath="$PROJECT_DIR$/warehouse-backend/controllers/auth_controller.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/warehouse-backend/controllers/product_controller.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/warehouse-backend/controllers/user_controller.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/warehouse-backend/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/warehouse-backend/go.mod" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/warehouse-backend/go.sum" beforeDir="false" afterPath="$PROJECT_DIR$/warehouse-backend/go.sum" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/warehouse-backend/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/warehouse-backend/main.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/warehouse-backend/middleware/auth_middleware.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/warehouse-backend/middleware/role_middleware.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/warehouse-backend/models/user.go" beforeDir="false" afterPath="$PROJECT_DIR$/warehouse-backend/models/user.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/warehouse-backend/routes/auth_routes.go" beforeDir="false" afterPath="$PROJECT_DIR$/warehouse-backend/routes/auth_routes.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/warehouse-backend/routes/contact_routes.go" beforeDir="false" afterPath="$PROJECT_DIR$/warehouse-backend/routes/contact_routes.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/warehouse-backend/routes/user_routes.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/warehouse-frontend/cashier.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/warehouse-frontend/js/api.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/warehouse-frontend/js/auth.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/warehouse-frontend/js/products.js" beforeDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -55,6 +74,9 @@
   &quot;associatedIndex&quot;: 8
 }</component>
   <component name="ProjectId" id="2qNesEvuR8c8MJomk3gn4FZymrR" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
@@ -66,6 +88,7 @@
     "DefaultHtmlFileTemplate": "HTML File",
     "Go Build.go build Assignment_1_AP.executor": "Run",
     "Go Build.go build product_routes.go.executor": "Run",
+    "JavaScript Debug.ContactUs.html (1).executor": "Run",
     "JavaScript Debug.ContactUs.html.executor": "Run",
     "JavaScript Debug.admin.html.executor": "Run",
     "JavaScript Debug.cashier.html.executor": "Run",
@@ -100,7 +123,7 @@
       <recent name="$PROJECT_DIR$" />
     </key>
   </component>
-  <component name="RunManager" selected="JavaScript Debug.admin.html">
+  <component name="RunManager" selected="JavaScript Debug.ContactUs.html (1)">
     <configuration name="go build Assignment_1_AP" type="GoApplicationRunConfiguration" factoryName="Go Application" nameIsGenerated="true">
       <module name="Assignment_1_AP" />
       <working_directory value="$PROJECT_DIR$" />
@@ -128,13 +151,13 @@
       <filePath value="$PROJECT_DIR$/warehouse-backend/routes/product_routes.go" />
       <method v="2" />
     </configuration>
+    <configuration name="ContactUs.html (1)" type="JavascriptDebugType" temporary="true" nameIsGenerated="true" uri="http://localhost:63342/Marketplace/warehouse-frontend/ContactUs.html" useBuiltInWebServerPort="true">
+      <method v="2" />
+    </configuration>
     <configuration name="ContactUs.html" type="JavascriptDebugType" temporary="true" nameIsGenerated="true" uri="http://localhost:63342/Assignment_1_AP/warehouse-frontend/ContactUs.html" useBuiltInWebServerPort="true">
       <method v="2" />
     </configuration>
     <configuration name="admin.html" type="JavascriptDebugType" temporary="true" nameIsGenerated="true" uri="http://localhost:63342/Assignment_1_AP/warehouse-frontend/admin.html" useBuiltInWebServerPort="true">
-      <method v="2" />
-    </configuration>
-    <configuration name="cashier.html" type="JavascriptDebugType" temporary="true" nameIsGenerated="true" uri="http://localhost:63342/Assignment_1_AP/warehouse-frontend/cashier.html" useBuiltInWebServerPort="true">
       <method v="2" />
     </configuration>
     <configuration name="index.html" type="JavascriptDebugType" temporary="true" nameIsGenerated="true" uri="http://localhost:63342/Assignment_1_AP/warehouse-frontend/index.html" useBuiltInWebServerPort="true">
@@ -142,11 +165,11 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="JavaScript Debug.ContactUs.html (1)" />
         <item itemvalue="JavaScript Debug.admin.html" />
         <item itemvalue="JavaScript Debug.index.html" />
         <item itemvalue="JavaScript Debug.ContactUs.html" />
         <item itemvalue="Go Build.go build product_routes.go" />
-        <item itemvalue="JavaScript Debug.cashier.html" />
       </list>
     </recent_temporary>
   </component>
@@ -177,7 +200,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Adding .gitignore file." />
     <MESSAGE value="Adding Post requests to server with html page" />
     <MESSAGE value="Updated docs." />
     <MESSAGE value="Refactoring objects and docs." />
@@ -202,7 +224,8 @@
     <MESSAGE value="Structuring logging." />
     <MESSAGE value="Email Sending." />
     <MESSAGE value="Rate limiting." />
-    <option name="LAST_COMMIT_MESSAGE" value="Rate limiting." />
+    <MESSAGE value="Email verification." />
+    <option name="LAST_COMMIT_MESSAGE" value="Email verification." />
   </component>
   <component name="VgoProject">
     <settings-migrated>true</settings-migrated>
