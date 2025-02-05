@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Log In</title>
+    <link rel="stylesheet" href="./css/styles.css">
+    <link rel="stylesheet" href="./css/navBar.css">
+</head>
+<body>
+<nav class="navbar">
+    <div class="logo">
+        <a href="index.html">Marketplace</a>
+    </div>
+    <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="shoppingCart.html">Cart</a></li>
+        <li><a href="profile.html">Profile</a></li>
+        <li><a href="ContactUs.html">Contact Us</a></li>
+        <li class="admin-link" id="admin-link" style="display: none;"><a href="admin.html">Admin Panel</a></li>
+        <li><a href="LogIn.html" id="login-link">Log In</a></li>
+        <li><a href="SignUp.html" id="signup-link">Sign Up</a></li>
+        <li><a href="#" id="logout-link" style="display: none;">Log Out</a></li>
+    </ul>
+</nav>
+
+<div class="login-container">
+    <h1>Log In</h1>
+    <form id="login-form">
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required><br><br>
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required><br><br>
+        <button type="submit">Log In</button>
+    </form>
+    <p>Don't have an account? <a href="SignUp.html">Sign Up</a></p>
+    <pre id="login-response"></pre>
+</div>
+<script src="./js/navbar.js" defer></script>
+<script src="./js/auth.js"></script>
+</body>
+</html>

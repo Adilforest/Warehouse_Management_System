@@ -7,6 +7,7 @@ import (
 	"time"
 	"warehouse-backend/database"
 	"warehouse-backend/logger"
+	"warehouse-backend/middleware"
 	"warehouse-backend/models"
 
 	"github.com/gin-gonic/gin"
@@ -18,7 +19,8 @@ func SetupAuthRoutes(router *gin.Engine) {
 	authRoutes := router.Group("/auth")
 	{
 		authRoutes.POST("/signup", SignupHandler)
-		authRoutes.GET("/verify", VerifyHandler) // Новый маршрут для верификации
+		authRoutes.GET("/verify", VerifyHandler)
+		authRoutes.POST("/login", LoginHandler) // Новый маршрут для верификации
 	}
 }
 
@@ -50,9 +52,21 @@ func SignupHandler(c *gin.Context) {
 		return
 	}
 
+	// Генерируем JWT-токен
+	token, err := middleware.GenerateToken(user.ID.Hex(), user.Email)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate token"})
+		return
+	}
+
+	logger.LogInfo("signup_handler", "User registered and logged in successfully", map[string]interface{}{
+		"user_id": user.ID.Hex(),
+		"email":   user.Email,
+	})
+
 	c.JSON(http.StatusCreated, gin.H{
-		"message": "User registered successfully. Please check your email for verification.",
-		"user":    user,
+		"message": "User registered and logged in successfully",
+		"token":   token,
 	})
 }
 
@@ -100,4 +114,38 @@ func VerifyHandler(c *gin.Context) {
 		"email":   user.Email,
 	})
 	c.JSON(http.StatusOK, gin.H{"message": "Email verified successfully"})
+}
+
+// LoginHandler обрабатывает запрос на вход
+func LoginHandler(c *gin.Context) {
+	type LoginRequest struct {
+		Email    string `json:"email"`
+		Password string `json:"password"`
+	}
+
+	var req LoginRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
+		return
+	}
+
+	// Вызываем функцию для входа
+	token, err := controllers.LoginUser(req.Email, req.Password)
+	if err != nil {
+		logger.LogError("login_handler", "Failed to login user", map[string]interface{}{
+			"email": req.Email,
+			"error": err.Error(),
+		}, err)
+		c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		return
+	}
+
+	logger.LogInfo("login_handler", "User logged in successfully", map[string]interface{}{
+		"email": req.Email,
+	})
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Login successful",
+		"token":   token, // Возвращаем токен
+	})
 }

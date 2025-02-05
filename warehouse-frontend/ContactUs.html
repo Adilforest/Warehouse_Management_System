@@ -5,8 +5,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Contact Us</title>
     <link rel="stylesheet" href="./css/ContactUs.css">
+    <link rel="stylesheet" href="./css/navBar.css">
 </head>
-<body>
+<body class="contact-page">
+<nav class="navbar">
+    <div class="logo">
+        <a href="index.html">Marketplace</a>
+    </div>
+    <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="shoppingCart.html">Cart</a></li>
+        <li><a href="profile.html">Profile</a></li>
+        <li><a href="ContactUs.html">Contact Us</a></li>
+        <li class="admin-link" id="admin-link" style="display: none;"><a href="admin.html">Admin Panel</a></li>
+        <li><a href="LogIn.html" id="login-link">Log In</a></li>
+        <li><a href="SignUp.html" id="signup-link">Sign Up</a></li>
+        <li><a href="#" id="logout-link" style="display: none;">Log Out</a></li>
+    </ul>
+</nav>
 <div class="contact-container">
     <h1>Contact Us</h1>
     <form id="contactForm" enctype="multipart/form-data">
@@ -35,7 +51,7 @@
 
     <div id="responseMessage" class="response-message"></div>
 </div>
-
+<script src="./js/navbar.js" defer></script>
 <script src="./js/ContactUs.js"></script>
 </body>
 </html>

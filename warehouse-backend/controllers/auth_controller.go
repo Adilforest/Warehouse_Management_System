@@ -4,10 +4,12 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"go.mongodb.org/mongo-driver/bson"
 	"gopkg.in/gomail.v2"
 	"os"
 	"strconv"
 	"time"
+	"warehouse-backend/middleware"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"golang.org/x/crypto/bcrypt"
@@ -31,6 +33,11 @@ func CreateUser(name, email, password string) (models.User, error) {
 		Password:          string(hashedPassword),
 		Verified:          false,
 		VerificationToken: generateVerificationToken(),
+		Role:              "user",
+	}
+
+	if email == "231441@astanait.edu.kz" {
+		user.Role = "admin"
 	}
 
 	collection := database.GetCollection("warehouse", "users")
@@ -100,4 +107,37 @@ func sendVerificationEmail(email, token string) error {
 	}
 
 	return nil
+}
+
+func LoginUser(email, password string) (string, error) {
+	// Находим пользователя по email
+	var user models.User
+	collection := database.GetCollection("warehouse", "users")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	err := collection.FindOne(ctx, bson.M{"email": email}).Decode(&user)
+	if err != nil {
+		return "", errors.New("user not found")
+	}
+
+	// Проверяем, подтвержден ли email
+	if !user.Verified {
+		return "", errors.New("email not verified")
+	}
+
+	// Проверяем пароль
+	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
+	if err != nil {
+		return "", errors.New("invalid password")
+	}
+
+	// Генерируем JWT-токен
+	token, err := middleware.GenerateToken(user.ID.Hex(), user.Email)
+	if err != nil {
+		return "", errors.New("failed to generate token")
+	}
+
+	return token, nil
+
 }

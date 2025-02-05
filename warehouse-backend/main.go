@@ -148,6 +148,15 @@ func setupRoutes() *gin.Engine {
 	// Настройка маршрутов для аутентификации
 	routes.SetupAuthRoutes(router)
 
+	// Настройка защищенных маршрутов (требуется авторизация)
+	protectedRoutes := router.Group("/protected")
+	protectedRoutes.Use(middleware.AuthMiddleware()) // Middleware для проверки JWT
+	{
+		// Маршруты для профиля пользователя
+		protectedRoutes.GET("/profile", controllers.GetProfile)    // Получение данных профиля
+		protectedRoutes.PUT("/profile", controllers.UpdateProfile) // Обновление данных профиля
+	}
+
 	return router
 }
 

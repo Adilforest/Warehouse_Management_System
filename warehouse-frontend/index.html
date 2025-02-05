@@ -5,8 +5,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Product Catalog</title>
     <link rel="stylesheet" href="./css/index.css">
+    <link rel="stylesheet" href="./css/navBar.css">
+    <link rel="stylesheet" href="./css/navBar.css">
 </head>
 <body>
+
+<nav class="navbar">
+    <div class="logo">
+        <a href="index.html">Marketplace</a>
+    </div>
+    <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="shoppingCart.html">Cart</a></li>
+        <li><a href="profile.html">Profile</a></li>
+        <li><a href="ContactUs.html">Contact Us</a></li>
+        <li class="admin-link" id="admin-link" style="display: none;"><a href="admin.html">Admin Panel</a></li>
+        <li><a href="LogIn.html" id="login-link">Log In</a></li>
+        <li><a href="SignUp.html" id="signup-link">Sign Up</a></li>
+        <li><a href="#" id="logout-link" style="display: none;">Log Out</a></li>
+    </ul>
+</nav>
+
 <header>
     <h1>Product Catalog</h1>
 </header>
@@ -134,7 +153,7 @@
 <footer>
     <p>&copy; 2023 Product Catalog. All rights reserved.</p>
 </footer>
-
+<script src="./js/navbar.js" defer></script>
 <script src="./js/index.js"></script>
 </body>
 </html>

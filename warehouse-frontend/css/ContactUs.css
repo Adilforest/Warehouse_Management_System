@@ -1,5 +1,4 @@
-/* Основные стили для страницы */
-body {
+.contact-page body {
     font-family: Arial, sans-serif;
     background-color: #f4f4f4;
     margin: 0;
@@ -10,7 +9,7 @@ body {
     height: 100vh;
 }
 
-.contact-container {
+.contact-page .contact-container {
     background-color: #fff;
     padding: 20px;
     border-radius: 8px;
@@ -19,26 +18,21 @@ body {
     max-width: 500px;
 }
 
-h1 {
+.contact-page h1 {
     text-align: center;
     color: #333;
     margin-bottom: 20px;
 }
 
-.form-group {
-    margin-bottom: 15px;
-}
-
-.form-group label {
+.contact-page .form-group label {
     display: block;
     margin-bottom: 5px;
     color: #555;
     font-weight: bold;
 }
 
-.form-group input,
-.form-group textarea,
-.form-group file {
+.contact-page .form-group input,
+.contact-page .form-group textarea {
     width: 100%;
     padding: 10px;
     border: 1px solid #ccc;
@@ -46,12 +40,7 @@ h1 {
     font-size: 16px;
 }
 
-.form-group textarea {
-    resize: vertical;
-    min-height: 100px;
-}
-
-.submit-btn {
+.contact-page .submit-btn {
     width: 100%;
     padding: 10px;
     background-color: #007bff;
@@ -62,21 +51,6 @@ h1 {
     cursor: pointer;
 }
 
-.submit-btn:hover {
+.contact-page .submit-btn:hover {
     background-color: #0056b3;
-}
-
-.response-message {
-    margin-top: 20px;
-    text-align: center;
-    font-size: 14px;
-    color: #333;
-}
-
-.response-message.success {
-    color: #28a745;
-}
-
-.response-message.error {
-    color: #dc3545;
 }

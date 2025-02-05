@@ -9,4 +9,5 @@ type User struct {
 	Password          string             `bson:"password" json:"-"`
 	Verified          bool               `bson:"verified" json:"verified"`
 	VerificationToken string             `bson:"verification_token" json:"-"`
+	Role              string             `bson:"role" json:"role"`
 }

@@ -267,3 +267,40 @@ function deleteAllProducts() {
         });
 }
 
+
+document.addEventListener("DOMContentLoaded", async () => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+        alert("You need to log in first.");
+        window.location.href = "LogIn.html";
+        return;
+    }
+
+    try {
+        const response = await fetch("http://localhost:8080/protected/profile", {
+            method: "GET",
+            headers: { Authorization: `Bearer ${token}` },
+        });
+
+        if (!response.ok) {
+            throw new Error("Failed to load profile data.");
+        }
+
+        const user = await response.json();
+
+        // Проверяем, является ли пользователь администратором
+        if (user.email !== "231441@astanait.edu.kz") {
+            alert("You do not have permission to access this page.");
+            window.location.href = "index.html";
+            return;
+        }
+
+        // Загружаем данные админ-панели
+        document.getElementById("admin-response").textContent =
+            "Welcome, admin! You can manage the inventory here.";
+    } catch (error) {
+        console.error("Error checking admin access:", error);
+        alert("An error occurred. Please try again later.");
+        window.location.href = "LogIn.html";
+    }
+});
