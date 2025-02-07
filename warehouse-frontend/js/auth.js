@@ -32,17 +32,18 @@ document.addEventListener("DOMContentLoaded", () => {
                     // Используем result.data.token, так как токен находится внутри data
                     localStorage.setItem("token", result.data.token);
                     localStorage.setItem("email", email); // Сохраняем email
-                    localStorage.setItem("isAdmin", email === "231441@astanait.edu.kz"); // Определяем роль администратора
+                    // Сохраняем роль, возвращённую сервером (например, "admin" или "user")
+                    localStorage.setItem("role", result.data.role);
 
                     // Выводим сообщение об успехе
                     displayLoginResponse("Login successful!");
 
-                    // Перенаправляем пользователя в зависимости от роли
+                    // Перенаправляем пользователя в зависимости от его роли
                     setTimeout(() => {
-                        if (email === "231441@astanait.edu.kz") {
-                            window.location.href = "admin.html"; // Перенаправление на админку
+                        if (result.data.role === "admin") {
+                            window.location.href = "admin.html"; // Перенаправление для админа
                         } else {
-                            window.location.href = "index.html"; // Перенаправление на главную
+                            window.location.href = "index.html"; // Перенаправление для обычного пользователя
                         }
                     }, 1000); // Задержка для отображения сообщения
                 } else {

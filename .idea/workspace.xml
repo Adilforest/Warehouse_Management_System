@@ -5,16 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="0bf56199-4d44-488a-a581-530161417705" name="Changes" comment="Verification.">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/warehouse-backend/controllers/auth_controller.go" beforeDir="false" afterPath="$PROJECT_DIR$/warehouse-backend/controllers/auth_controller.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/warehouse-backend/controllers/profile_controller.go" beforeDir="false" afterPath="$PROJECT_DIR$/warehouse-backend/controllers/profile_controller.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/warehouse-backend/controllers/user_controller.go" beforeDir="false" afterPath="$PROJECT_DIR$/warehouse-backend/controllers/user_controller.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/warehouse-backend/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/warehouse-backend/main.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/warehouse-backend/middleware/auth.go" beforeDir="false" afterPath="$PROJECT_DIR$/warehouse-backend/middleware/auth.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/warehouse-backend/routes/auth_routes.go" beforeDir="false" afterPath="$PROJECT_DIR$/warehouse-backend/routes/auth_routes.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/warehouse-frontend/admin.html" beforeDir="false" afterPath="$PROJECT_DIR$/warehouse-frontend/admin.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/warehouse-frontend/js/auth.js" beforeDir="false" afterPath="$PROJECT_DIR$/warehouse-frontend/js/auth.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/warehouse-frontend/js/user.js" beforeDir="false" afterPath="$PROJECT_DIR$/warehouse-frontend/js/user.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/warehouse-frontend/js/navbar.js" beforeDir="false" afterPath="$PROJECT_DIR$/warehouse-frontend/js/navbar.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
