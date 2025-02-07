@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"errors"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
 	"os"
@@ -29,17 +30,17 @@ func GenerateToken(userID string, email string) (string, error) {
 // VerifyToken проверяет и валидирует JWT-токен
 func VerifyToken(tokenString string) (*jwt.Token, error) {
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-		// Убедитесь, что метод подписи совпадает
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, errors.New("unexpected signing method")
 		}
 		return jwtSecret, nil
 	})
-
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to parse token: %w", err)
 	}
-
+	if !token.Valid {
+		return nil, errors.New("invalid token")
+	}
 	return token, nil
 }
 

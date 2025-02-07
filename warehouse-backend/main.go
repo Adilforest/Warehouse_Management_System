@@ -156,6 +156,15 @@ func setupRoutes() *gin.Engine {
 		protectedRoutes.GET("/profile", controllers.GetProfile)    // Получение данных профиля
 		protectedRoutes.PUT("/profile", controllers.UpdateProfile) // Обновление данных профиля
 	}
+	// Маршруты для работы с пользователями
+	userRoutes := router.Group("/users")
+	{
+		userRoutes.GET("/", middleware.AuthMiddleware(), controllers.GetAllUsers)
+		userRoutes.GET("/:id", middleware.AuthMiddleware(), controllers.GetUserByID)
+		userRoutes.PUT("/:id", middleware.AuthMiddleware(), controllers.UpdateUser)
+		userRoutes.DELETE("/:id", middleware.AuthMiddleware(), controllers.DeleteUser)
+		userRoutes.DELETE("/deleteAll", middleware.AuthMiddleware(), controllers.DeleteAllUsers)
+	}
 
 	return router
 }
