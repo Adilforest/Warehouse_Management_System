@@ -162,7 +162,6 @@
 
 <h2>Server Response:</h2>
 <pre id="server-response"></pre>
-
 <section>
     <h2>User Management</h2>
 
@@ -170,60 +169,89 @@
     <form id="create-user-form">
         <label for="create-name">Name:</label>
         <input type="text" id="create-name" required><br>
+
         <label for="create-email">Email:</label>
         <input type="email" id="create-email" required><br>
+
         <label for="create-password">Password:</label>
         <input type="password" id="create-password" required><br>
+
+        <label for="create-confirm-password">Confirm Password:</label>
+        <input type="password" id="create-confirm-password" required><br>
+
         <button type="submit">Create User</button>
     </form>
     <pre id="create-user-response"></pre>
+
 </section>
+
 <section>
     <!-- Get All Users -->
-    <h2>Get All</h2>
+    <h2>Get All Users</h2>
     <button onclick="getAllUsers()">Get All Users</button>
     <pre id="all-users-response"></pre>
-    <!-- Get User by ID -->
 </section>
+
 <section>
-    <h2>Get By ID</h2>
+    <!-- Get User by ID -->
+    <h2>Get User By ID</h2>
     <form id="get-user-form">
-        <label for="get-id">User ID:</label>
-        <input type="text" id="get-id" required><br>
+        <label for="user-get-id">User ID:</label>
+        <input type="text" id="user-get-id" required><br>
         <button type="submit">Get User</button>
     </form>
     <pre id="get-user-response"></pre>
 </section>
+
 <section>
-    <h2>Update User By ID</h2>
     <!-- Update User -->
+    <h2>Update User By ID</h2>
     <form id="update-user-form">
-        <label for="update-id">User ID:</label>
-        <input type="text" id="update-id" required><br>
-        <label for="update-name">Name:</label>
-        <input type="text" id="update-name"><br>
-        <label for="update-email">Email:</label>
-        <input type="email" id="update-email"><br>
+        <label for="user-update-id">User ID:</label>
+        <input type="text" id="user-update-id" required><br>
+        <label for="user-update-name">Name:</label>
+        <input type="text" id="user-update-name"><br>
+        <label for="user-update-email">Email:</label>
+        <input type="email" id="user-update-email"><br>
         <button type="submit">Update User</button>
     </form>
     <pre id="update-user-response"></pre>
 </section>
+
 <section>
-    <h2>Delete User By ID</h2>
     <!-- Delete User -->
+    <h2>Delete User By ID</h2>
     <form id="delete-user-form">
-        <label for="delete-id">User ID:</label>
-        <input type="text" id="delete-id" required><br>
+        <label for="user-delete-id">User ID:</label>
+        <input type="text" id="user-delete-id" required><br>
         <button type="submit">Delete User</button>
     </form>
     <pre id="delete-user-response"></pre>
 </section>
+
 <section>
-    <h2>Delete All Users</h2>
     <!-- Delete All Users -->
+    <h2>Delete All Users</h2>
     <button onclick="deleteAllUsers()">Delete All Users</button>
     <pre id="delete-all-users-response"></pre>
 </section>
+
+<section>
+    <!-- Change User Role -->
+    <h2>Change User Role</h2>
+    <form id="change-role-form">
+        <label for="user-role-id">User ID:</label>
+        <input type="text" id="user-role-id" required><br>
+        <label for="new-role">New Role:</label>
+        <select id="new-role" required>
+            <option value="admin">Admin</option>
+            <option value="user">User</option>
+        </select><br>
+        <button type="submit">Change Role</button>
+    </form>
+    <pre id="change-role-response"></pre>
+</section>
+
 <script src="./js/user.js"></script>
 <script src="./js/navbar.js" defer></script>
 </body>

@@ -9,11 +9,11 @@ import (
 	"os"
 	"strconv"
 	"time"
-	"warehouse-backend/middleware"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"golang.org/x/crypto/bcrypt"
 	"warehouse-backend/database"
+	"warehouse-backend/middleware"
 	"warehouse-backend/models"
 )
 
@@ -33,19 +33,21 @@ func CreateUser(name, email, password string) (models.User, error) {
 		Password:          string(hashedPassword),
 		Verified:          false,
 		VerificationToken: generateVerificationToken(),
-		Role:              "user",
+		Role:              "user", // По умолчанию роль пользователя — "user"
 	}
 
+	// Проверяем, является ли пользователь администратором
 	if email == "231441@astanait.edu.kz" {
-		user.Role = "admin"
+		user.Role = "admin" // Назначаем роль "admin" для указанного email
 	}
 
+	// Получаем коллекцию MongoDB
 	collection := database.GetCollection("warehouse", "users")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
 	// Проверяем, существует ли пользователь с таким email
-	existingUser := collection.FindOne(ctx, models.User{Email: email})
+	existingUser := collection.FindOne(ctx, bson.M{"email": email})
 	if existingUser.Err() == nil {
 		return models.User{}, errors.New("user with this email already exists")
 	}
@@ -109,6 +111,7 @@ func sendVerificationEmail(email, token string) error {
 	return nil
 }
 
+// LoginUser выполняет вход пользователя
 func LoginUser(email, password string) (string, error) {
 	// Находим пользователя по email
 	var user models.User
@@ -139,5 +142,4 @@ func LoginUser(email, password string) (string, error) {
 	}
 
 	return token, nil
-
 }

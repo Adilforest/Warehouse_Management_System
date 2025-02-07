@@ -164,6 +164,7 @@ func setupRoutes() *gin.Engine {
 		userRoutes.PUT("/:id", middleware.AuthMiddleware(), controllers.UpdateUser)
 		userRoutes.DELETE("/:id", middleware.AuthMiddleware(), controllers.DeleteUser)
 		userRoutes.DELETE("/deleteAll", middleware.AuthMiddleware(), controllers.DeleteAllUsers)
+		userRoutes.PUT("/:id/role", middleware.AuthMiddleware(), controllers.UpdateUserRole)
 	}
 
 	return router

@@ -29,7 +29,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 // Обрабатываем успешный ответ
                 if (response.ok) {
                     // Сохраняем токен и данные пользователя в localStorage
-                    localStorage.setItem("token", result.token);
+                    // Используем result.data.token, так как токен находится внутри data
+                    localStorage.setItem("token", result.data.token);
                     localStorage.setItem("email", email); // Сохраняем email
                     localStorage.setItem("isAdmin", email === "231441@astanait.edu.kz"); // Определяем роль администратора
 

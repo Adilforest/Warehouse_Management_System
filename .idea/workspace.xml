@@ -4,15 +4,17 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0bf56199-4d44-488a-a581-530161417705" name="Changes" comment="Log In verification.">
-      <change afterPath="$PROJECT_DIR$/warehouse-backend/controllers/user_controller.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/warehouse-frontend/js/user.js" afterDir="false" />
+    <list default="true" id="0bf56199-4d44-488a-a581-530161417705" name="Changes" comment="Verification.">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/warehouse-backend/.env" beforeDir="false" afterPath="$PROJECT_DIR$/warehouse-backend/.env" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/warehouse-backend/controllers/auth_controller.go" beforeDir="false" afterPath="$PROJECT_DIR$/warehouse-backend/controllers/auth_controller.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/warehouse-backend/controllers/profile_controller.go" beforeDir="false" afterPath="$PROJECT_DIR$/warehouse-backend/controllers/profile_controller.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/warehouse-backend/controllers/user_controller.go" beforeDir="false" afterPath="$PROJECT_DIR$/warehouse-backend/controllers/user_controller.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/warehouse-backend/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/warehouse-backend/main.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/warehouse-backend/middleware/auth.go" beforeDir="false" afterPath="$PROJECT_DIR$/warehouse-backend/middleware/auth.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/warehouse-backend/routes/auth_routes.go" beforeDir="false" afterPath="$PROJECT_DIR$/warehouse-backend/routes/auth_routes.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/warehouse-frontend/admin.html" beforeDir="false" afterPath="$PROJECT_DIR$/warehouse-frontend/admin.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/warehouse-frontend/js/auth.js" beforeDir="false" afterPath="$PROJECT_DIR$/warehouse-frontend/js/auth.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/warehouse-frontend/js/user.js" beforeDir="false" afterPath="$PROJECT_DIR$/warehouse-frontend/js/user.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -178,7 +180,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Updated docs." />
     <MESSAGE value="Refactoring objects and docs." />
     <MESSAGE value="Refactoring docs." />
     <MESSAGE value="Refactoring backend." />
@@ -203,7 +204,8 @@
     <MESSAGE value="Rate limiting." />
     <MESSAGE value="Email verification." />
     <MESSAGE value="Log In verification." />
-    <option name="LAST_COMMIT_MESSAGE" value="Log In verification." />
+    <MESSAGE value="Verification." />
+    <option name="LAST_COMMIT_MESSAGE" value="Verification." />
   </component>
   <component name="VgoProject">
     <settings-migrated>true</settings-migrated>

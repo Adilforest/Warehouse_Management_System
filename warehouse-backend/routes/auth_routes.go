@@ -1,17 +1,17 @@
 package routes
 
 import (
-	"go.mongodb.org/mongo-driver/bson"
-	"golang.org/x/net/context"
+	"context"
 	"net/http"
 	"time"
+
+	"github.com/gin-gonic/gin"
+	"go.mongodb.org/mongo-driver/bson"
+	"warehouse-backend/controllers"
 	"warehouse-backend/database"
 	"warehouse-backend/logger"
 	"warehouse-backend/middleware"
 	"warehouse-backend/models"
-
-	"github.com/gin-gonic/gin"
-	"warehouse-backend/controllers"
 )
 
 // SetupAuthRoutes настраивает маршруты для аутентификации
@@ -20,8 +20,19 @@ func SetupAuthRoutes(router *gin.Engine) {
 	{
 		authRoutes.POST("/signup", SignupHandler)
 		authRoutes.GET("/verify", VerifyHandler)
-		authRoutes.POST("/login", LoginHandler) // Новый маршрут для верификации
+		authRoutes.POST("/login", LoginHandler)
 	}
+}
+
+// Helper function to send standardized JSON responses
+func sendResponse(c *gin.Context, status int, message string, data interface{}, err error) {
+	if err != nil {
+		logger.LogError("response_handler", message, map[string]interface{}{"error": err.Error()}, err)
+		c.JSON(status, gin.H{"error": err.Error()})
+		return
+	}
+	logger.LogInfo("response_handler", message, map[string]interface{}{"data": data})
+	c.JSON(status, gin.H{"message": message, "data": data})
 }
 
 // SignupHandler обрабатывает запрос на регистрацию
@@ -35,53 +46,42 @@ func SignupHandler(c *gin.Context) {
 
 	var req SignupRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
+		sendResponse(c, http.StatusBadRequest, "Invalid request payload", nil, err)
 		return
 	}
 
 	// Проверяем совпадение паролей
 	if req.Password != req.ConfirmPassword {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Passwords do not match"})
+		sendResponse(c, http.StatusBadRequest, "Passwords do not match", nil, nil)
 		return
 	}
 
 	// Вызываем функцию для создания пользователя
 	user, err := controllers.CreateUser(req.Name, req.Email, req.Password)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		sendResponse(c, http.StatusInternalServerError, "Failed to create user", nil, err)
 		return
 	}
 
 	// Генерируем JWT-токен
 	token, err := middleware.GenerateToken(user.ID.Hex(), user.Email)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate token"})
+		sendResponse(c, http.StatusInternalServerError, "Failed to generate token", nil, err)
 		return
 	}
 
-	logger.LogInfo("signup_handler", "User registered and logged in successfully", map[string]interface{}{
-		"user_id": user.ID.Hex(),
-		"email":   user.Email,
-	})
-
-	c.JSON(http.StatusCreated, gin.H{
-		"message": "User registered and logged in successfully",
-		"token":   token,
-	})
+	sendResponse(c, http.StatusCreated, "User registered and logged in successfully", gin.H{"token": token}, nil)
 }
 
 // VerifyHandler обрабатывает запрос на верификацию email
 func VerifyHandler(c *gin.Context) {
 	token := c.Query("token")
 	if token == "" {
-		logger.LogError("verify_handler", "Verification token is missing", map[string]interface{}{}, nil)
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Verification token is required"})
+		sendResponse(c, http.StatusBadRequest, "Verification token is required", nil, nil)
 		return
 	}
 
-	logger.LogInfo("verify_handler", "Verifying token", map[string]interface{}{
-		"token": token,
-	})
+	logger.LogInfo("verify_handler", "Verifying token", map[string]interface{}{"token": token})
 
 	// Находим пользователя по токену
 	var user models.User
@@ -91,10 +91,7 @@ func VerifyHandler(c *gin.Context) {
 
 	err := collection.FindOne(ctx, bson.M{"verification_token": token}).Decode(&user)
 	if err != nil {
-		logger.LogError("verify_handler", "Invalid or expired verification token", map[string]interface{}{
-			"token": token,
-		}, err)
-		c.JSON(http.StatusNotFound, gin.H{"error": "Invalid or expired verification token"})
+		sendResponse(c, http.StatusNotFound, "Invalid or expired verification token", nil, err)
 		return
 	}
 
@@ -102,18 +99,11 @@ func VerifyHandler(c *gin.Context) {
 	update := bson.M{"$set": bson.M{"verified": true, "verification_token": ""}}
 	_, err = collection.UpdateOne(ctx, bson.M{"verification_token": token}, update)
 	if err != nil {
-		logger.LogError("verify_handler", "Failed to update user verification status", map[string]interface{}{
-			"token": token,
-		}, err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to verify user"})
+		sendResponse(c, http.StatusInternalServerError, "Failed to verify user", nil, err)
 		return
 	}
 
-	logger.LogInfo("verify_handler", "User verified successfully", map[string]interface{}{
-		"user_id": user.ID.Hex(),
-		"email":   user.Email,
-	})
-	c.JSON(http.StatusOK, gin.H{"message": "Email verified successfully"})
+	sendResponse(c, http.StatusOK, "Email verified successfully", nil, nil)
 }
 
 // LoginHandler обрабатывает запрос на вход
@@ -125,27 +115,16 @@ func LoginHandler(c *gin.Context) {
 
 	var req LoginRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
+		sendResponse(c, http.StatusBadRequest, "Invalid request payload", nil, err)
 		return
 	}
 
 	// Вызываем функцию для входа
 	token, err := controllers.LoginUser(req.Email, req.Password)
 	if err != nil {
-		logger.LogError("login_handler", "Failed to login user", map[string]interface{}{
-			"email": req.Email,
-			"error": err.Error(),
-		}, err)
-		c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		sendResponse(c, http.StatusUnauthorized, "Failed to login user", nil, err)
 		return
 	}
 
-	logger.LogInfo("login_handler", "User logged in successfully", map[string]interface{}{
-		"email": req.Email,
-	})
-
-	c.JSON(http.StatusOK, gin.H{
-		"message": "Login successful",
-		"token":   token, // Возвращаем токен
-	})
+	sendResponse(c, http.StatusOK, "Login successful", gin.H{"token": token}, nil)
 }

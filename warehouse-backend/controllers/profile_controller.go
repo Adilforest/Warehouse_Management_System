@@ -10,33 +10,40 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"golang.org/x/crypto/bcrypt"
+
 	"warehouse-backend/database"
 	"warehouse-backend/models"
 )
 
 // GetProfile возвращает данные текущего пользователя
 func GetProfile(c *gin.Context) {
+	// Получаем user_id и email из контекста
 	userID := c.GetString("user_id")
 	email := c.GetString("email")
 
+	// Преобразуем строковый ID в ObjectID
 	objectID, err := primitive.ObjectIDFromHex(userID)
 	if err != nil {
+		log.Printf("Invalid user ID: %v", err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user ID"})
 		return
 	}
 
-	var user models.User
+	// Получаем коллекцию пользователей
 	collection := database.GetCollection("warehouse", "users")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
+	// Ищем пользователя в базе данных
+	var user models.User
 	err = collection.FindOne(ctx, bson.M{"_id": objectID}).Decode(&user)
 	if err != nil {
+		log.Printf("User not found: %v", err)
 		c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
 		return
 	}
 
-	// Проверка роли администратора
+	// Проверяем роль администратора
 	isAdmin := false
 	if email == "231441@astanait.edu.kz" { // Замените на вашу логику проверки администратора
 		isAdmin = true
