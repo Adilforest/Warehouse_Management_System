@@ -2,22 +2,12 @@ package controllers
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/joho/godotenv"
 	"gopkg.in/gomail.v2"
 	"io"
 	"net/http"
 	"os"
 	"warehouse-backend/logger"
 )
-
-// Загружаем переменные окружения из .env
-func init() {
-	if err := godotenv.Load(); err != nil {
-		logger.LogError("ContactController", "Ошибка загрузки .env файла", map[string]interface{}{
-			"error": err.Error(),
-		}, err)
-	}
-}
 
 // ContactController обрабатывает запросы от формы "Contact Us".
 func ContactController(c *gin.Context) {
@@ -29,7 +19,7 @@ func ContactController(c *gin.Context) {
 
 	// Проверяем метод запроса (должен быть POST)
 	if c.Request.Method != http.MethodPost {
-		logger.LogError("ContactController", "Неподдерживаемый метод запроса", map[string]interface{}{
+		logger.Log.Error("ContactController", "Неподдерживаемый метод запроса", map[string]interface{}{
 			"method": c.Request.Method,
 		}, nil)
 		c.JSON(http.StatusMethodNotAllowed, gin.H{"error": "Метод не поддерживается"})
@@ -39,7 +29,7 @@ func ContactController(c *gin.Context) {
 	// Парсим multipart/form-data (максимальный размер файла — 10 MB)
 	err := c.Request.ParseMultipartForm(10 << 20) // 10 MB
 	if err != nil {
-		logger.LogError("ContactController", "Ошибка при парсинге формы", map[string]interface{}{
+		logger.Log.Error("ContactController", "Ошибка при парсинге формы", map[string]interface{}{
 			"error": err.Error(),
 		}, err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Ошибка при обработке формы"})
@@ -73,7 +63,7 @@ func ContactController(c *gin.Context) {
 		filePath = "uploads/" + handler.Filename
 		f, err := os.Create(filePath)
 		if err != nil {
-			logger.LogError("ContactController", "Ошибка при создании файла", map[string]interface{}{
+			logger.Log.Error("ContactController", "Ошибка при создании файла", map[string]interface{}{
 				"file_path": filePath,
 				"error":     err.Error(),
 			}, err)
@@ -85,7 +75,7 @@ func ContactController(c *gin.Context) {
 		// Копируем содержимое файла
 		_, err = io.Copy(f, file)
 		if err != nil {
-			logger.LogError("ContactController", "Ошибка при копировании файла", map[string]interface{}{
+			logger.Log.Error("ContactController", "Ошибка при копировании файла", map[string]interface{}{
 				"file_path": filePath,
 				"error":     err.Error(),
 			}, err)
@@ -103,7 +93,7 @@ func ContactController(c *gin.Context) {
 	// Отправляем email
 	err = SendEmail(name, email, message, filePath)
 	if err != nil {
-		logger.LogError("ContactController", "Ошибка при отправке email", map[string]interface{}{
+		logger.Log.Error("ContactController", "Ошибка при отправке email", map[string]interface{}{
 			"sender_email": email,
 			"error":        err.Error(),
 		}, err)

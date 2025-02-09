@@ -49,7 +49,7 @@ func GetUserByID(c *gin.Context) {
 	id := c.Param("id")
 	objectID, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
-		logger.LogError("get_user_by_id", "Invalid user ID", map[string]interface{}{
+		logger.Log.Error("get_user_by_id", "Invalid user ID", map[string]interface{}{
 			"user_id": id,
 		}, err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user ID"})
@@ -64,7 +64,7 @@ func GetUserByID(c *gin.Context) {
 	err = collection.FindOne(ctx, bson.M{"_id": objectID}).Decode(&user)
 	if err != nil {
 		if errors.Is(err, mongo.ErrNoDocuments) {
-			logger.LogError("get_user_by_id", "User not found", map[string]interface{}{
+			logger.Log.Error("get_user_by_id", "User not found", map[string]interface{}{
 				"user_id": id,
 			}, err)
 			c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
@@ -86,7 +86,7 @@ func UpdateUser(c *gin.Context) {
 	id := c.Param("id")
 	objectID, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
-		logger.LogError("update_user", "Invalid user ID", map[string]interface{}{
+		logger.Log.Error("update_user", "Invalid user ID", map[string]interface{}{
 			"user_id": id,
 		}, err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user ID"})
@@ -95,7 +95,7 @@ func UpdateUser(c *gin.Context) {
 
 	var updateData bson.M
 	if err := c.ShouldBindJSON(&updateData); err != nil {
-		logger.LogError("update_user", "Invalid request payload", map[string]interface{}{
+		logger.Log.Error("update_user", "Invalid request payload", map[string]interface{}{
 			"error": err.Error(),
 		}, err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
@@ -125,7 +125,7 @@ func UpdateUser(c *gin.Context) {
 	}
 
 	if result.MatchedCount == 0 {
-		logger.LogError("update_user", "User not found", map[string]interface{}{
+		logger.Log.Error("update_user", "User not found", map[string]interface{}{
 			"user_id": id,
 		}, nil)
 		c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
@@ -143,7 +143,7 @@ func DeleteUser(c *gin.Context) {
 	id := c.Param("id")
 	objectID, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
-		logger.LogError("delete_user", "Invalid user ID", map[string]interface{}{
+		logger.Log.Error("delete_user", "Invalid user ID", map[string]interface{}{
 			"user_id": id,
 		}, err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user ID"})
@@ -162,7 +162,7 @@ func DeleteUser(c *gin.Context) {
 	}
 
 	if result.DeletedCount == 0 {
-		logger.LogError("delete_user", "User not found", map[string]interface{}{
+		logger.Log.Error("delete_user", "User not found", map[string]interface{}{
 			"user_id": id,
 		}, nil)
 		c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
@@ -208,7 +208,7 @@ func UpdateUserRole(c *gin.Context) {
 
 	err := collection.FindOne(ctx, bson.M{"email": currentUserEmail}).Decode(&currentUser)
 	if err != nil {
-		logger.LogError("update_user_role", "Failed to fetch current user", map[string]interface{}{
+		logger.Log.Error("update_user_role", "Failed to fetch current user", map[string]interface{}{
 			"user_email": currentUserEmail,
 		}, err)
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Failed to fetch current user"})
@@ -217,7 +217,7 @@ func UpdateUserRole(c *gin.Context) {
 
 	// Проверяем, является ли текущий пользователь администратором
 	if currentUser.Role != "admin" {
-		logger.LogError("update_user_role", "Unauthorized access attempt", map[string]interface{}{
+		logger.Log.Error("update_user_role", "Unauthorized access attempt", map[string]interface{}{
 			"user_email": currentUserEmail,
 		}, nil)
 		c.JSON(http.StatusForbidden, gin.H{"error": "You do not have permission to perform this action"})
@@ -228,7 +228,7 @@ func UpdateUserRole(c *gin.Context) {
 	id := c.Param("id")
 	objectID, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
-		logger.LogError("update_user_role", "Invalid user ID", map[string]interface{}{
+		logger.Log.Error("update_user_role", "Invalid user ID", map[string]interface{}{
 			"user_id": id,
 		}, err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user ID"})
@@ -241,7 +241,7 @@ func UpdateUserRole(c *gin.Context) {
 	}
 	var req RoleUpdateRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		logger.LogError("update_user_role", "Invalid request payload", map[string]interface{}{
+		logger.Log.Error("update_user_role", "Invalid request payload", map[string]interface{}{
 			"error": err.Error(),
 		}, err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
@@ -250,7 +250,7 @@ func UpdateUserRole(c *gin.Context) {
 
 	// Проверяем, что роль является допустимой
 	if req.Role != "admin" && req.Role != "user" {
-		logger.LogError("update_user_role", "Invalid role specified", map[string]interface{}{
+		logger.Log.Error("update_user_role", "Invalid role specified", map[string]interface{}{
 			"role": req.Role,
 		}, nil)
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid role. Allowed roles: 'admin', 'user'"})
@@ -262,7 +262,7 @@ func UpdateUserRole(c *gin.Context) {
 	err = collection.FindOne(ctx, bson.M{"_id": objectID}).Decode(&user)
 	if err != nil {
 		if errors.Is(err, mongo.ErrNoDocuments) {
-			logger.LogError("update_user_role", "User not found", map[string]interface{}{
+			logger.Log.Error("update_user_role", "User not found", map[string]interface{}{
 				"user_id": id,
 			}, err)
 			c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})

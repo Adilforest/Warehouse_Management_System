@@ -60,20 +60,24 @@ func main() {
 }
 
 func setupDatabase() {
-	// Загрузка переменных из .env файла
-	err := godotenv.Load()
+	// Load environment variables from .env file
+	err := godotenv.Load("/app/.env") // Explicitly specify the path
 	if err != nil {
-		logger.LogError("setup_database", "Error loading .env file", map[string]interface{}{
+		logger.Log.Error("setup_database", "Error loading .env file", map[string]interface{}{
 			"error": err.Error(),
-		}, err) // Добавлен четвертый аргумент
+		}, err)
 		logger.Log.Fatal("Error loading .env file: ", err)
 	}
 
 	mongoURI := os.Getenv("MONGO_URI")
 	if mongoURI == "" {
-		logger.LogError("setup_database", "MONGO_URI is not set in .env", map[string]interface{}{}, nil) // Добавлен четвертый аргумент
+		logger.Log.Error("setup_database", "MONGO_URI is not set in .env", map[string]interface{}{}, nil)
 		logger.Log.Fatal("MONGO_URI is not set in .env")
 	}
+
+	logger.Log.Info("Connecting to MongoDB", map[string]interface{}{
+		"mongoURI": mongoURI,
+	})
 
 	err = database.InitMongoDB(mongoURI)
 	if err != nil {
@@ -191,7 +195,7 @@ func handleHome(c *gin.Context) {
 func createProductHandler(c *gin.Context) {
 	var product models.Product
 	if err := c.ShouldBindJSON(&product); err != nil {
-		logger.LogError("create_product", "Invalid payload", map[string]interface{}{
+		logger.Log.Error("create_product", "Invalid payload", map[string]interface{}{
 			"error": err.Error(),
 		}, err) // Добавлен четвертый аргумент
 		c.JSON(http.StatusBadRequest, createResponse("fail", "Invalid JSON payload", nil))
@@ -218,7 +222,7 @@ func getProductHandler(c *gin.Context) {
 	id := c.Param("id")
 	objectID, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
-		logger.LogError("get_product", "Invalid product ID", map[string]interface{}{
+		logger.Log.Error("get_product", "Invalid product ID", map[string]interface{}{
 			"product_id": id,
 		}, err) // Добавлен четвертый аргумент
 		c.JSON(http.StatusBadRequest, createResponse("fail", "Invalid product ID", nil))
@@ -300,7 +304,7 @@ func getAllProductsHandler(c *gin.Context) {
 
 	if err != nil {
 		// Обработка ошибки базы данных
-		logger.LogError("get_all_products", "Failed to fetch products from database", map[string]interface{}{
+		logger.Log.Error("get_all_products", "Failed to fetch products from database", map[string]interface{}{
 			"error": err.Error(),
 		}, err)
 		c.JSON(http.StatusInternalServerError, createResponse("fail", "Failed to fetch products", nil))
@@ -357,7 +361,7 @@ func updateProductHandler(c *gin.Context) {
 	id := c.Param("id")
 	objectID, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
-		logger.LogError("update_product", "Invalid product ID", map[string]interface{}{
+		logger.Log.Error("update_product", "Invalid product ID", map[string]interface{}{
 			"product_id": id,
 		}, err) // Добавлен четвертый аргумент
 		c.JSON(http.StatusBadRequest, createResponse("fail", "Invalid product ID", nil))
@@ -366,7 +370,7 @@ func updateProductHandler(c *gin.Context) {
 
 	var updatedProduct models.Product
 	if err := c.ShouldBindJSON(&updatedProduct); err != nil {
-		logger.LogError("update_product", "Invalid JSON payload", map[string]interface{}{
+		logger.Log.Error("update_product", "Invalid JSON payload", map[string]interface{}{
 			"error": err.Error(),
 		}, err) // Добавлен четвертый аргумент
 		c.JSON(http.StatusBadRequest, createResponse("fail", "Invalid JSON payload", nil))
@@ -387,7 +391,7 @@ func deleteProductHandler(c *gin.Context) {
 	id := c.Param("id")
 	objectID, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
-		logger.LogError("delete_product", "Invalid product ID", map[string]interface{}{
+		logger.Log.Error("delete_product", "Invalid product ID", map[string]interface{}{
 			"product_id": id,
 		}, err) // Добавлен четвертый аргумент
 		c.JSON(http.StatusBadRequest, createResponse("fail", "Invalid product ID", nil))

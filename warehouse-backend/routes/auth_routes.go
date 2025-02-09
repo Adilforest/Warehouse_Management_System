@@ -26,7 +26,7 @@ func SetupAuthRoutes(router *gin.Engine) {
 // Helper function to send standardized JSON responses
 func sendResponse(c *gin.Context, status int, message string, data interface{}, err error) {
 	if err != nil {
-		logger.LogError("response_handler", message, map[string]interface{}{"error": err.Error()}, err)
+		logger.Log.Error("response_handler", message, map[string]interface{}{"error": err.Error()}, err)
 		c.JSON(status, gin.H{"error": err.Error()})
 		return
 	}

@@ -9,6 +9,11 @@ import (
 
 var Log *logrus.Logger
 
+func init() 
+func init() {
+	InitLogger()
+}
+
 // InitLogger инициализирует логгер
 func InitLogger() {
 	Log = logrus.New()
@@ -27,6 +32,7 @@ func InitLogger() {
 	Log.SetOutput(io.MultiWriter(logFile, os.Stdout))
 
 	Log.SetFormatter(&logrus.JSONFormatter{})
+	Log.SetReportCaller(true)
 }
 
 // LogInfo логирует информационные события
@@ -34,14 +40,6 @@ func LogInfo(event, message string, fields map[string]interface{}) {
 	Log.WithFields(logrus.Fields(fields)).
 		WithField("event", event).
 		Info(message)
-}
-
-// LogError логирует ошибки с кастомными полями
-func LogError(event, message string, fields map[string]interface{}, err error) {
-	Log.WithFields(logrus.Fields(fields)).
-		WithField("event", event).
-		WithField("error", err.Error()).
-		Error(message)
 }
 
 // LogRequest логирует HTTP-запрос с методом, путём и статусом
