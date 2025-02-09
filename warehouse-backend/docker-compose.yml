@@ -1,35 +1,35 @@
 version: '3.8'
 
 services:
+  # Бэкенд
   app:
     build:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "8080:8080"  # Expose app on port 8080
+      - "8080:8080"
     env_file:
-      - .env  # Load environment variables from .env file
+      - .env
     depends_on:
-      - mongo  # Ensure MongoDB starts first
-    # Optional: Add a health check or retry mechanism
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
+      - mongo
 
+  # MongoDB
   mongo:
     image: mongo:latest
     ports:
-      - "27017:27017"  # Expose MongoDB on port 27017
+      - "27017:27017"
     volumes:
-      - mongo_data:/data/db  # Persist MongoDB data
-    # Optional: Add a health check to ensure MongoDB is ready
-    healthcheck:
-      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
+      - mongo_data:/data/db
+
+  # Фронтенд
+  frontend:
+    build:
+      context: ../warehouse-frontend  # Указываем путь к папке с фронтендом
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"  # Открываем порт 80 для фронтенда
+    depends_on:
+      - app  # Фронтенд зависит от бэкенда
 
 volumes:
-  mongo_data:  # Define a volume for MongoDB data persistence
+  mongo_data:
