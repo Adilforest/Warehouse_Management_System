@@ -9,7 +9,6 @@ import (
 
 var Log *logrus.Logger
 
-func init() 
 func init() {
 	InitLogger()
 }
