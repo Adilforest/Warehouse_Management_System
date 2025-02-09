@@ -4,7 +4,12 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0bf56199-4d44-488a-a581-530161417705" name="Changes" comment="Unit tests" />
+    <list default="true" id="0bf56199-4d44-488a-a581-530161417705" name="Changes" comment="Unit tests for database functions.">
+      <change afterPath="$PROJECT_DIR$/warehouse-backend/integration_test.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/warehouse-backend/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/warehouse-backend/main.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/warehouse-backend/routes/contact_routes.go" beforeDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -178,7 +183,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Refactoring docs." />
     <MESSAGE value="Refactoring backend." />
     <MESSAGE value="Fixed bag with DB." />
     <MESSAGE value="Added snapshot for web page." />
@@ -203,7 +207,8 @@
     <MESSAGE value="Log In verification." />
     <MESSAGE value="Verification." />
     <MESSAGE value="Unit tests" />
-    <option name="LAST_COMMIT_MESSAGE" value="Unit tests" />
+    <MESSAGE value="Unit tests for database functions." />
+    <option name="LAST_COMMIT_MESSAGE" value="Unit tests for database functions." />
   </component>
   <component name="VgoProject">
     <settings-migrated>true</settings-migrated>
