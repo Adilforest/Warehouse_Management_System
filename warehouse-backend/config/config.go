@@ -2,7 +2,6 @@ package config
 
 import (
 	"fmt"
-	"os"
 )
 
 type Config struct {
@@ -11,16 +10,6 @@ type Config struct {
 	DBHost     string
 	DBName     string
 	DBPort     string
-}
-
-func GetConfig() Config {
-	return Config{
-		DBUser:     os.Getenv("DB_USER"),
-		DBPassword: os.Getenv("DB_PASSWORD"),
-		DBHost:     os.Getenv("DB_HOST"),
-		DBName:     os.Getenv("DB_NAME"),
-		DBPort:     os.Getenv("DB_PORT"),
-	}
 }
 
 func (c Config) GetMongoDBURI() string {

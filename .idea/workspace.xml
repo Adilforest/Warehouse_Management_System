@@ -4,9 +4,9 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0bf56199-4d44-488a-a581-530161417705" name="Changes" comment="Verification.">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/warehouse-frontend/js/admin.js" beforeDir="false" afterPath="$PROJECT_DIR$/warehouse-frontend/js/admin.js" afterDir="false" />
+    <list default="true" id="0bf56199-4d44-488a-a581-530161417705" name="Changes" comment="fixing.">
+      <change beforePath="$PROJECT_DIR$/warehouse-backend/config/config.go" beforeDir="false" afterPath="$PROJECT_DIR$/warehouse-backend/config/config.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/warehouse-backend/middleware/logging_middleware.go" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -172,7 +172,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Refactoring objects and docs." />
     <MESSAGE value="Refactoring docs." />
     <MESSAGE value="Refactoring backend." />
     <MESSAGE value="Fixed bag with DB." />
@@ -197,7 +196,8 @@
     <MESSAGE value="Email verification." />
     <MESSAGE value="Log In verification." />
     <MESSAGE value="Verification." />
-    <option name="LAST_COMMIT_MESSAGE" value="Verification." />
+    <MESSAGE value="fixing." />
+    <option name="LAST_COMMIT_MESSAGE" value="fixing." />
   </component>
   <component name="VgoProject">
     <settings-migrated>true</settings-migrated>
