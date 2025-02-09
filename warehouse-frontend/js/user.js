@@ -36,7 +36,16 @@ async function checkAdminAccess() {
         }
 
         const user = await response.json();
-        if (user.email !== "231441@astanait.edu.kz") {
+
+        console.log("Server response:", user);
+
+        // Проверяем, содержит ли ответ поле isAdmin
+        if (typeof user.isAdmin === "undefined") {
+            throw new Error("isAdmin is missing in the server response.");
+        }
+
+        // Проверяем роль пользователя
+        if (!user.isAdmin) {
             alert("You do not have permission to access this page.");
             window.location.href = "index.html";
             return false;

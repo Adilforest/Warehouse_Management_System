@@ -156,15 +156,28 @@ func setupRoutes() *gin.Engine {
 		protectedRoutes.GET("/profile", controllers.GetProfile)    // Получение данных профиля
 		protectedRoutes.PUT("/profile", controllers.UpdateProfile) // Обновление данных профиля
 	}
+
+	// Middleware для проверки роли администратора
+	adminOnlyMiddleware := func(c *gin.Context) {
+		role := c.GetString("role")
+		if role != "admin" {
+			c.JSON(http.StatusForbidden, gin.H{"error": "You do not have permission to perform this action"})
+			c.Abort()
+			return
+		}
+		c.Next()
+	}
+
 	// Маршруты для работы с пользователями
 	userRoutes := router.Group("/users")
+	userRoutes.Use(middleware.AuthMiddleware()) // Middleware для проверки JWT
 	{
-		userRoutes.GET("/", middleware.AuthMiddleware(), controllers.GetAllUsers)
-		userRoutes.GET("/:id", middleware.AuthMiddleware(), controllers.GetUserByID)
-		userRoutes.PUT("/:id", middleware.AuthMiddleware(), controllers.UpdateUser)
-		userRoutes.DELETE("/:id", middleware.AuthMiddleware(), controllers.DeleteUser)
-		userRoutes.DELETE("/deleteAll", middleware.AuthMiddleware(), controllers.DeleteAllUsers)
-		userRoutes.PUT("/:id/role", middleware.AuthMiddleware(), controllers.UpdateUserRole)
+		userRoutes.GET("/", adminOnlyMiddleware, controllers.GetAllUsers)                                                      // Только администраторы могут просматривать всех пользователей
+		userRoutes.GET("/:id", adminOnlyMiddleware, controllers.GetUserByID)                                                   // Только администраторы могут просматривать пользователя по ID
+		userRoutes.PUT("/:id", adminOnlyMiddleware, controllers.UpdateUser)                                                    // Только администраторы могут обновлять пользователя
+		userRoutes.DELETE("/:id", adminOnlyMiddleware, controllers.DeleteUser)                                                 // Только администраторы могут удалять пользователя
+		userRoutes.DELETE("/deleteAll", adminOnlyMiddleware, controllers.DeleteAllUsers)                                       // Только администраторы могут удалять всех пользователей
+		userRoutes.PUT("/:id/role", middleware.AuthMiddleware(), middleware.AdminOnlyMiddleware(), controllers.UpdateUserRole) // Только администраторы могут изменять роль пользователя
 	}
 
 	return router

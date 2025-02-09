@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
+	"net/http"
 	"os"
 	"strings"
 	"time"
@@ -14,20 +15,19 @@ import (
 var jwtSecret = []byte(os.Getenv("JWT_SECRET")) // Убедитесь, что это значение берётся из .env
 
 // GenerateToken создает новый JWT-токен для пользователя
-func GenerateToken(userID string, email string) (string, error) {
+func GenerateToken(userID string, email string, role string) (string, error) {
 	// Создаем токен с указанными claims
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"user_id": userID,                                // ID пользователя
 		"email":   email,                                 // Email пользователя
+		"role":    role,                                  // Роль пользователя
 		"exp":     time.Now().Add(time.Hour * 24).Unix(), // Токен действителен 24 часа
 	})
-
 	// Подписываем токен с использованием секретного ключа
 	tokenString, err := token.SignedString(jwtSecret)
 	if err != nil {
 		return "", fmt.Errorf("failed to sign token: %w", err)
 	}
-
 	return tokenString, nil
 }
 
@@ -41,70 +41,72 @@ func VerifyToken(tokenString string) (*jwt.Token, error) {
 		}
 		return jwtSecret, nil
 	})
-
 	// Обрабатываем ошибки парсинга
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse token: %w", err)
 	}
-
 	// Проверяем валидность токена
 	if !token.Valid {
 		return nil, errors.New("invalid token")
 	}
-
 	return token, nil
 }
 
 // AuthMiddleware проверяет JWT-токен и устанавливает данные пользователя в контекст
 func AuthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		// Получаем заголовок Authorization
 		tokenString := c.GetHeader("Authorization")
 		if tokenString == "" {
 			c.JSON(401, gin.H{"error": "Missing token"})
 			c.Abort()
 			return
 		}
-
-		// Убираем префикс "Bearer " из токена
 		tokenString = strings.TrimPrefix(tokenString, "Bearer ")
-
-		// Проверяем токен
 		token, err := VerifyToken(tokenString)
 		if err != nil || !token.Valid {
 			c.JSON(401, gin.H{"error": "Invalid or expired token"})
 			c.Abort()
 			return
 		}
-
-		// Извлекаем данные пользователя из токена
 		claims, ok := token.Claims.(jwt.MapClaims)
 		if !ok {
 			c.JSON(401, gin.H{"error": "Invalid token claims"})
 			c.Abort()
 			return
 		}
-
-		// Получаем user_id и email из claims
 		userID, ok := claims["user_id"].(string)
 		if !ok {
 			c.JSON(401, gin.H{"error": "Invalid user_id in token"})
 			c.Abort()
 			return
 		}
-
 		email, ok := claims["email"].(string)
 		if !ok {
 			c.JSON(401, gin.H{"error": "Invalid email in token"})
 			c.Abort()
 			return
 		}
-
-		// Сохраняем данные пользователя в контексте
+		role, ok := claims["role"].(string)
+		if !ok {
+			c.JSON(401, gin.H{"error": "Invalid role in token"})
+			c.Abort()
+			return
+		}
 		c.Set("user_id", userID)
 		c.Set("email", email)
+		c.Set("role", role) // Убедитесь, что роль сохраняется в контексте
+		c.Next()
+	}
+}
 
-		// Продолжаем выполнение запроса
+func AdminOnlyMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		role := c.GetString("role")
+		if role != "admin" {
+			c.JSON(http.StatusForbidden, gin.H{"error": "You do not have permission to perform this action"})
+			c.Abort()
+			return
+		}
 		c.Next()
 	}
 }

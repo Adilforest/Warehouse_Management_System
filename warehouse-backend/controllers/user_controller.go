@@ -195,10 +195,28 @@ func DeleteAllUsers(c *gin.Context) {
 }
 
 // UpdateUserRole обновляет роль пользователя
+// UpdateUserRole обновляет роль пользователя
 func UpdateUserRole(c *gin.Context) {
-	// Проверяем, является ли текущий пользователь администратором
+	// Получаем email текущего пользователя из контекста
 	currentUserEmail := c.GetString("email")
-	if currentUserEmail != "231441@astanait.edu.kz" {
+
+	// Получаем роль текущего пользователя из базы данных
+	var currentUser models.User
+	collection := database.GetCollection("warehouse", "users")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	err := collection.FindOne(ctx, bson.M{"email": currentUserEmail}).Decode(&currentUser)
+	if err != nil {
+		logger.LogError("update_user_role", "Failed to fetch current user", map[string]interface{}{
+			"user_email": currentUserEmail,
+		}, err)
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Failed to fetch current user"})
+		return
+	}
+
+	// Проверяем, является ли текущий пользователь администратором
+	if currentUser.Role != "admin" {
 		logger.LogError("update_user_role", "Unauthorized access attempt", map[string]interface{}{
 			"user_email": currentUserEmail,
 		}, nil)
@@ -240,10 +258,6 @@ func UpdateUserRole(c *gin.Context) {
 	}
 
 	// Находим пользователя в базе данных
-	collection := database.GetCollection("warehouse", "users")
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
-
 	var user models.User
 	err = collection.FindOne(ctx, bson.M{"_id": objectID}).Decode(&user)
 	if err != nil {

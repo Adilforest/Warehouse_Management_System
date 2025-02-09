@@ -5,7 +5,16 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="0bf56199-4d44-488a-a581-530161417705" name="Changes" comment="Verification.">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/warehouse-backend/controllers/auth_controller.go" beforeDir="false" afterPath="$PROJECT_DIR$/warehouse-backend/controllers/auth_controller.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/warehouse-backend/controllers/profile_controller.go" beforeDir="false" afterPath="$PROJECT_DIR$/warehouse-backend/controllers/profile_controller.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/warehouse-backend/controllers/user_controller.go" beforeDir="false" afterPath="$PROJECT_DIR$/warehouse-backend/controllers/user_controller.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/warehouse-backend/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/warehouse-backend/main.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/warehouse-backend/middleware/auth.go" beforeDir="false" afterPath="$PROJECT_DIR$/warehouse-backend/middleware/auth.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/warehouse-backend/routes/auth_routes.go" beforeDir="false" afterPath="$PROJECT_DIR$/warehouse-backend/routes/auth_routes.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/warehouse-frontend/js/admin.js" beforeDir="false" afterPath="$PROJECT_DIR$/warehouse-frontend/js/admin.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/warehouse-frontend/js/navbar.js" beforeDir="false" afterPath="$PROJECT_DIR$/warehouse-frontend/js/navbar.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/warehouse-frontend/js/user.js" beforeDir="false" afterPath="$PROJECT_DIR$/warehouse-frontend/js/user.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -64,38 +73,38 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;ASKED_SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;DefaultGoTemplateProperty&quot;: &quot;Go File&quot;,
-    &quot;DefaultHtmlFileTemplate&quot;: &quot;HTML File&quot;,
-    &quot;Go Build.go build Assignment_1_AP.executor&quot;: &quot;Run&quot;,
-    &quot;Go Build.go build product_routes.go.executor&quot;: &quot;Run&quot;,
-    &quot;JavaScript Debug.ContactUs.html (1).executor&quot;: &quot;Run&quot;,
-    &quot;JavaScript Debug.ContactUs.html.executor&quot;: &quot;Run&quot;,
-    &quot;JavaScript Debug.admin.html (1).executor&quot;: &quot;Run&quot;,
-    &quot;JavaScript Debug.admin.html.executor&quot;: &quot;Run&quot;,
-    &quot;JavaScript Debug.cashier.html.executor&quot;: &quot;Run&quot;,
-    &quot;JavaScript Debug.index.html (1).executor&quot;: &quot;Run&quot;,
-    &quot;JavaScript Debug.index.html.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.go.formatter.settings.were.checked&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.go.migrated.go.modules.settings&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.go.modules.go.list.on.any.changes.was.set&quot;: &quot;true&quot;,
-    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;mongo-main&quot;,
-    &quot;go.import.settings.migrated&quot;: &quot;true&quot;,
-    &quot;go.sdk.automatically.set&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/Users/adilforest/GolandProjects/Assignment_1_AP&quot;,
-    &quot;list.type.of.created.stylesheet&quot;: &quot;CSS&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;onboarding.tips.debug.path&quot;: &quot;/Users/adilforest/GolandProjects/Assignment_1_AP/main.go&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "DefaultGoTemplateProperty": "Go File",
+    "DefaultHtmlFileTemplate": "HTML File",
+    "Go Build.go build Assignment_1_AP.executor": "Run",
+    "Go Build.go build product_routes.go.executor": "Run",
+    "JavaScript Debug.ContactUs.html (1).executor": "Run",
+    "JavaScript Debug.ContactUs.html.executor": "Run",
+    "JavaScript Debug.admin.html (1).executor": "Run",
+    "JavaScript Debug.admin.html.executor": "Run",
+    "JavaScript Debug.cashier.html.executor": "Run",
+    "JavaScript Debug.index.html (1).executor": "Run",
+    "JavaScript Debug.index.html.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.go.formatter.settings.were.checked": "true",
+    "RunOnceActivity.go.migrated.go.modules.settings": "true",
+    "RunOnceActivity.go.modules.go.list.on.any.changes.was.set": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "git-widget-placeholder": "mongo-main",
+    "go.import.settings.migrated": "true",
+    "go.sdk.automatically.set": "true",
+    "last_opened_file_path": "/Users/adilforest",
+    "list.type.of.created.stylesheet": "CSS",
+    "node.js.detected.package.eslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "onboarding.tips.debug.path": "/Users/adilforest/GolandProjects/Assignment_1_AP/main.go",
+    "settings.editor.selected.configurable": "preferences.pluginManager"
   }
-}</component>
+}]]></component>
   <component name="QodanaReportsService">
     <option name="descriptions">
       <ReportDescription localRun="true" path="/private/var/folders/2y/r4jgj_ys60n2_nrs19mncjlm0000gn/T/qodana_output/qodana.sarif.json" reportGuid="69d9870a-8054-4ba2-bc81-9d28ddf84fcc" reportId="Assignment_1_AP/qodana/2024-12-25" />
@@ -147,8 +156,8 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-gosdk-d297c17c1fbd-d82d926f19eb-org.jetbrains.plugins.go.sharedIndexes.bundled-GO-243.22562.186" />
-        <option value="bundled-js-predefined-d6986cc7102b-deb605915726-JavaScript-GO-243.22562.186" />
+        <option value="bundled-gosdk-d297c17c1fbd-85c80fddc9a6-org.jetbrains.plugins.go.sharedIndexes.bundled-GO-243.23654.119" />
+        <option value="bundled-js-predefined-d6986cc7102b-822845ee3bb5-JavaScript-GO-243.23654.119" />
       </set>
     </attachedChunks>
   </component>

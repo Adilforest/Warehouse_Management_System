@@ -5,13 +5,12 @@ import (
 	"errors"
 	"fmt"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"golang.org/x/crypto/bcrypt"
 	"gopkg.in/gomail.v2"
 	"os"
 	"strconv"
 	"time"
-
-	"go.mongodb.org/mongo-driver/bson/primitive"
-	"golang.org/x/crypto/bcrypt"
 	"warehouse-backend/database"
 	"warehouse-backend/middleware"
 	"warehouse-backend/models"
@@ -34,11 +33,6 @@ func CreateUser(name, email, password string) (models.User, error) {
 		Verified:          false,
 		VerificationToken: generateVerificationToken(),
 		Role:              "user", // По умолчанию роль пользователя — "user"
-	}
-
-	// Проверяем, является ли пользователь администратором
-	if email == "231441@astanait.edu.kz" {
-		user.Role = "admin" // Назначаем роль "admin" для указанного email
 	}
 
 	// Получаем коллекцию MongoDB
@@ -76,7 +70,6 @@ func generateVerificationToken() string {
 // sendVerificationEmail отправляет email с ссылкой для верификации
 func sendVerificationEmail(email, token string) error {
 	verificationLink := "http://localhost:8080/auth/verify?token=" + token
-
 	// Временно выводим ссылку в консоль (для тестирования)
 	fmt.Println("Verification link:", verificationLink)
 
@@ -118,28 +111,24 @@ func LoginUser(email, password string) (string, error) {
 	collection := database.GetCollection("warehouse", "users")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-
 	err := collection.FindOne(ctx, bson.M{"email": email}).Decode(&user)
 	if err != nil {
 		return "", errors.New("user not found")
 	}
-
 	// Проверяем, подтвержден ли email
 	if !user.Verified {
 		return "", errors.New("email not verified")
 	}
-
 	// Проверяем пароль
 	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
 	if err != nil {
 		return "", errors.New("invalid password")
 	}
-
 	// Генерируем JWT-токен
-	token, err := middleware.GenerateToken(user.ID.Hex(), user.Email)
+	token, err := middleware.GenerateToken(user.ID.Hex(), user.Email, user.Role)
 	if err != nil {
 		return "", errors.New("failed to generate token")
 	}
-
+	// Возвращаем токен и роль пользователя
 	return token, nil
 }

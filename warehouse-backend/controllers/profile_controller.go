@@ -17,9 +17,8 @@ import (
 
 // GetProfile возвращает данные текущего пользователя
 func GetProfile(c *gin.Context) {
-	// Получаем user_id и email из контекста
+	// Получаем user_id из контекста
 	userID := c.GetString("user_id")
-	email := c.GetString("email")
 
 	// Преобразуем строковый ID в ObjectID
 	objectID, err := primitive.ObjectIDFromHex(userID)
@@ -45,7 +44,7 @@ func GetProfile(c *gin.Context) {
 
 	// Проверяем роль администратора
 	isAdmin := false
-	if email == "231441@astanait.edu.kz" { // Замените на вашу логику проверки администратора
+	if user.Role == "admin" { // Проверяем роль пользователя
 		isAdmin = true
 	}
 

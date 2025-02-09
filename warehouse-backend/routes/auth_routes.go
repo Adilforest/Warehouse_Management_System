@@ -2,11 +2,10 @@ package routes
 
 import (
 	"context"
-	"net/http"
-	"time"
-
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
+	"net/http"
+	"time"
 	"warehouse-backend/controllers"
 	"warehouse-backend/database"
 	"warehouse-backend/logger"
@@ -43,33 +42,28 @@ func SignupHandler(c *gin.Context) {
 		Password        string `json:"password"`
 		ConfirmPassword string `json:"confirm_password"`
 	}
-
 	var req SignupRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		sendResponse(c, http.StatusBadRequest, "Invalid request payload", nil, err)
 		return
 	}
-
 	// Проверяем совпадение паролей
 	if req.Password != req.ConfirmPassword {
 		sendResponse(c, http.StatusBadRequest, "Passwords do not match", nil, nil)
 		return
 	}
-
 	// Вызываем функцию для создания пользователя
 	user, err := controllers.CreateUser(req.Name, req.Email, req.Password)
 	if err != nil {
 		sendResponse(c, http.StatusInternalServerError, "Failed to create user", nil, err)
 		return
 	}
-
-	// Генерируем JWT-токен
-	token, err := middleware.GenerateToken(user.ID.Hex(), user.Email)
+	// Генерируем JWT-токен с ролью пользователя
+	token, err := middleware.GenerateToken(user.ID.Hex(), user.Email, user.Role)
 	if err != nil {
 		sendResponse(c, http.StatusInternalServerError, "Failed to generate token", nil, err)
 		return
 	}
-
 	sendResponse(c, http.StatusCreated, "User registered and logged in successfully", gin.H{"token": token}, nil)
 }
 
@@ -80,21 +74,17 @@ func VerifyHandler(c *gin.Context) {
 		sendResponse(c, http.StatusBadRequest, "Verification token is required", nil, nil)
 		return
 	}
-
 	logger.LogInfo("verify_handler", "Verifying token", map[string]interface{}{"token": token})
-
 	// Находим пользователя по токену
 	var user models.User
 	collection := database.GetCollection("warehouse", "users")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-
 	err := collection.FindOne(ctx, bson.M{"verification_token": token}).Decode(&user)
 	if err != nil {
 		sendResponse(c, http.StatusNotFound, "Invalid or expired verification token", nil, err)
 		return
 	}
-
 	// Обновляем статус верификации
 	update := bson.M{"$set": bson.M{"verified": true, "verification_token": ""}}
 	_, err = collection.UpdateOne(ctx, bson.M{"verification_token": token}, update)
@@ -102,7 +92,6 @@ func VerifyHandler(c *gin.Context) {
 		sendResponse(c, http.StatusInternalServerError, "Failed to verify user", nil, err)
 		return
 	}
-
 	sendResponse(c, http.StatusOK, "Email verified successfully", nil, nil)
 }
 
@@ -112,19 +101,30 @@ func LoginHandler(c *gin.Context) {
 		Email    string `json:"email"`
 		Password string `json:"password"`
 	}
-
 	var req LoginRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		sendResponse(c, http.StatusBadRequest, "Invalid request payload", nil, err)
 		return
 	}
-
 	// Вызываем функцию для входа
 	token, err := controllers.LoginUser(req.Email, req.Password)
 	if err != nil {
 		sendResponse(c, http.StatusUnauthorized, "Failed to login user", nil, err)
 		return
 	}
-
-	sendResponse(c, http.StatusOK, "Login successful", gin.H{"token": token}, nil)
+	// Получаем роль пользователя из базы данных
+	var user models.User
+	collection := database.GetCollection("warehouse", "users")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	err = collection.FindOne(ctx, bson.M{"email": req.Email}).Decode(&user)
+	if err != nil {
+		sendResponse(c, http.StatusInternalServerError, "Failed to fetch user role", nil, err)
+		return
+	}
+	// Возвращаем успешный ответ с токеном и ролью
+	sendResponse(c, http.StatusOK, "Login successful", gin.H{
+		"token": token,
+		"role":  user.Role,
+	}, nil)
 }
