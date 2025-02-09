@@ -1,4 +1,54 @@
 const apiUrl = "http://localhost:8080/products";
+// Получение токена из localStorage
+function getToken() {
+    return localStorage.getItem("token");
+}
+
+// Проверка авторизации пользователя (админа)
+async function checkAdminAccess() {
+    const token = getToken();
+    if (!token) {
+        alert("You need to log in first.");
+        window.location.href = "LogIn.html";
+        return false;
+    }
+
+    try {
+        const response = await fetch("http://localhost:8080/protected/profile", {
+            method: "GET",
+            headers: { Authorization: `Bearer ${token}` },
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || "Failed to load profile data.");
+        }
+
+        const user = await response.json();
+
+        console.log("Server response:", user);
+
+        // Проверяем, содержит ли ответ поле isAdmin
+        if (typeof user.isAdmin === "undefined") {
+            throw new Error("isAdmin is missing in the server response.");
+        }
+
+        // Проверяем роль пользователя
+        if (!user.isAdmin) {
+            alert("You do not have permission to access this page.");
+            window.location.href = "index.html";
+            return false;
+        }
+
+        return true; // Пользователь является администратором
+    } catch (error) {
+        console.error("Error checking admin access:", error);
+        alert(`An error occurred: ${error.message}`);
+        window.location.href = "LogIn.html";
+        return false;
+    }
+}
+
 
 function toggleFields(context) {
     const prefix = context || "create";
@@ -80,6 +130,7 @@ function isValidURL(url) {
 }
 
 function createProduct() {
+    if (!(checkAdminAccess())) return;
     if (!validateCreateForm()) {
         return; // Остановка, если валидация не пройдена
     }
@@ -134,6 +185,7 @@ function createProduct() {
 }
 
 function getProductById() {
+    if (!(checkAdminAccess())) return;
     const productId = document.getElementById("get-id").value;
 
     if (!productId || productId.length !== 24) {
@@ -159,6 +211,7 @@ function getProductById() {
 }
 
 function updateProduct() {
+    if (!(checkAdminAccess())) return;
     const id = document.getElementById("update-id").value.trim();
 
     // Проверяем корректность ID
@@ -219,6 +272,7 @@ function updateProduct() {
 }
 
 function getAllProducts() {
+    if (!(checkAdminAccess())) return;
     fetch(apiUrl + "/")
         .then((response) => response.json())
         .then((data) => displayResponse("all-products-response", data))
@@ -229,6 +283,7 @@ function getAllProducts() {
 }
 
 function deleteProduct() {
+    if (!(checkAdminAccess())) return;
     const id = document.getElementById("delete-id").value.trim();
 
     if (!id || id.length !== 24) {
@@ -256,6 +311,7 @@ function deleteProduct() {
 }
 
 function deleteAllProducts() {
+    if (!(checkAdminAccess())) return;
     fetch(`${apiUrl}/deleteAll`, {
         method: "DELETE",
     })
@@ -266,4 +322,3 @@ function deleteAllProducts() {
             displayResponse("server-response", error);
         });
 }
-
