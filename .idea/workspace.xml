@@ -5,8 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="0bf56199-4d44-488a-a581-530161417705" name="Changes" comment="fixing.">
-      <change beforePath="$PROJECT_DIR$/warehouse-backend/config/config.go" beforeDir="false" afterPath="$PROJECT_DIR$/warehouse-backend/config/config.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/warehouse-backend/middleware/logging_middleware.go" beforeDir="false" />
+      <change afterPath="$PROJECT_DIR$/warehouse-backend/Dockerfile" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/warehouse-backend/docker-compose.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/warehouse-backend/.env" beforeDir="false" afterPath="$PROJECT_DIR$/warehouse-backend/.env" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -110,7 +112,7 @@
       <recent name="$PROJECT_DIR$" />
     </key>
   </component>
-  <component name="RunManager" selected="JavaScript Debug.admin.html (1)">
+  <component name="RunManager" selected="JavaScript Debug.index.html (1)">
     <configuration name="go build Assignment_1_AP" type="GoApplicationRunConfiguration" factoryName="Go Application" nameIsGenerated="true">
       <module name="Assignment_1_AP" />
       <working_directory value="$PROJECT_DIR$" />
@@ -137,8 +139,8 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="JavaScript Debug.admin.html (1)" />
         <item itemvalue="JavaScript Debug.index.html (1)" />
+        <item itemvalue="JavaScript Debug.admin.html (1)" />
         <item itemvalue="JavaScript Debug.ContactUs.html (1)" />
         <item itemvalue="JavaScript Debug.admin.html" />
         <item itemvalue="JavaScript Debug.index.html" />
