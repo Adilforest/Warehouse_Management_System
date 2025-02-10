@@ -187,11 +187,6 @@ func setupRoutes() *gin.Engine {
 	return router
 }
 
-func handleHome(c *gin.Context) {
-	logger.LogRequest("GET", "/", "200")
-	c.String(http.StatusOK, "Welcome to the Warehouse Backend!")
-}
-
 func createProductHandler(c *gin.Context) {
 	var product models.Product
 	if err := c.ShouldBindJSON(&product); err != nil {
