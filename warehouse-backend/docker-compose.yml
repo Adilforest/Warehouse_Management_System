@@ -24,12 +24,12 @@ services:
   # Фронтенд
   frontend:
     build:
-      context: ../warehouse-frontend  # Указываем путь к папке с фронтендом
+      context: ../warehouse-frontend  
       dockerfile: Dockerfile
     ports:
-      - "80:80"  # Открываем порт 80 для фронтенда
+      - "80:80"  
     depends_on:
-      - app  # Фронтенд зависит от бэкенда
+      - app 
 
 volumes:
   mongo_data:
