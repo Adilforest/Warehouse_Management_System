@@ -61,7 +61,7 @@ func main() {
 
 func setupDatabase() {
 	// Load environment variables from .env file
-	err := godotenv.Load("/app/.env") // Explicitly specify the path
+	err := godotenv.Load(".env")
 	if err != nil {
 		logger.Log.Error("setup_database", "Error loading .env file", map[string]interface{}{
 			"error": err.Error(),
