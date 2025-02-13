@@ -131,6 +131,9 @@ func setupRoutes() *gin.Engine {
 		})
 		c.File("./public/index.html") // Отсылка index.html (путь до файла)
 	})
+	router.GET("/login", func(c *gin.Context) {
+		c.File("./warehouse-frontend/login.html")
+	})
 
 	// Маршруты для работы с продуктами
 	productRoutes := router.Group("/products")
