@@ -176,14 +176,23 @@ func setupRoutes() *gin.Engine {
 	userRoutes := router.Group("/users")
 	userRoutes.Use(middleware.AuthMiddleware()) // Middleware для проверки JWT
 	{
-		userRoutes.GET("/", adminOnlyMiddleware, controllers.GetAllUsers)                                                      // Только администраторы могут просматривать всех пользователей
-		userRoutes.GET("/:id", adminOnlyMiddleware, controllers.GetUserByID)                                                   // Только администраторы могут просматривать пользователя по ID
-		userRoutes.PUT("/:id", adminOnlyMiddleware, controllers.UpdateUser)                                                    // Только администраторы могут обновлять пользователя
-		userRoutes.DELETE("/:id", adminOnlyMiddleware, controllers.DeleteUser)                                                 // Только администраторы могут удалять пользователя
-		userRoutes.DELETE("/deleteAll", adminOnlyMiddleware, controllers.DeleteAllUsers)                                       // Только администраторы могут удалять всех пользователей
-		userRoutes.PUT("/:id/role", middleware.AuthMiddleware(), middleware.AdminOnlyMiddleware(), controllers.UpdateUserRole) // Только администраторы могут изменять роль пользователя
+		userRoutes.GET("/", adminOnlyMiddleware, controllers.GetAllUsers)                                                     
+		userRoutes.GET("/:id", adminOnlyMiddleware, controllers.GetUserByID)                                                  
+		userRoutes.PUT("/:id", adminOnlyMiddleware, controllers.UpdateUser)                                                  
+		userRoutes.DELETE("/:id", adminOnlyMiddleware, controllers.DeleteUser)                                                 
+		userRoutes.DELETE("/deleteAll", adminOnlyMiddleware, controllers.DeleteAllUsers)                                      
+		userRoutes.PUT("/:id/role", middleware.AuthMiddleware(), middleware.AdminOnlyMiddleware(), controllers.UpdateUserRole) 
 	}
 
+	cartRoutes := router.Group("/cart")
+	{
+		cartRoutes.Use(middleware.AuthMiddleware()) 
+		cartRoutes.GET("/", controllers.GetCart)
+		cartRoutes.POST("/add", controllers.AddToCart)
+		cartRoutes.POST("/remove", controllers.RemoveFromCart)
+		cartRoutes.DELETE("/clear", controllers.ClearCart)
+	}
+	
 	return router
 }
 
