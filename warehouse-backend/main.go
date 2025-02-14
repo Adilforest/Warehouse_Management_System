@@ -187,12 +187,13 @@ func setupRoutes() *gin.Engine {
 
 	// Маршруты для работы с корзиной
 	cartRoutes := router.Group("/cart")
-	cartRoutes.Use(middleware.AuthMiddleware()) // Middleware для проверки JWT
+	cartRoutes.Use(middleware.AuthMiddleware())
 	{
-		cartRoutes.POST("/:product_id/add", controllers.AddToCartHandler)           // Добавить товар в корзину
-		cartRoutes.GET("/", controllers.GetCartHandler)                             // Получить корзину
-		cartRoutes.DELETE("/:product_id/remove", controllers.RemoveFromCartHandler) // Удалить товар из корзины
-		cartRoutes.DELETE("/clear", controllers.ClearCartHandler)                   // Очистить корзину
+		cartRoutes.POST("/:product_id/add", controllers.AddToCartHandler)
+		cartRoutes.GET("/", controllers.GetCartHandler)
+		cartRoutes.DELETE("/:product_id/remove", controllers.RemoveFromCartHandler)
+		cartRoutes.DELETE("/clear", controllers.ClearCartHandler)
+		cartRoutes.POST("/pay", controllers.PayCartHandler)
 	}
 
 	return router

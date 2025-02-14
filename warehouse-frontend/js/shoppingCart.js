@@ -83,9 +83,6 @@ async function displayCart() {
     }
 }
 
-
-
-
 // Функция для удаления товара из корзины
 async function removeFromCart(productId) {
     if (!(await checkAuth())) return;
@@ -134,6 +131,31 @@ async function clearCart() {
     }
 }
 
+// Функция для оплаты корзины
+async function payCart() {
+    if (!(await checkAuth())) return;
+
+    try {
+        const response = await fetch(`${apiUrl}/pay`, {
+            method: "POST",
+            headers: {
+                Authorization: `Bearer ${getToken()}`,
+            },
+        });
+
+        if (!response.ok) {
+            throw new Error("Failed to process payment.");
+        }
+
+        const result = await response.json();
+        alert(result.message || "Payment successful!");
+        displayCart(); // Обновляем отображение корзины после оплаты
+    } catch (error) {
+        console.error("Error processing payment:", error);
+        alert("An error occurred while processing payment.");
+    }
+}
+
 // Вспомогательная функция для преобразования первой буквы строки в верхний регистр
 function capitalize(text) {
     return text.charAt(0).toUpperCase() + text.slice(1);
@@ -149,6 +171,13 @@ document.addEventListener("DOMContentLoaded", () => {
     clearCartButton.innerText = "Clear Cart";
     clearCartButton.addEventListener("click", clearCart);
 
+    // Добавляем кнопку "Pay Cart" динамически
+    const payCartButton = document.createElement("button");
+    payCartButton.id = "pay-cart-btn";
+    payCartButton.innerText = "Pay Cart";
+    payCartButton.addEventListener("click", payCart);
+
     const mainElement = document.querySelector("main");
     mainElement.appendChild(clearCartButton);
+    mainElement.appendChild(payCartButton);
 });

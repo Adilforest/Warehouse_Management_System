@@ -1,14 +1,15 @@
 package controllers
 
 import (
-    "net/http"
-    "strconv"
+	"net/http"
+	"strconv"
 
-    "warehouse-backend/database"
-    "warehouse-backend/models"
+	"warehouse-backend/database"
+	"warehouse-backend/models"
 
-    "github.com/gin-gonic/gin"
-    "go.mongodb.org/mongo-driver/bson/primitive"
+	"github.com/gin-gonic/gin"
+	"github.com/sirupsen/logrus"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 // AddToCartHandler добавляет товар в корзину
@@ -157,4 +158,45 @@ func ClearCartHandler(c *gin.Context) {
     }
 
     c.JSON(http.StatusOK, gin.H{"message": "Cart cleared successfully"})
+}
+
+func PayCartHandler(c *gin.Context) {
+	// Получаем ID пользователя из middleware
+	userID, exists := c.Get("userID")
+	if !exists {
+		logrus.Warn("User not authenticated, cannot process payment")
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
+		return
+	}
+
+	// Убедимся, что userID имеет тип primitive.ObjectID
+	userObjectID, ok := userID.(primitive.ObjectID)
+	if !ok {
+		logrus.Error("Failed to extract user ID in payment handler")
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to extract user ID"})
+		return
+	}
+
+	logrus.Infof("Processing payment for user %s", userObjectID.Hex())
+	// Вызываем функцию для оплаты корзины
+	success, err := database.PayShoppingCart(userObjectID)
+	if err != nil {
+		logrus.Errorf("Payment processing error for user %s: %v", userObjectID.Hex(), err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	if success {
+		// Если оплата прошла успешно, очищаем корзину
+		if err := database.ClearCart(userObjectID); err != nil {
+			logrus.Errorf("Payment succeeded but failed to clear cart for user %s: %v", userObjectID.Hex(), err)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Payment succeeded but failed to clear cart"})
+			return
+		}
+		logrus.Infof("Payment successful and cart cleared for user %s", userObjectID.Hex())
+		c.JSON(http.StatusOK, gin.H{"message": "Payment successful"})
+	} else {
+		logrus.Warnf("Payment failed for user %s", userObjectID.Hex())
+		c.JSON(http.StatusBadRequest, gin.H{"message": "Payment failed"})
+	}
 }
