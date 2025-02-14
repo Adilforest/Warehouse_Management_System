@@ -33,42 +33,55 @@ async function displayCart() {
             throw new Error("Failed to fetch cart data.");
         }
 
-        const cartData = await response.json();
+        const result = await response.json();
+        const cart = result.data; // Извлекаем объект корзины из свойства data
         const cartContainer = document.getElementById("cart-container");
 
         // Очищаем контейнер перед отображением новых данных
         cartContainer.innerHTML = "";
 
-        if (cartData.length === 0) {
+        if (!cart || !cart.items || cart.items.length === 0) {
             cartContainer.innerHTML = "<p>Your cart is empty.</p>";
             return;
         }
 
         // Создаем элементы для каждого товара в корзине
-        cartData.forEach((item) => {
+        cart.items.forEach((item) => {
             const productCard = document.createElement("div");
             productCard.className = "cart-item";
 
             productCard.innerHTML = `
                 <h3>${item.product.brand} ${item.product.model}</h3>
                 <p>Type: ${capitalize(item.product.type)}</p>
-                <p>Price: $${item.product.price.toFixed(2)}</p>
+                <p>Price: $${Number(item.product.price).toFixed(2)}</p>
                 <p>Quantity: ${item.quantity}</p>
                 <button class="remove-btn" data-product-id="${item.product._id}">Remove</button>
             `;
 
-            // Добавляем обработчик события для кнопки "Remove"
+            // Добавляем обработчик события для кнопки "Remove" с подтверждением
             const removeButton = productCard.querySelector(".remove-btn");
-            removeButton.addEventListener("click", () => removeFromCart(item.product._id));
+            removeButton.addEventListener("click", () => {
+                if (confirm("Are you sure you want to remove this product from your cart?")) {
+                    removeFromCart(item.product._id);
+                }
+            });
 
             cartContainer.appendChild(productCard);
         });
+
+        // Добавляем блок для отображения общей суммы корзины
+        const totalDiv = document.createElement("div");
+        totalDiv.className = "cart-total";
+        totalDiv.innerHTML = `<h2>Total: $${Number(cart.total).toFixed(2)}</h2>`;
+        cartContainer.appendChild(totalDiv);
     } catch (error) {
         console.error("Error fetching cart:", error);
         document.getElementById("cart-container").innerHTML =
             "<p>An error occurred while loading your cart. Please try again later.</p>";
     }
 }
+
+
 
 // Функция для удаления товара из корзины
 async function removeFromCart(productId) {

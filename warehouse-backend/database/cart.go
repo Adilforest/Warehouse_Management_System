@@ -53,14 +53,19 @@ func AddItemToCart(cartID primitive.ObjectID, item models.CartItem) error {
     defer cancel()
 
     // Проверяем, существует ли уже такой товар в корзине
-    filter := bson.M{"_id": cartID, "items.product.id": item.Product.ID}
+    // Обратите внимание, что если идентификатор продукта хранится в поле "_id" внутри вложенного документа "product",
+    // то фильтр должен использовать "items.product._id"
+    filter := bson.M{"_id": cartID, "items.product._id": item.Product.ID}
     update := bson.M{
         "$inc": bson.M{"items.$.quantity": item.Quantity},
         "$set": bson.M{"updated_at": time.Now()},
     }
 
-    _, err := collection.UpdateOne(ctx, filter, update)
+    res, err := collection.UpdateOne(ctx, filter, update)
     if err != nil {
+        return err
+    }
+    if res.MatchedCount == 0 {
         // Если товар не найден, добавляем новый элемент
         filter = bson.M{"_id": cartID}
         update = bson.M{
