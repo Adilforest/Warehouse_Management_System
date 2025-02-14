@@ -125,7 +125,7 @@ func LoginUser(email, password string) (string, error) {
 		return "", errors.New("invalid password")
 	}
 	// Генерируем JWT-токен
-	token, err := middleware.GenerateToken(user.ID.Hex(), user.Email, user.Role)
+	token, err := middleware.GenerateToken(user.ID, user.Email, user.Role)
 	if err != nil {
 		return "", errors.New("failed to generate token")
 	}

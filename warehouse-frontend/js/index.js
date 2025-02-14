@@ -63,17 +63,24 @@ async function fetchProducts(filters = {}, sortBy = "", order = "asc", page = 1,
 }
 
 function renderProducts(productsToRender) {
+
     productList.innerHTML = "";
     if (!Array.isArray(productsToRender)) {
         console.error("Expected an array of products, but got:", productsToRender);
         productList.innerHTML = '<p>No products found.</p>';
         return;
     }
+
     if (productsToRender.length === 0) {
         productList.innerHTML = '<p>No products found.</p>';
         return;
     }
+
     productsToRender.forEach(product => {
+        if (!product.id) {
+            console.error("Product ID is missing for product:", product);
+            return;
+        }
         const productCard = document.createElement("div");
         productCard.className = "product-card";
         productCard.innerHTML = `
@@ -92,10 +99,14 @@ function renderProducts(productsToRender) {
                 <button class="add-to-cart-btn" data-product-id="${product._id}">Add to Cart</button>
             </div>
         `;
-        // Добавляем обработчик события для кнопки "Add to Cart"
+        
         const addToCartButton = productCard.querySelector(".add-to-cart-btn");
         addToCartButton.addEventListener("click", () => {
-            addToCart(product._id);
+            if (!product.id) {
+                alert("Product ID is missing");
+                return;
+            }
+            addToCart(product.id); 
         });
 
         productList.appendChild(productCard);
@@ -107,6 +118,11 @@ async function addToCart(productId) {
     if (!token) {
         alert("You need to log in to add items to the cart.");
         window.location.href = "/Login.html";
+        return;
+    }
+
+    if (!productId || typeof productId !== "string") {
+        alert("Invalid product ID");
         return;
     }
 

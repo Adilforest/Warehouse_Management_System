@@ -7,40 +7,32 @@ function getToken() {
 // Проверка авторизации пользователя (админа)
 async function checkAdminAccess() {
     const token = getToken();
+    console.log("Token from localStorage:", token); // Логируем токен
     if (!token) {
         alert("You need to log in first.");
         window.location.href = "LogIn.html";
         return false;
     }
-
     try {
         const response = await fetch("http://localhost:8080/protected/profile", {
             method: "GET",
             headers: { Authorization: `Bearer ${token}` },
         });
-
         if (!response.ok) {
             const errorData = await response.json();
             throw new Error(errorData.error || "Failed to load profile data.");
         }
-
         const user = await response.json();
-
         console.log("Server response:", user);
-
-        // Проверяем, содержит ли ответ поле isAdmin
         if (typeof user.isAdmin === "undefined") {
             throw new Error("isAdmin is missing in the server response.");
         }
-
-        // Проверяем роль пользователя
         if (!user.isAdmin) {
             alert("You do not have permission to access this page.");
             window.location.href = "index.html";
             return false;
         }
-
-        return true; // Пользователь является администратором
+        return true;
     } catch (error) {
         console.error("Error checking admin access:", error);
         alert(`An error occurred: ${error.message}`);

@@ -59,7 +59,7 @@ func SignupHandler(c *gin.Context) {
 		return
 	}
 	// Генерируем JWT-токен с ролью пользователя
-	token, err := middleware.GenerateToken(user.ID.Hex(), user.Email, user.Role)
+	token, err := middleware.GenerateToken(user.ID, user.Email, user.Role)
 	if err != nil {
 		sendResponse(c, http.StatusInternalServerError, "Failed to generate token", nil, err)
 		return
