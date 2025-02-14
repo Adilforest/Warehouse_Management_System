@@ -169,7 +169,6 @@ func PayCartHandler(c *gin.Context) {
 		return
 	}
 
-	// Убедимся, что userID имеет тип primitive.ObjectID
 	userObjectID, ok := userID.(primitive.ObjectID)
 	if !ok {
 		logrus.Error("Failed to extract user ID in payment handler")
@@ -177,9 +176,16 @@ func PayCartHandler(c *gin.Context) {
 		return
 	}
 
+	// Читаем данные платежа из тела запроса
+	var paymentDetails map[string]interface{}
+	if err := c.ShouldBindJSON(&paymentDetails); err != nil {
+		logrus.Errorf("Failed to bind payment details for user %s: %v", userObjectID.Hex(), err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid payment details"})
+		return
+	}
+
 	logrus.Infof("Processing payment for user %s", userObjectID.Hex())
-	// Вызываем функцию для оплаты корзины
-	success, err := database.PayShoppingCart(userObjectID)
+	success, err := database.PayShoppingCart(userObjectID, paymentDetails)
 	if err != nil {
 		logrus.Errorf("Payment processing error for user %s: %v", userObjectID.Hex(), err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -187,7 +193,6 @@ func PayCartHandler(c *gin.Context) {
 	}
 
 	if success {
-		// Если оплата прошла успешно, очищаем корзину
 		if err := database.ClearCart(userObjectID); err != nil {
 			logrus.Errorf("Payment succeeded but failed to clear cart for user %s: %v", userObjectID.Hex(), err)
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Payment succeeded but failed to clear cart"})
@@ -200,3 +205,4 @@ func PayCartHandler(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "Payment failed"})
 	}
 }
+

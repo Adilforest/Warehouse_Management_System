@@ -131,16 +131,36 @@ async function clearCart() {
     }
 }
 
-// Функция для оплаты корзины
-async function payCart() {
-    if (!(await checkAuth())) return;
+// Функция для оплаты корзины с использованием формы
+async function submitPaymentForm() {
+    // Получаем значения из формы
+    const cardNumber = document.getElementById("cardNumber").value.trim();
+    const expirationDate = document.getElementById("expirationDate").value.trim();
+    const cvv = document.getElementById("cvv").value.trim();
+    const name = document.getElementById("name").value.trim();
+    const address = document.getElementById("address").value.trim();
+
+    if (!cardNumber || !expirationDate || !cvv || !name || !address) {
+        alert("Please fill in all payment fields.");
+        return;
+    }
+
+    const paymentDetails = {
+        cardNumber,
+        expirationDate,
+        cvv,
+        name,
+        address,
+    };
 
     try {
         const response = await fetch(`${apiUrl}/pay`, {
             method: "POST",
             headers: {
+                "Content-Type": "application/json",
                 Authorization: `Bearer ${getToken()}`,
             },
+            body: JSON.stringify(paymentDetails)
         });
 
         if (!response.ok) {
@@ -149,11 +169,30 @@ async function payCart() {
 
         const result = await response.json();
         alert(result.message || "Payment successful!");
+
+        // После успешной оплаты скрываем форму и очищаем поля
+        document.getElementById("payment-details-form").reset();
+        document.getElementById("payment-form").style.display = "none";
+
         displayCart(); // Обновляем отображение корзины после оплаты
     } catch (error) {
         console.error("Error processing payment:", error);
         alert("An error occurred while processing payment.");
     }
+}
+
+// Функция для показа формы оплаты (при нажатии кнопки "Pay Cart")
+function showPaymentForm() {
+    document.getElementById("payment-form").style.display = "block";
+}
+
+
+
+
+// Функция для показа формы оплаты (при нажатии кнопки "Pay Cart")
+function showPaymentForm() {
+    const paymentForm = document.getElementById("payment-form");
+    paymentForm.style.display = "block";
 }
 
 // Вспомогательная функция для преобразования первой буквы строки в верхний регистр
@@ -175,9 +214,16 @@ document.addEventListener("DOMContentLoaded", () => {
     const payCartButton = document.createElement("button");
     payCartButton.id = "pay-cart-btn";
     payCartButton.innerText = "Pay Cart";
-    payCartButton.addEventListener("click", payCart);
+    payCartButton.addEventListener("click", showPaymentForm);
 
     const mainElement = document.querySelector("main");
     mainElement.appendChild(clearCartButton);
     mainElement.appendChild(payCartButton);
+
+    // Добавляем обработчик отправки формы оплаты
+    const paymentFormElement = document.getElementById("payment-details-form");
+    paymentFormElement.addEventListener("submit", (e) => {
+        e.preventDefault();
+        submitPaymentForm();
+    });
 });

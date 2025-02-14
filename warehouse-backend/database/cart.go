@@ -176,9 +176,7 @@ func UpdateCartTotal(cartID primitive.ObjectID) error {
 	return err
 }
 
-// PayShoppingCart отправляет данные корзины и клиента в микросервис транзакций.
-// Возвращает true, если транзакция прошла успешно, и false в противном случае.
-func PayShoppingCart(userID primitive.ObjectID) (bool, error) {
+func PayShoppingCart(userID primitive.ObjectID, paymentDetails map[string]interface{}) (bool, error) {
 	// Получаем корзину пользователя
 	cart, err := GetCartByUserID(userID)
 	if err != nil {
@@ -187,15 +185,23 @@ func PayShoppingCart(userID primitive.ObjectID) (bool, error) {
 	}
 	logrus.Infof("Retrieved cart for user %s", userID.Hex())
 
+	// Если в paymentDetails нет email, пытаемся получить его из контекста или устанавливаем пустое значение
+	if _, exists := paymentDetails["email"]; !exists {
+		// Например, можно получить email из другого поля контекста (если middleware его установил)
+		// Или, если email передаётся в теле запроса, он уже должен быть там.
+		paymentDetails["email"] = ""
+	}
+
 	// Генерируем новый идентификатор транзакции
 	transactionID := primitive.NewObjectID()
 	logrus.Infof("Generated transaction ID: %s", transactionID.Hex())
 
-	// Формируем пейлоад для микросервиса транзакций
+	// Формируем пейлоад для микросервиса транзакций, включая данные платежа
 	payload := map[string]interface{}{
-		"transaction_id": transactionID.Hex(),
-		"user_id":        userID.Hex(),
-		"cart":           cart, // Можно передать только необходимые поля
+		"transaction_id":  transactionID.Hex(),
+		"user_id":         userID.Hex(),
+		"cart":            cart, // Можно передать только необходимые поля
+		"payment_details": paymentDetails,
 	}
 
 	jsonData, err := json.Marshal(payload)
@@ -204,11 +210,10 @@ func PayShoppingCart(userID primitive.ObjectID) (bool, error) {
 		return false, fmt.Errorf("failed to marshal payload: %v", err)
 	}
 
-	// URL микросервиса транзакций (при необходимости измените)
+	// URL микросервиса транзакций
 	transactionURL := "http://localhost:8081/transactions"
 	logrus.Infof("Sending payment request to %s for user %s", transactionURL, userID.Hex())
 
-	// Отправляем POST-запрос в микросервис транзакций
 	client := &http.Client{Timeout: 10 * time.Second}
 	req, err := http.NewRequest("POST", transactionURL, bytes.NewBuffer(jsonData))
 	if err != nil {
@@ -229,7 +234,6 @@ func PayShoppingCart(userID primitive.ObjectID) (bool, error) {
 		return false, fmt.Errorf("transaction microservice returned status %d", resp.StatusCode)
 	}
 
-	// Ожидаем JSON-ответ, например: {"success": true}
 	var res struct {
 		Success bool `json:"success"`
 	}
@@ -241,3 +245,5 @@ func PayShoppingCart(userID primitive.ObjectID) (bool, error) {
 	logrus.Infof("Payment microservice response for user %s: success=%v", userID.Hex(), res.Success)
 	return res.Success, nil
 }
+
+
