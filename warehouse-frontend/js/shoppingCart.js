@@ -20,7 +20,6 @@ async function checkAuth() {
 // Функция для отображения товаров в корзине
 async function displayCart() {
     if (!(await checkAuth())) return;
-
     try {
         const response = await fetch(apiUrl + "/", {
             method: "GET",
@@ -28,18 +27,15 @@ async function displayCart() {
                 Authorization: `Bearer ${getToken()}`,
             },
         });
-
         if (!response.ok) {
             throw new Error("Failed to fetch cart data.");
         }
-
         const result = await response.json();
         const cart = result.data; // Извлекаем объект корзины из свойства data
         const cartContainer = document.getElementById("cart-container");
 
         // Очищаем контейнер перед отображением новых данных
         cartContainer.innerHTML = "";
-
         if (!cart || !cart.items || cart.items.length === 0) {
             cartContainer.innerHTML = "<p>Your cart is empty.</p>";
             return;
@@ -47,11 +43,9 @@ async function displayCart() {
 
         // Создаем элементы для каждого товара в корзине
         cart.items.forEach((item) => {
-            // Если идентификатор продукта приходит как id, а не _id, используем его
             const productId = item.product._id || item.product.id;
             const productCard = document.createElement("div");
             productCard.className = "cart-item";
-
             productCard.innerHTML = `
                 <h3>${item.product.brand} ${item.product.model}</h3>
                 <p>Type: ${capitalize(item.product.type)}</p>
@@ -59,15 +53,12 @@ async function displayCart() {
                 <p>Quantity: ${item.quantity}</p>
                 <button class="remove-btn" data-product-id="${productId}">Remove</button>
             `;
-
-            // Добавляем обработчик события для кнопки "Remove" с подтверждением
             const removeButton = productCard.querySelector(".remove-btn");
             removeButton.addEventListener("click", () => {
                 if (confirm("Are you sure you want to remove this product from your cart?")) {
                     removeFromCart(productId);
                 }
             });
-
             cartContainer.appendChild(productCard);
         });
 
@@ -86,7 +77,6 @@ async function displayCart() {
 // Функция для удаления товара из корзины
 async function removeFromCart(productId) {
     if (!(await checkAuth())) return;
-
     try {
         const response = await fetch(`${apiUrl}/${productId}/remove`, {
             method: "DELETE",
@@ -94,11 +84,9 @@ async function removeFromCart(productId) {
                 Authorization: `Bearer ${getToken()}`,
             },
         });
-
         if (!response.ok) {
             throw new Error("Failed to remove item from cart.");
         }
-
         alert("Product removed from cart successfully!");
         displayCart(); // Обновляем отображение корзины
     } catch (error) {
@@ -110,7 +98,6 @@ async function removeFromCart(productId) {
 // Функция для очистки всей корзины
 async function clearCart() {
     if (!(await checkAuth())) return;
-
     try {
         const response = await fetch(`${apiUrl}/clear`, {
             method: "DELETE",
@@ -118,11 +105,9 @@ async function clearCart() {
                 Authorization: `Bearer ${getToken()}`,
             },
         });
-
         if (!response.ok) {
             throw new Error("Failed to clear cart.");
         }
-
         alert("Cart cleared successfully!");
         displayCart(); // Обновляем отображение корзины
     } catch (error) {
@@ -139,8 +124,9 @@ async function submitPaymentForm() {
     const cvv = document.getElementById("cvv").value.trim();
     const name = document.getElementById("name").value.trim();
     const address = document.getElementById("address").value.trim();
+    const email = document.getElementById("email").value.trim(); // Добавляем email
 
-    if (!cardNumber || !expirationDate || !cvv || !name || !address) {
+    if (!cardNumber || !expirationDate || !cvv || !name || !address || !email) {
         alert("Please fill in all payment fields.");
         return;
     }
@@ -151,6 +137,7 @@ async function submitPaymentForm() {
         cvv,
         name,
         address,
+        email, // Добавляем email в данные платежа
     };
 
     try {
@@ -160,7 +147,7 @@ async function submitPaymentForm() {
                 "Content-Type": "application/json",
                 Authorization: `Bearer ${getToken()}`,
             },
-            body: JSON.stringify(paymentDetails)
+            body: JSON.stringify(paymentDetails),
         });
 
         if (!response.ok) {
@@ -168,12 +155,11 @@ async function submitPaymentForm() {
         }
 
         const result = await response.json();
-        alert(result.message || "Payment successful!");
+        alert(result.message || "Payment successful! A receipt has been sent to your email.");
 
         // После успешной оплаты скрываем форму и очищаем поля
         document.getElementById("payment-details-form").reset();
         document.getElementById("payment-form").style.display = "none";
-
         displayCart(); // Обновляем отображение корзины после оплаты
     } catch (error) {
         console.error("Error processing payment:", error);
@@ -184,15 +170,6 @@ async function submitPaymentForm() {
 // Функция для показа формы оплаты (при нажатии кнопки "Pay Cart")
 function showPaymentForm() {
     document.getElementById("payment-form").style.display = "block";
-}
-
-
-
-
-// Функция для показа формы оплаты (при нажатии кнопки "Pay Cart")
-function showPaymentForm() {
-    const paymentForm = document.getElementById("payment-form");
-    paymentForm.style.display = "block";
 }
 
 // Вспомогательная функция для преобразования первой буквы строки в верхний регистр

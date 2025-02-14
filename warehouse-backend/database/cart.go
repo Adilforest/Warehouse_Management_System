@@ -177,73 +177,70 @@ func UpdateCartTotal(cartID primitive.ObjectID) error {
 }
 
 func PayShoppingCart(userID primitive.ObjectID, paymentDetails map[string]interface{}) (bool, error) {
-	// Получаем корзину пользователя
-	cart, err := GetCartByUserID(userID)
-	if err != nil {
-		logrus.Errorf("Failed to retrieve cart for user %s: %v", userID.Hex(), err)
-		return false, fmt.Errorf("failed to retrieve cart: %v", err)
-	}
-	logrus.Infof("Retrieved cart for user %s", userID.Hex())
+    // Получаем корзину пользователя
+    cart, err := GetCartByUserID(userID)
+    if err != nil {
+        logrus.Errorf("Failed to retrieve cart for user %s: %v", userID.Hex(), err)
+        return false, fmt.Errorf("failed to retrieve cart: %v", err)
+    }
+    logrus.Infof("Retrieved cart for user %s", userID.Hex())
 
-	// Если в paymentDetails нет email, пытаемся получить его из контекста или устанавливаем пустое значение
-	if _, exists := paymentDetails["email"]; !exists {
-		// Например, можно получить email из другого поля контекста (если middleware его установил)
-		// Или, если email передаётся в теле запроса, он уже должен быть там.
-		paymentDetails["email"] = ""
-	}
+    // Проверяем наличие email в данных платежа
+    email, emailExists := paymentDetails["email"].(string)
+    if !emailExists || email == "" {
+        logrus.Errorf("Email is missing or empty in payment details for user %s", userID.Hex())
+        return false, fmt.Errorf("email is required for payment processing")
+    }
 
-	// Генерируем новый идентификатор транзакции
-	transactionID := primitive.NewObjectID()
-	logrus.Infof("Generated transaction ID: %s", transactionID.Hex())
+    // Генерируем новый идентификатор транзакции
+    transactionID := primitive.NewObjectID()
+    logrus.Infof("Generated transaction ID: %s", transactionID.Hex())
 
-	// Формируем пейлоад для микросервиса транзакций, включая данные платежа
-	payload := map[string]interface{}{
-		"transaction_id":  transactionID.Hex(),
-		"user_id":         userID.Hex(),
-		"cart":            cart, // Можно передать только необходимые поля
-		"payment_details": paymentDetails,
-	}
+    // Формируем пейлоад для микросервиса транзакций, включая данные платежа
+    payload := map[string]interface{}{
+        "transaction_id":  transactionID.Hex(),
+        "user_id":         userID.Hex(),
+        "cart":            cart, // Можно передать только необходимые поля
+        "payment_details": paymentDetails,
+    }
+    jsonData, err := json.Marshal(payload)
+    if err != nil {
+        logrus.Errorf("Failed to marshal payload for user %s: %v", userID.Hex(), err)
+        return false, fmt.Errorf("failed to marshal payload: %v", err)
+    }
 
-	jsonData, err := json.Marshal(payload)
-	if err != nil {
-		logrus.Errorf("Failed to marshal payload for user %s: %v", userID.Hex(), err)
-		return false, fmt.Errorf("failed to marshal payload: %v", err)
-	}
+    // URL микросервиса транзакций
+    transactionURL := "http://localhost:8081/transactions"
+    logrus.Infof("Sending payment request to %s for user %s", transactionURL, userID.Hex())
 
-	// URL микросервиса транзакций
-	transactionURL := "http://localhost:8081/transactions"
-	logrus.Infof("Sending payment request to %s for user %s", transactionURL, userID.Hex())
+    client := &http.Client{Timeout: 10 * time.Second}
+    req, err := http.NewRequest("POST", transactionURL, bytes.NewBuffer(jsonData))
+    if err != nil {
+        logrus.Errorf("Failed to create request for user %s: %v", userID.Hex(), err)
+        return false, fmt.Errorf("failed to create request: %v", err)
+    }
+    req.Header.Set("Content-Type", "application/json")
 
-	client := &http.Client{Timeout: 10 * time.Second}
-	req, err := http.NewRequest("POST", transactionURL, bytes.NewBuffer(jsonData))
-	if err != nil {
-		logrus.Errorf("Failed to create request for user %s: %v", userID.Hex(), err)
-		return false, fmt.Errorf("failed to create request: %v", err)
-	}
-	req.Header.Set("Content-Type", "application/json")
+    resp, err := client.Do(req)
+    if err != nil {
+        logrus.Errorf("Payment request failed for user %s: %v", userID.Hex(), err)
+        return false, fmt.Errorf("failed to send request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	resp, err := client.Do(req)
-	if err != nil {
-		logrus.Errorf("Payment request failed for user %s: %v", userID.Hex(), err)
-		return false, fmt.Errorf("failed to send request: %v", err)
-	}
-	defer resp.Body.Close()
+    if resp.StatusCode != http.StatusOK {
+        logrus.Errorf("Transaction microservice returned status %d for user %s", resp.StatusCode, userID.Hex())
+        return false, fmt.Errorf("transaction microservice returned status %d", resp.StatusCode)
+    }
 
-	if resp.StatusCode != http.StatusOK {
-		logrus.Errorf("Transaction microservice returned status %d for user %s", resp.StatusCode, userID.Hex())
-		return false, fmt.Errorf("transaction microservice returned status %d", resp.StatusCode)
-	}
+    var res struct {
+        Success bool `json:"success"`
+    }
+    if err := json.NewDecoder(resp.Body).Decode(&res); err != nil {
+        logrus.Errorf("Failed to decode response for user %s: %v", userID.Hex(), err)
+        return false, fmt.Errorf("failed to decode response: %v", err)
+    }
+    logrus.Infof("Payment microservice response for user %s: success=%v", userID.Hex(), res.Success)
 
-	var res struct {
-		Success bool `json:"success"`
-	}
-	if err := json.NewDecoder(resp.Body).Decode(&res); err != nil {
-		logrus.Errorf("Failed to decode response for user %s: %v", userID.Hex(), err)
-		return false, fmt.Errorf("failed to decode response: %v", err)
-	}
-
-	logrus.Infof("Payment microservice response for user %s: success=%v", userID.Hex(), res.Success)
-	return res.Success, nil
+    return res.Success, nil
 }
-
-
