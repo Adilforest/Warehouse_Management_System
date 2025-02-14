@@ -3,12 +3,14 @@ package middleware
 import (
 	"errors"
 	"fmt"
-	"github.com/gin-gonic/gin"
-	"github.com/golang-jwt/jwt/v5"
 	"net/http"
 	"os"
 	"strings"
 	"time"
+
+	"github.com/gin-gonic/gin"
+	"github.com/golang-jwt/jwt/v5"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 // jwtSecret хранит секретный ключ для подписи JWT-токенов
@@ -54,49 +56,48 @@ func VerifyToken(tokenString string) (*jwt.Token, error) {
 
 // AuthMiddleware проверяет JWT-токен и устанавливает данные пользователя в контекст
 func AuthMiddleware() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		tokenString := c.GetHeader("Authorization")
-		if tokenString == "" {
-			c.JSON(401, gin.H{"error": "Missing token"})
-			c.Abort()
-			return
-		}
-		tokenString = strings.TrimPrefix(tokenString, "Bearer ")
-		token, err := VerifyToken(tokenString)
-		if err != nil || !token.Valid {
-			c.JSON(401, gin.H{"error": "Invalid or expired token"})
-			c.Abort()
-			return
-		}
-		claims, ok := token.Claims.(jwt.MapClaims)
-		if !ok {
-			c.JSON(401, gin.H{"error": "Invalid token claims"})
-			c.Abort()
-			return
-		}
-		userID, ok := claims["user_id"].(string)
-		if !ok {
-			c.JSON(401, gin.H{"error": "Invalid user_id in token"})
-			c.Abort()
-			return
-		}
-		email, ok := claims["email"].(string)
-		if !ok {
-			c.JSON(401, gin.H{"error": "Invalid email in token"})
-			c.Abort()
-			return
-		}
-		role, ok := claims["role"].(string)
-		if !ok {
-			c.JSON(401, gin.H{"error": "Invalid role in token"})
-			c.Abort()
-			return
-		}
-		c.Set("user_id", userID)
-		c.Set("email", email)
-		c.Set("role", role) // Убедитесь, что роль сохраняется в контексте
-		c.Next()
-	}
+    return func(c *gin.Context) {
+        tokenString := c.GetHeader("Authorization")
+        if tokenString == "" || !strings.HasPrefix(tokenString, "Bearer ") {
+            c.JSON(http.StatusUnauthorized, gin.H{"error": "Missing or invalid Authorization header"})
+            c.Abort()
+            return
+        }
+
+        tokenString = strings.TrimPrefix(tokenString, "Bearer ")
+        token, err := VerifyToken(tokenString)
+        if err != nil || !token.Valid {
+            c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid or expired token"})
+            c.Abort()
+            return
+        }
+
+        claims, ok := token.Claims.(jwt.MapClaims)
+        if !ok {
+            c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token claims"})
+            c.Abort()
+            return
+        }
+
+        userID, ok := claims["user_id"].(string)
+        if !ok {
+            c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid user_id in token"})
+            c.Abort()
+            return
+        }
+
+        // Преобразуем userID в primitive.ObjectID
+        objectID, err := primitive.ObjectIDFromHex(userID)
+        if err != nil {
+            c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid user_id format"})
+            c.Abort()
+            return
+        }
+
+        // Сохраняем userID в контекст
+        c.Set("userID", objectID)
+        c.Next()
+    }
 }
 
 func AdminOnlyMiddleware() gin.HandlerFunc {

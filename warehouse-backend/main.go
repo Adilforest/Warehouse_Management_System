@@ -1,11 +1,6 @@
 package main
 
 import (
-	"github.com/gin-contrib/cors"
-	"github.com/gin-gonic/gin"
-	"github.com/joho/godotenv"
-	"go.mongodb.org/mongo-driver/bson/primitive"
-	"golang.org/x/time/rate"
 	"net/http"
 	"os"
 	"os/signal"
@@ -19,6 +14,12 @@ import (
 	"warehouse-backend/middleware"
 	"warehouse-backend/models"
 	"warehouse-backend/routes"
+
+	"github.com/gin-contrib/cors"
+	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"golang.org/x/time/rate"
 )
 
 const serverPort = ":8080"
@@ -176,23 +177,24 @@ func setupRoutes() *gin.Engine {
 	userRoutes := router.Group("/users")
 	userRoutes.Use(middleware.AuthMiddleware()) // Middleware для проверки JWT
 	{
-		userRoutes.GET("/", adminOnlyMiddleware, controllers.GetAllUsers)                                                     
-		userRoutes.GET("/:id", adminOnlyMiddleware, controllers.GetUserByID)                                                  
-		userRoutes.PUT("/:id", adminOnlyMiddleware, controllers.UpdateUser)                                                  
-		userRoutes.DELETE("/:id", adminOnlyMiddleware, controllers.DeleteUser)                                                 
-		userRoutes.DELETE("/deleteAll", adminOnlyMiddleware, controllers.DeleteAllUsers)                                      
-		userRoutes.PUT("/:id/role", middleware.AuthMiddleware(), middleware.AdminOnlyMiddleware(), controllers.UpdateUserRole) 
+		userRoutes.GET("/", adminOnlyMiddleware, controllers.GetAllUsers)
+		userRoutes.GET("/:id", adminOnlyMiddleware, controllers.GetUserByID)
+		userRoutes.PUT("/:id", adminOnlyMiddleware, controllers.UpdateUser)
+		userRoutes.DELETE("/:id", adminOnlyMiddleware, controllers.DeleteUser)
+		userRoutes.DELETE("/deleteAll", adminOnlyMiddleware, controllers.DeleteAllUsers)
+		userRoutes.PUT("/:id/role", middleware.AuthMiddleware(), middleware.AdminOnlyMiddleware(), controllers.UpdateUserRole)
 	}
 
+	// Маршруты для работы с корзиной
 	cartRoutes := router.Group("/cart")
+	cartRoutes.Use(middleware.AuthMiddleware()) // Middleware для проверки JWT
 	{
-		cartRoutes.Use(middleware.AuthMiddleware()) 
-		cartRoutes.GET("/", controllers.GetCart)
-		cartRoutes.POST("/add", controllers.AddToCart)
-		cartRoutes.POST("/remove", controllers.RemoveFromCart)
-		cartRoutes.DELETE("/clear", controllers.ClearCart)
+		cartRoutes.POST("/:product_id/add", controllers.AddToCartHandler)           // Добавить товар в корзину
+		cartRoutes.GET("/", controllers.GetCartHandler)                             // Получить корзину
+		cartRoutes.DELETE("/:product_id/remove", controllers.RemoveFromCartHandler) // Удалить товар из корзины
+		cartRoutes.DELETE("/clear", controllers.ClearCartHandler)                   // Очистить корзину
 	}
-	
+
 	return router
 }
 

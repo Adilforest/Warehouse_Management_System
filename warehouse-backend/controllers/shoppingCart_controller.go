@@ -1,139 +1,160 @@
 package controllers
 
 import (
-	"net/http"
-	"warehouse-backend/database"
-	"warehouse-backend/models"
+    "net/http"
+    "strconv"
 
-	"github.com/gin-gonic/gin"
-	"go.mongodb.org/mongo-driver/bson/primitive"
+    "warehouse-backend/database"
+    "warehouse-backend/models"
+
+    "github.com/gin-gonic/gin"
+    "go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-// GetCart возвращает корзину текущего пользователя.
-func GetCart(c *gin.Context) {
-	userIDStr, exists := c.Get("userID")
-	if !exists {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
-		return
-	}
+// AddToCartHandler добавляет товар в корзину
+func AddToCartHandler(c *gin.Context) {
+    userID, exists := c.Get("userID") // Получаем ID пользователя из middleware
+    if !exists {
+        c.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
+        return
+    }
 
-	userID, err := primitive.ObjectIDFromHex(userIDStr.(string))
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user ID"})
-		return
-	}
+    // Убедитесь, что userID имеет тип primitive.ObjectID
+    userObjectID, ok := userID.(primitive.ObjectID)
+    if !ok {
+        c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to extract user ID"})
+        return
+    }
 
-	cart, err := database.GetCartByUserID(userID)
-	if err != nil {
-		// Если корзина не найдена, создаём новую.
-		newCart := models.Cart{
-			ID:     primitive.NewObjectID(),
-			UserID: userID,
-			Items:  []models.CartItem{},
-		}
-		if err := database.CreateCart(&newCart); err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not create cart"})
-			return
-		}
-		cart = &newCart
-	}
+    productIDStr := c.Param("product_id")
+    productID, err := primitive.ObjectIDFromHex(productIDStr)
+    if err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid product ID"})
+        return
+    }
 
-	c.JSON(http.StatusOK, cart)
+    quantityStr := c.Query("quantity")
+    quantity, err := strconv.Atoi(quantityStr)
+    if err != nil || quantity <= 0 {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid quantity"})
+        return
+    }
+
+    // Получаем корзину пользователя
+    cart, err := database.GetCartByUserID(userObjectID)
+    if err != nil {
+        // Если корзины нет, создаем новую
+        cart, err = database.CreateCart(userObjectID)
+        if err != nil {
+            c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create cart"})
+            return
+        }
+    }
+
+    // Получаем продукт
+    product, err := database.GetProductByID(productID)
+    if err != nil {
+        c.JSON(http.StatusNotFound, gin.H{"error": "Product not found"})
+        return
+    }
+
+    // Создаем элемент корзины
+    item := models.CartItem{
+        Product:  *product,
+        Quantity: quantity,
+    }
+
+    // Добавляем товар в корзину
+    err = database.AddItemToCart(cart.ID, item)
+    if err != nil {
+        c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to add item to cart"})
+        return
+    }
+
+    c.JSON(http.StatusOK, gin.H{"message": "Item added to cart"})
 }
 
-// AddToCart добавляет товар в корзину.
-func AddToCart(c *gin.Context) {
-	var req struct {
-		ProductID string `json:"productId"`
-		Quantity  int    `json:"quantity"`
-	}
-	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body"})
-		return
-	}
+// GetCartHandler возвращает корзину пользователя
+func GetCartHandler(c *gin.Context) {
+    userID, exists := c.Get("userID") // Получаем ID пользователя из middleware
+    if !exists {
+        c.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
+        return
+    }
 
-	userIDStr, exists := c.Get("userID")
-	if !exists {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
-		return
-	}
-	userID, err := primitive.ObjectIDFromHex(userIDStr.(string))
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user ID"})
-		return
-	}
-	productID, err := primitive.ObjectIDFromHex(req.ProductID)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid product ID"})
-		return
-	}
-	if req.Quantity <= 0 {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Quantity must be greater than zero"})
-		return
-	}
+    // Убедитесь, что userID имеет тип primitive.ObjectID
+    userObjectID, ok := userID.(primitive.ObjectID)
+    if !ok {
+        c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to extract user ID"})
+        return
+    }
 
-	if err := database.AddItemToCart(userID, productID, req.Quantity); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not add item to cart"})
-		return
-	}
+    // Получаем корзину пользователя
+    cart, err := database.GetCartByUserID(userObjectID)
+    if err != nil {
+        c.JSON(http.StatusNotFound, gin.H{"error": "Cart not found"})
+        return
+    }
 
-	c.JSON(http.StatusOK, gin.H{"message": "Item added to cart"})
+    c.JSON(http.StatusOK, gin.H{
+        "status": "success",
+        "data":   cart,
+    })
 }
 
-// RemoveFromCart удаляет товар из корзины.
-func RemoveFromCart(c *gin.Context) {
-	var req struct {
-		ProductID string `json:"productId"`
-	}
-	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body"})
-		return
-	}
-	userIDStr, exists := c.Get("userID")
-	if !exists {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
-		return
-	}
-	userID, err := primitive.ObjectIDFromHex(userIDStr.(string))
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user ID"})
-		return
-	}
-	productID, err := primitive.ObjectIDFromHex(req.ProductID)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid product ID"})
-		return
-	}
+// RemoveFromCartHandler удаляет товар из корзины
+func RemoveFromCartHandler(c *gin.Context) {
+    userID, exists := c.Get("userID") // Получаем ID пользователя из middleware
+    if !exists {
+        c.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
+        return
+    }
 
-	if err := database.RemoveItemFromCart(userID, productID); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not remove item from cart"})
-		return
-	}
+    // Убедитесь, что userID имеет тип primitive.ObjectID
+    userObjectID, ok := userID.(primitive.ObjectID)
+    if !ok {
+        c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to extract user ID"})
+        return
+    }
 
-	c.JSON(http.StatusOK, gin.H{"message": "Item removed from cart"})
+    productIDStr := c.Param("product_id")
+    productID, err := primitive.ObjectIDFromHex(productIDStr)
+    if err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid product ID"})
+        return
+    }
+
+    // Удаляем товар из корзины
+    err = database.RemoveItemFromCart(userObjectID, productID)
+    if err != nil {
+        c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to remove item from cart"})
+        return
+    }
+
+    c.JSON(http.StatusOK, gin.H{"message": "Item removed from cart"})
 }
 
-// ClearCart очищает корзину пользователя.
-func ClearCart(c *gin.Context) {
-	userIDStr, exists := c.Get("userID")
-	if !exists {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
-		return
-	}
-	userID, err := primitive.ObjectIDFromHex(userIDStr.(string))
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user ID"})
-		return
-	}
-	cart, err := database.GetCartByUserID(userID)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not retrieve cart"})
-		return
-	}
-	cart.Items = []models.CartItem{}
-	if err := database.UpdateCart(cart); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not clear cart"})
-		return
-	}
-	c.JSON(http.StatusOK, gin.H{"message": "Cart cleared"})
+// ClearCartHandler очищает корзину пользователя
+func ClearCartHandler(c *gin.Context) {
+    userID, exists := c.Get("userID") // Получаем ID пользователя из middleware
+    if !exists {
+        c.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
+        return
+    }
+
+    // Убедитесь, что userID имеет тип primitive.ObjectID
+    userObjectID, ok := userID.(primitive.ObjectID)
+    if !ok {
+        c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to extract user ID"})
+        return
+    }
+
+    // Очищаем корзину
+    err := database.ClearCart(userObjectID)
+    if err != nil {
+        c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to clear cart"})
+        return
+    }
+
+    c.JSON(http.StatusOK, gin.H{"message": "Cart cleared successfully"})
 }

@@ -1,101 +1,153 @@
 package database
 
 import (
-	"context"
-	"time"
-	"warehouse-backend/models"
-
-	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
-	"go.mongodb.org/mongo-driver/mongo"
+    "context"
+    "time"
+    "warehouse-backend/models"
+    "go.mongodb.org/mongo-driver/bson"
+    "go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-// getCartCollection возвращает коллекцию "carts" из базы "warehouse".
-func getCartCollection() *mongo.Collection {
-	return GetCollection("warehouse", "carts")
+// CreateCart создает новую корзину для пользователя
+func CreateCart(userID primitive.ObjectID) (*models.Cart, error) {
+    collection := GetCollection("warehouse", "carts")
+    ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+    defer cancel()
+
+    cart := models.Cart{
+        UserID:  userID,
+        Items:   []models.CartItem{},
+        Total:   0,
+        Created: time.Now(),
+        Updated: time.Now(),
+    }
+
+    result, err := collection.InsertOne(ctx, cart)
+    if err != nil {
+        return nil, err
+    }
+
+    cart.ID = result.InsertedID.(primitive.ObjectID)
+    return &cart, nil
 }
 
-// GetCartByUserID возвращает корзину для указанного пользователя.
+// GetCartByUserID возвращает корзину пользователя по его ID
 func GetCartByUserID(userID primitive.ObjectID) (*models.Cart, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
+    collection := GetCollection("warehouse", "carts")
+    ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+    defer cancel()
 
-	var cart models.Cart
-	err := getCartCollection().FindOne(ctx, bson.M{"userId": userID}).Decode(&cart)
-	if err != nil {
-		return nil, err
-	}
-	return &cart, nil
+    var cart models.Cart
+    err := collection.FindOne(ctx, bson.M{"user_id": userID}).Decode(&cart)
+    if err != nil {
+        return nil, err
+    }
+
+    return &cart, nil
 }
 
-// CreateCart создаёт новую корзину.
-func CreateCart(cart *models.Cart) error {
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
+// AddItemToCart добавляет товар в корзину
+func AddItemToCart(cartID primitive.ObjectID, item models.CartItem) error {
+    collection := GetCollection("warehouse", "carts")
+    ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+    defer cancel()
 
-	_, err := getCartCollection().InsertOne(ctx, cart)
-	return err
+    // Проверяем, существует ли уже такой товар в корзине
+    filter := bson.M{"_id": cartID, "items.product.id": item.Product.ID}
+    update := bson.M{
+        "$inc": bson.M{"items.$.quantity": item.Quantity},
+        "$set": bson.M{"updated_at": time.Now()},
+    }
+
+    _, err := collection.UpdateOne(ctx, filter, update)
+    if err != nil {
+        // Если товар не найден, добавляем новый элемент
+        filter = bson.M{"_id": cartID}
+        update = bson.M{
+            "$push": bson.M{"items": item},
+            "$set":  bson.M{"updated_at": time.Now()},
+        }
+        _, err = collection.UpdateOne(ctx, filter, update)
+        if err != nil {
+            return err
+        }
+    }
+
+    // Обновляем общую стоимость корзины
+    return UpdateCartTotal(cartID)
 }
 
-// UpdateCart обновляет корзину (например, изменяя список Items).
-func UpdateCart(cart *models.Cart) error {
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
-
-	filter := bson.M{"_id": cart.ID}
-	update := bson.M{"$set": bson.M{"items": cart.Items}}
-	_, err := getCartCollection().UpdateOne(ctx, filter, update)
-	return err
-}
-
-// DeleteCart удаляет корзину по её ID.
-func DeleteCart(cartID primitive.ObjectID) error {
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
-
-	_, err := getCartCollection().DeleteOne(ctx, bson.M{"_id": cartID})
-	return err
-}
-
-// AddItemToCart добавляет товар в корзину или увеличивает его количество, если он уже там есть.
-func AddItemToCart(userID, productID primitive.ObjectID, quantity int) error {
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
-
-	collection := getCartCollection()
-
-	// Пытаемся обновить количество, если элемент уже есть.
-	filter := bson.M{"userId": userID, "items.productId": productID}
-	update := bson.M{"$inc": bson.M{"items.$.quantity": quantity}}
-	result, err := collection.UpdateOne(ctx, filter, update)
-	if err != nil {
-		return err
-	}
-
-	// Если элемент не найден, добавляем новый.
-	if result.ModifiedCount == 0 {
-		newItem := models.CartItem{
-			ID:        primitive.NewObjectID(),
-			ProductID: productID,
-			Quantity:  quantity,
-		}
-		filter = bson.M{"userId": userID}
-		update = bson.M{"$push": bson.M{"items": newItem}}
-		_, err = collection.UpdateOne(ctx, filter, update)
-		if err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
-// RemoveItemFromCart удаляет товар из корзины.
+// RemoveItemFromCart удаляет товар из корзины
 func RemoveItemFromCart(userID, productID primitive.ObjectID) error {
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
+    collection := GetCollection("warehouse", "carts")
+    ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+    defer cancel()
 
-	filter := bson.M{"userId": userID}
-	update := bson.M{"$pull": bson.M{"items": bson.M{"productId": productID}}}
-	_, err := getCartCollection().UpdateOne(ctx, filter, update)
-	return err
+    filter := bson.M{"user_id": userID}
+    update := bson.M{
+        "$pull": bson.M{"items": bson.M{"product.id": productID}},
+        "$set":  bson.M{"updated_at": time.Now()},
+    }
+
+    _, err := collection.UpdateOne(ctx, filter, update)
+    if err != nil {
+        return err
+    }
+
+    // Обновляем общую стоимость корзины
+    return UpdateCartTotal(userID)
+}
+
+// ClearCart очищает корзину пользователя
+func ClearCart(userID primitive.ObjectID) error {
+    collection := GetCollection("warehouse", "carts")
+    ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+    defer cancel()
+
+    filter := bson.M{"user_id": userID}
+    update := bson.M{
+        "$set": bson.M{
+            "items":   []models.CartItem{},
+            "total":   0,
+            "updated": time.Now(),
+        },
+    }
+
+    _, err := collection.UpdateOne(ctx, filter, update)
+    return err
+}
+
+func UpdateCartTotal(cartID primitive.ObjectID) error {
+    collection := GetCollection("warehouse", "carts")
+    ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+    defer cancel()
+
+    pipeline := []bson.M{
+        {"$match": bson.M{"_id": cartID}},
+        {"$unwind": "$items"},
+        {"$group": bson.M{
+            "_id":   "$_id",
+            "total": bson.M{"$sum": bson.M{"$multiply": []interface{}{"$items.product.price", "$items.quantity"}}},
+        }},
+    }
+
+    var result struct {
+        ID    primitive.ObjectID `bson:"_id"`
+        Total float64            `bson:"total"`
+    }
+
+    cursor, err := collection.Aggregate(ctx, pipeline)
+    if err != nil {
+        return err
+    }
+    defer cursor.Close(ctx)
+
+    if cursor.Next(ctx) {
+        if err := cursor.Decode(&result); err != nil {
+            return err
+        }
+    }
+
+    _, err = collection.UpdateOne(ctx, bson.M{"_id": cartID}, bson.M{"$set": bson.M{"total": result.Total}})
+    return err
 }

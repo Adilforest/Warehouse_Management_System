@@ -64,22 +64,18 @@ async function fetchProducts(filters = {}, sortBy = "", order = "asc", page = 1,
 
 function renderProducts(productsToRender) {
     productList.innerHTML = "";
-
     if (!Array.isArray(productsToRender)) {
         console.error("Expected an array of products, but got:", productsToRender);
         productList.innerHTML = '<p>No products found.</p>';
         return;
     }
-
     if (productsToRender.length === 0) {
         productList.innerHTML = '<p>No products found.</p>';
         return;
     }
-
     productsToRender.forEach(product => {
         const productCard = document.createElement("div");
         productCard.className = "product-card";
-
         productCard.innerHTML = `
             <img src="${product.link || 'https://via.placeholder.com/250x150'}" alt="${product.type}">
             <div class="card-content">
@@ -93,11 +89,46 @@ function renderProducts(productsToRender) {
                 <p class="price">$${product.price.toFixed(2)}</p>
             </div>
             <div class="card-footer">
-                <button>Details</button>
+                <button class="add-to-cart-btn" data-product-id="${product._id}">Add to Cart</button>
             </div>
         `;
+        // Добавляем обработчик события для кнопки "Add to Cart"
+        const addToCartButton = productCard.querySelector(".add-to-cart-btn");
+        addToCartButton.addEventListener("click", () => {
+            addToCart(product._id);
+        });
+
         productList.appendChild(productCard);
     });
+}
+
+async function addToCart(productId) {
+    const token = localStorage.getItem("token");
+    if (!token) {
+        alert("You need to log in to add items to the cart.");
+        window.location.href = "/Login.html";
+        return;
+    }
+
+    try {
+        const response = await fetch(`http://localhost:8080/cart/${productId}/add?quantity=1`, {
+            method: "POST",
+            headers: {
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json",
+            },
+        });
+
+        if (response.ok) {
+            alert("Product added to cart successfully!");
+        } else {
+            const errorData = await response.json();
+            alert(`Failed to add product to cart: ${errorData.error}`);
+        }
+    } catch (error) {
+        console.error("Error adding product to cart:", error);
+        alert("An error occurred while adding the product to the cart.");
+    }
 }
 
 function renderPagination(totalItems) {
