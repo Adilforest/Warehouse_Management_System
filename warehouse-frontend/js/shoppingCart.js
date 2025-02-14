@@ -47,6 +47,8 @@ async function displayCart() {
 
         // Создаем элементы для каждого товара в корзине
         cart.items.forEach((item) => {
+            // Если идентификатор продукта приходит как id, а не _id, используем его
+            const productId = item.product._id || item.product.id;
             const productCard = document.createElement("div");
             productCard.className = "cart-item";
 
@@ -55,14 +57,14 @@ async function displayCart() {
                 <p>Type: ${capitalize(item.product.type)}</p>
                 <p>Price: $${Number(item.product.price).toFixed(2)}</p>
                 <p>Quantity: ${item.quantity}</p>
-                <button class="remove-btn" data-product-id="${item.product._id}">Remove</button>
+                <button class="remove-btn" data-product-id="${productId}">Remove</button>
             `;
 
             // Добавляем обработчик события для кнопки "Remove" с подтверждением
             const removeButton = productCard.querySelector(".remove-btn");
             removeButton.addEventListener("click", () => {
                 if (confirm("Are you sure you want to remove this product from your cart?")) {
-                    removeFromCart(item.product._id);
+                    removeFromCart(productId);
                 }
             });
 
@@ -80,6 +82,7 @@ async function displayCart() {
             "<p>An error occurred while loading your cart. Please try again later.</p>";
     }
 }
+
 
 
 
