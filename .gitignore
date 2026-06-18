@@ -5,3 +5,7 @@ qodana.yaml
 server.log
 uploads
 .VSCode
+.env
+**/.env
+*.log
+receipt_*.pdf
